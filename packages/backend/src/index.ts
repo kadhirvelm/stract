@@ -9,8 +9,10 @@ app.use(compression());
 
 configureSecurity(app);
 
-app[SampleService.getSampleData.method](SampleService.getSampleData.endpoint, (_, res) => {
-    SampleService.getSampleData.backend({ label: "string" }, res, (label: { label: string }) => {
+const { method, endpoint, implementation } = SampleService.getSampleData.backend;
+
+app[method](endpoint, (_, res) => {
+    implementation({ label: "string" }, res, (label: { label: string }) => {
         return new Promise(resolve => resolve(label));
     });
 });

@@ -11,9 +11,11 @@ interface ISampleEndpoints extends IService {
 
 export const SampleService: ISampleEndpoints = {
     getSampleData: {
-        backend: backendEndpointImplementation<{ label: string }, { label: string }>(),
-        endpoint: "/sample-endpoint",
+        backend: {
+            endpoint: "/sample-endpoint",
+            implementation: backendEndpointImplementation<{ label: string }, { label: string }>(),
+            method: "get",
+        },
         frontend: frontendEndpointImplementation("/sample-endpoint"),
-        method: "get",
     },
 };

@@ -13,10 +13,12 @@ type IBackendEndpointDefinition<T, E> = (
 type IFrontendEndpointDefintion<Payload, Response> = (payload: Payload) => Promise<Response>;
 
 export interface IEndpointDefiniton<Payload extends {}, Response extends {}> {
-    backend: IBackendEndpointDefinition<Payload, Response>;
-    endpoint: string;
+    backend: {
+        endpoint: string;
+        method: IMethods;
+        implementation: IBackendEndpointDefinition<Payload, Response>;
+    };
     frontend: IFrontendEndpointDefintion<Payload, Response>;
-    method: IMethods;
 }
 
 export interface IService {
