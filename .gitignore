@@ -1,0 +1,17 @@
+.DS_Store
+.vscode
+yarn-error.log
+
+dist/*
+node_modules/*
+
+packages/*/node_modules/*
+packages/*/dist/*
+packages/*/build/*
+
+distribution/*
+production/*
+
+*.log
+logs/*
+logs

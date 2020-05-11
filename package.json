@@ -1,0 +1,49 @@
+{
+  "name": "corona",
+  "version": "0.1.0",
+  "description": "A dashboard that lets you analyze corona data.",
+  "dependencies": {},
+  "private": true,
+  "devDependencies": {
+    "@types/node": "^12.12.6",
+    "@typescript-eslint/eslint-plugin": "^2.7.0",
+    "@typescript-eslint/parser": "^2.14.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-typescript": "^6.3.1",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.15.1",
+    "eslint-plugin-react-hooks": "^2.0.0",
+    "lerna": "^3.20.1",
+    "prettier": "^1.19.1",
+    "typescript": "^3.7.2"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "resolutions": {
+    "redux": "4.0.1"
+  },
+  "scripts": {
+    "build": "lerna run build",
+    "clean": "node scripts/cleanPackages",
+    "clean:lock": "npx yarn-deduplicate yarn.lock",
+    "dev": "lerna run dev --parallel",
+    "dev:mobile": "lerna run dev:mobile --parallel",
+    "lint": "lerna run lint",
+    "update-version": "lerna publish --skip-git --skip-npm --force-publish '*'",
+    "start:production": "source ~/.bash_profile && yarn build && cd packages/backend && yarn start:production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kadhirvelm/corona.git"
+  },
+  "author": "kadhirvelm",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kadhirvelm/corona/issues"
+  },
+  "homepage": "https://github.com/kadhirvelm/corona#readme"
+}
