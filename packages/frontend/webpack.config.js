@@ -117,10 +117,10 @@ module.exports = {
             favicon: path.resolve(__dirname, "public/favicon.ico"),
             meta: {
                 copyright: "Copyright 2020",
-                description: "Allows a person to view nation, state, and county level corona-related information for the united states.",
-                "og:title": "United States Corona Dashboard",
+                description: "Play Stract, the team based strategy game.",
+                "og:title": "Stract",
                 "og:image": path.resolve(__dirname, "public/og-image.png"),
-                title: "United States Corona Dashboard.",
+                title: "Stract.",
                 viewport: "width=device-width, initial-scale=1.0",
             },
             template: "./src/index.html",

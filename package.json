@@ -1,7 +1,7 @@
 {
-  "name": "corona",
+  "name": "stract",
   "version": "0.1.0",
-  "description": "A dashboard that lets you analyze corona data.",
+  "description": "Stract, the team based strategy game.",
   "dependencies": {},
   "private": true,
   "devDependencies": {
@@ -38,12 +38,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kadhirvelm/corona.git"
+    "url": "git+https://github.com/kadhirvelm/stract.git"
   },
   "author": "kadhirvelm",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kadhirvelm/corona/issues"
+    "url": "https://github.com/kadhirvelm/stract/issues"
   },
-  "homepage": "https://github.com/kadhirvelm/corona#readme"
+  "homepage": "https://github.com/kadhirvelm/stract#readme"
 }

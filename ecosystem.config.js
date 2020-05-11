@@ -1,6 +1,6 @@
 module.exports = {
     apps : [{
-      name: "corona-service",
+      name: "stract-service",
       script: "./dist/index.js",
       instances: "max",
       exec_mode: "cluster",
