@@ -14,6 +14,7 @@ export function setupGameSocket(server: Server) {
         const fromClient = StractGameSocketService.backend.fromClient(socket);
         const toClient = StractGameSocketService.backend.toClient(socket);
 
+        // eslint-disable-next-line no-console
         console.log("Socket connected", socket.id);
 
         fromClient.getGameUpdate(() => {
