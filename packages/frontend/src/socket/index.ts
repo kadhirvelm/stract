@@ -1,11 +1,11 @@
-import { ISocketMessageMetadata, IStractToServer, ORIGIN, PORT, StractGameSocketService } from "@stract/api";
+import { ISocketMessageMetadata, IStractToServer, ORIGIN, PORT, StractGameSocketService, socketId } from "@stract/api";
 import { Dispatch } from "redux";
 import io from "socket.io-client";
 import { v4 } from "uuid";
 import { handleGameBoard } from "./handleGameBoard";
 
 const socketMetadata: ISocketMessageMetadata = {
-    socketIdentifier: v4(),
+    socketIdentifier: socketId(v4()),
 };
 
 let toServer: IStractToServer["toServer"] | undefined;
