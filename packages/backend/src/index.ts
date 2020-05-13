@@ -13,7 +13,7 @@ app.use(compression());
 configureSecurity(app);
 setupRoutes(app, server);
 
-server.listen(PORT, "0.0.0.0", () => {
+server.listen(PORT, ORIGIN, () => {
     // eslint-disable-next-line no-console
     console.log({ level: "info", message: `Server started, listening on http://${ORIGIN}:${PORT}` });
 });

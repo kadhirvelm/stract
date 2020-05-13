@@ -1,20 +1,48 @@
+import { Spinner } from "@blueprintjs/core";
+import { IStractGame } from "@stract/api";
 import * as React from "react";
-import io from "socket.io-client";
-import { StractGameSocketService } from "@stract/api";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
+import { instantiateStractGameSocketListener, sendServerMessage } from "./socket";
+import { IStoreState } from "./store";
+import { GameBoard } from "./components/gameBoard";
+import styles from "./game.module.scss";
 
-export class Game extends React.PureComponent {
-    public componentDidMount() {
-        const socket = io("http://10.0.0.215:3000/");
+interface IOwnProps {
+    storeDispatch: Dispatch;
+}
 
-        const toServer = StractGameSocketService.frontend.toServer(socket, { socketIdentifier: "sample-socket" });
-        const fromServer = StractGameSocketService.frontend.fromServer(socket);
+interface IStoreProps {
+    gameBoard?: IStractGame;
+}
 
-        fromServer.onGameUpdate(game => console.log("We got game", game));
+type IProps = IOwnProps & IStoreProps;
 
-        toServer.getGameUpdate({});
+class UnconnectedGame extends React.PureComponent<IProps> {
+    public async componentDidMount() {
+        const { storeDispatch } = this.props;
+        await instantiateStractGameSocketListener(storeDispatch);
+        sendServerMessage().getGameUpdate({});
     }
 
     public render() {
-        return <div>Hello world!</div>;
+        const { gameBoard } = this.props;
+        if (gameBoard === undefined) {
+            return <Spinner />;
+        }
+
+        return (
+            <div className={styles.boardContainer}>
+                <GameBoard gameBoard={gameBoard} />
+            </div>
+        );
     }
 }
+
+function mapStateToProps(state: IStoreState): IStoreProps {
+    return {
+        gameBoard: state.game.gameBoard,
+    };
+}
+
+export const Game = connect(mapStateToProps)(UnconnectedGame);

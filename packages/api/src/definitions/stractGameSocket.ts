@@ -19,7 +19,7 @@ enum MessageNames {
     ON_GAME_UPDATE = "on-game-update",
 }
 
-interface IStractToServer {
+export interface IStractToServer {
     fromClient: {
         getGameUpdate: IFromClientCallback<{}>;
     };
@@ -28,7 +28,7 @@ interface IStractToServer {
     };
 }
 
-interface IStractFromServer {
+export interface IStractFromServer {
     toClient: {
         onGameUpdate: IToServerCallback<IStractGame>;
     };
