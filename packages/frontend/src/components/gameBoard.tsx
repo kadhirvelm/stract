@@ -25,10 +25,10 @@ export function GameBoard(props: IProps) {
 
     return (
         <div className={styles.board}>
-            {board.map((row, x) => (
+            {board.map((row, xPos) => (
                 <div className={styles.row}>
-                    {row.map((tile, y) => (
-                        <GameTile dimension={squareDimension} gameTile={tile} x={x} y={y} />
+                    {row.map((tile, yPos) => (
+                        <GameTile dimension={squareDimension} gameTile={tile} x={xPos} y={yPos} />
                     ))}
                 </div>
             ))}
