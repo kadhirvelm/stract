@@ -37,7 +37,7 @@ interface IAllTeams<T> {
     south: T;
 }
 
-export interface IStractGame {
+export interface IStractGameV1 {
     metadata: {
         board: IBoardMetadata;
         id: IStractBoardId;

@@ -12,7 +12,7 @@ import {
     IFromClientCallback,
     IToClientCallback,
 } from "../common/genericSocket";
-import { IStractGame, IGameAction } from "../types";
+import { IStractGameV1, IGameAction } from "../types";
 
 enum MessageNames {
     GET_GAME_UPDATE = "get-game-update",
@@ -33,10 +33,10 @@ export interface IStractToServer {
 
 export interface IStractFromServer {
     toClient: {
-        onGameUpdate: IToServerCallback<IStractGame>;
+        onGameUpdate: IToServerCallback<IStractGameV1>;
     };
     fromServer: {
-        onGameUpdate: IFromServerCallback<IStractGame>;
+        onGameUpdate: IFromServerCallback<IStractGameV1>;
     };
 }
 
@@ -52,7 +52,7 @@ export const StractGameSocketService: ISocketService<
             addStagedAction: backendFromClient<IGameAction>(socket, { messageName: MessageNames.ADD_STAGED_ACTION }),
         }),
         toClient: (socket: ServerSocket) => ({
-            onGameUpdate: backendToClient<IStractGame>(socket, {
+            onGameUpdate: backendToClient<IStractGameV1>(socket, {
                 messageName: MessageNames.ON_GAME_UPDATE,
             }),
         }),
@@ -66,7 +66,7 @@ export const StractGameSocketService: ISocketService<
             }),
         }),
         fromServer: (socket: typeof ClientSocket.Socket) => ({
-            onGameUpdate: frontendFromServer<IStractGame>(socket, {
+            onGameUpdate: frontendFromServer<IStractGameV1>(socket, {
                 messageName: MessageNames.ON_GAME_UPDATE,
             }),
         }),

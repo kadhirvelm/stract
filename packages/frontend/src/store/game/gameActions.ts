@@ -1,4 +1,4 @@
 import { TypedAction } from "redoodle";
-import { IStractGame } from "@stract/api";
+import { IStractGameV1 } from "@stract/api";
 
-export const UpdateGameBoard = TypedAction.define("@stract/frontend/update-game-board")<IStractGame>();
+export const UpdateGameBoard = TypedAction.define("@stract/frontend/update-game-board")<IStractGameV1>();

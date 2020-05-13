@@ -1,5 +1,5 @@
 import { Spinner } from "@blueprintjs/core";
-import { IStractGame } from "@stract/api";
+import { IStractGameV1 } from "@stract/api";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -13,7 +13,7 @@ interface IOwnProps {
 }
 
 interface IStoreProps {
-    gameBoard?: IStractGame;
+    gameBoard?: IStractGameV1;
 }
 
 type IProps = IOwnProps & IStoreProps;

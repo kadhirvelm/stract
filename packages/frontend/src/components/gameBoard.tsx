@@ -1,10 +1,10 @@
 import * as React from "react";
-import { IStractGame } from "@stract/api";
+import { IStractGameV1 } from "@stract/api";
 import { GameTile } from "./gameTile";
 import styles from "./gameBoard.module.scss";
 
 interface IProps {
-    gameBoard: IStractGame;
+    gameBoard: IStractGameV1;
 }
 
 const MINIMUM_PADDING = 10;

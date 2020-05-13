@@ -1,6 +1,6 @@
 import { Server } from "http";
 import io from "socket.io";
-import { StractGameSocketService, IGameTile, teamId, stractBoardId, IStractGame } from "@stract/api";
+import { StractGameSocketService, IGameTile, teamId, stractBoardId, IStractGameV1 } from "@stract/api";
 import _ from "lodash";
 
 function createBoard(x: number, y: number): IGameTile[][] {
@@ -11,7 +11,7 @@ export function setupGameSocket(server: Server) {
     const socketConnection = io(server);
 
     socketConnection.on("connection", socket => {
-        const currentGameState: IStractGame = {
+        const currentGameState: IStractGameV1 = {
             metadata: {
                 board: {
                     size: {
