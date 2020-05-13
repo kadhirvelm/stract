@@ -1,9 +1,9 @@
 import { TypedReducer, setWith } from "redoodle";
-import { IStractGame } from "@stract/api";
+import { IStractGameV1 } from "@stract/api";
 import { UpdateGameBoard } from "./gameActions";
 
 export interface IGameState {
-    gameBoard?: IStractGame;
+    gameBoard?: IStractGameV1;
 }
 
 export const EMPTY_GAME_STATE: IGameState = {};

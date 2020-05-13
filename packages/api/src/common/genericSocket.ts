@@ -1,12 +1,16 @@
 import { Socket as ServerSocket } from "socket.io";
 import * as ClientSocket from "socket.io-client";
+import { Brand, createBrandedGeneric } from "./brandType";
 
 export interface INoMetadataSocketMessage {
     messageName: string;
 }
 
+export type ISocketIdentifer = Brand<string, "socket-id">;
+export const socketId = createBrandedGeneric<string, ISocketIdentifer>();
+
 export interface ISocketMessageMetadata {
-    socketIdentifier: string;
+    socketIdentifier: ISocketIdentifer;
 }
 
 export interface IWithMetadataSocketMessage extends INoMetadataSocketMessage {
