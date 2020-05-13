@@ -21,14 +21,31 @@ export function setupGameSocket(server: Server) {
                 },
                 id: stractBoardId("sample-stract-game"),
                 roomName: "Sample game board",
-                teams: {
-                    north: { id: teamId("north-team"), name: "North team" },
-                    south: { id: teamId("south-team"), name: "South team" },
-                },
-                turnNumber: 1,
             },
             board: createBoard(10, 10),
-            stagedActions: [],
+            stagedActions: {
+                north: [],
+                south: [],
+            },
+            teams: {
+                north: {
+                    id: teamId("north-team"),
+                    name: "North team",
+                    piecePool: {
+                        available: [{ total: 10, type: "circle" }],
+                        total: [{ total: 10, type: "circle" }],
+                    },
+                },
+                south: {
+                    id: teamId("south-team"),
+                    name: "South team",
+                    piecePool: {
+                        available: [{ total: 10, type: "circle" }],
+                        total: [{ total: 10, type: "circle" }],
+                    },
+                },
+            },
+            turnNumber: 1,
         };
 
         const fromClient = StractGameSocketService.backend.fromClient(socket);
@@ -42,7 +59,8 @@ export function setupGameSocket(server: Server) {
         });
 
         fromClient.addStagedAction((gameAction, socketMetadata) => {
-            currentGameState.stagedActions.push({
+            // TODO: determine what team this socket is on
+            currentGameState.stagedActions.north.push({
                 ...gameAction,
                 ownedByTeam: teamId(socketMetadata.socketIdentifier),
             });

@@ -2,6 +2,7 @@ import { IGameTile } from "./gameTile";
 import { ITeamRid } from "./team";
 import { IGameAction } from "./gameAction";
 import { Brand, createBrandedGeneric } from "../common";
+import { IGamePieceType } from "./gamePiece";
 
 export interface IBoardMetadata {
     size: {
@@ -13,13 +14,27 @@ export interface IBoardMetadata {
 export type IStractBoardId = Brand<string, "board-id">;
 export const stractBoardId = createBrandedGeneric<string, IStractBoardId>();
 
+export interface IBoardTeamPiecePool {
+    total: number;
+    type: IGamePieceType;
+}
+
 export interface IBoardTeamMetadata {
     id: ITeamRid;
     name: string;
+    piecePool: {
+        available: IBoardTeamPiecePool[];
+        total: IBoardTeamPiecePool[];
+    };
 }
 
 export interface IBoardStagedAction {
     ownedByTeam: ITeamRid;
+}
+
+interface IAllTeams<T> {
+    north: T;
+    south: T;
 }
 
 export interface IStractGame {
@@ -27,12 +42,9 @@ export interface IStractGame {
         board: IBoardMetadata;
         id: IStractBoardId;
         roomName: string;
-        teams: {
-            north: IBoardTeamMetadata;
-            south: IBoardTeamMetadata;
-        };
-        turnNumber: number;
     };
     board: Array<Array<IGameTile>>;
-    stagedActions: Array<IGameAction & IBoardStagedAction>;
+    stagedActions: IAllTeams<Array<IGameAction & IBoardStagedAction>>;
+    teams: IAllTeams<IBoardTeamMetadata>;
+    turnNumber: number;
 }
