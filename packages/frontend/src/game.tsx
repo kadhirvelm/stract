@@ -1,11 +1,11 @@
-import { Spinner } from "@blueprintjs/core";
-import { IStractGameV1 } from "@stract/api";
+import { IPlayer, IStractGameV1 } from "@stract/api";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { GameBoard } from "./components/gameBoard";
+import { RegisterPlayer } from "./components/player";
 import styles from "./game.module.scss";
-import { instantiateStractGameSocketListener, sendServerMessage } from "./socket";
+import { instantiateStractGameSocketListener } from "./socket";
 import { IStoreState } from "./store";
 
 interface IOwnProps {
@@ -14,35 +14,26 @@ interface IOwnProps {
 
 interface IStoreProps {
     gameBoard?: IStractGameV1;
+    player?: IPlayer;
 }
 
 type IProps = IOwnProps & IStoreProps;
 
 class UnconnectedGame extends React.PureComponent<IProps> {
-    public async componentDidMount() {
+    public componentDidMount() {
         const { storeDispatch } = this.props;
-        await instantiateStractGameSocketListener(storeDispatch);
-        sendServerMessage().getGameUpdate({});
-    }
-
-    public componentDidUpdate() {
-        const { gameBoard } = this.props;
-        if (gameBoard?.teams === undefined) {
-            return;
-        }
-
-        sendServerMessage().registerPlayer({ name: "Sample player", team: gameBoard?.teams.north.id });
+        instantiateStractGameSocketListener(storeDispatch);
     }
 
     public render() {
-        const { gameBoard } = this.props;
-        if (gameBoard === undefined) {
-            return <Spinner />;
+        const { player } = this.props;
+        if (player == null) {
+            return <RegisterPlayer />;
         }
 
         return (
             <div className={styles.boardContainer}>
-                <GameBoard gameBoard={gameBoard} />
+                <GameBoard />
             </div>
         );
     }
@@ -51,6 +42,7 @@ class UnconnectedGame extends React.PureComponent<IProps> {
 function mapStateToProps(state: IStoreState): IStoreProps {
     return {
         gameBoard: state.game.gameBoard,
+        player: state.game.player,
     };
 }
 

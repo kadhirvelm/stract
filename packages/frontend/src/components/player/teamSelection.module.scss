@@ -1,0 +1,90 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+@import "../../utils/variables";
+
+.team-selection-container {
+    @include boxed($pt-divider-black);
+
+    display: flex;
+    flex: 1;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.individual-team {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.team-members-container {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    > :not(:last-child) {
+        padding-bottom: 10px; 
+    }
+}
+
+.team-member {
+    font-weight: 550;
+}
+
+.active {
+    .team-member {
+        color: $white;
+    }
+
+    .north-title {
+        color: $white;
+    }
+
+    .south-title {
+        color: $white;
+    }
+}
+
+.north {
+    background: $north-color;
+
+    &.active.active {
+        background: $north-active;
+    }
+
+    &:hover {
+        background: $north-hover;
+    }
+}
+
+.south {
+    background: $south-color;
+
+    &.active.active {
+        background: $south-active;
+    }
+
+    &:hover {
+        background: $south-hover;
+    }
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    box-shadow: 0 1px $pt-divider-black;
+}
+
+.north-title {
+    color: $north-title;
+}
+
+.south-title {
+    color: $south-title;
+}

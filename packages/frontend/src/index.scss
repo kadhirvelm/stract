@@ -1,6 +1,12 @@
 @import "~@blueprintjs/core/lib/css/blueprint.css";
+@import "~@blueprintjs/core/lib/scss/variables";
+
+* {
+    font-size: 12px;
+    font-family: 'Press Start 2P', sans-serif;
+}
 
 body {
-    font-family: 'Open Sans', sans-serif;
-    color: #2E4053;
+    background: $light-gray5;
+    color: $dark-gray4;
 }

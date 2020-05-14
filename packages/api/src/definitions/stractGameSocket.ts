@@ -59,9 +59,10 @@ export interface IStractFromServer {
          */
         onGameUpdate: IToServerCallback<IStractGameV1>;
         /**
-         * If a player has successfully registered (or re-registered) with the game, replies with the latest player registration.
+         * If a player has successfully registered (or re-registered) with the game, replies with the latest player registration. It will
+         * return undefined if the game the player is connecting to no longer exists.
          */
-        onRegisterPlayer: IToServerCallback<IPlayer>;
+        onRegisterPlayer: IToServerCallback<IPlayer | undefined | null>;
     };
     fromServer: {
         /**
@@ -69,9 +70,10 @@ export interface IStractFromServer {
          */
         onGameUpdate: IFromServerCallback<IStractGameV1>;
         /**
-         * The player's registration. This message is sent when a player successfully registers (or re-registers) with the game.
+         * The player's registration. This message is sent when a player successfully registers (or re-registers) with the game. It will
+         * return undefined if the game the player is connecting to no longer exists.
          */
-        onRegisterPlayer: IFromServerCallback<IPlayer>;
+        onRegisterPlayer: IFromServerCallback<IPlayer | undefined | null>;
     };
 }
 
@@ -83,32 +85,34 @@ export const StractGameSocketService: ISocketService<
 > = {
     backend: {
         fromClient: (socket: ServerSocket) => ({
-            addStagedAction: backendFromClient<IGameAction>(socket, { messageName: MessageNames.ADD_STAGED_ACTION }),
-            getGameUpdate: backendFromClient<{}>(socket, { messageName: MessageNames.GET_GAME_UPDATE }),
-            registerPlayer: backendFromClient<IRegisterPlayer>(socket, { messageName: MessageNames.REGISTER_PLAYER }),
+            addStagedAction: backendFromClient(socket, { messageName: MessageNames.ADD_STAGED_ACTION }),
+            getGameUpdate: backendFromClient(socket, { messageName: MessageNames.GET_GAME_UPDATE }),
+            registerPlayer: backendFromClient(socket, { messageName: MessageNames.REGISTER_PLAYER }),
         }),
         toClient: (socket: ServerSocket | Namespace) => ({
-            onGameUpdate: backendToClient<IStractGameV1>(socket, {
+            onGameUpdate: backendToClient(socket, {
                 messageName: MessageNames.ON_GAME_UPDATE,
             }),
-            onRegisterPlayer: backendToClient<IPlayer>(socket, { messageName: MessageNames.ON_REGISTER_PLAYER }),
+            onRegisterPlayer: backendToClient(socket, {
+                messageName: MessageNames.ON_REGISTER_PLAYER,
+            }),
         }),
     },
     frontend: {
         toServer: (socket: typeof ClientSocket.Socket) => ({
-            addStagedAction: frontendToServer<IGameAction>(socket, {
+            addStagedAction: frontendToServer(socket, {
                 messageName: MessageNames.ADD_STAGED_ACTION,
             }),
-            getGameUpdate: frontendToServer<{}>(socket, { messageName: MessageNames.GET_GAME_UPDATE }),
-            registerPlayer: frontendToServer<IRegisterPlayer>(socket, {
+            getGameUpdate: frontendToServer(socket, { messageName: MessageNames.GET_GAME_UPDATE }),
+            registerPlayer: frontendToServer(socket, {
                 messageName: MessageNames.REGISTER_PLAYER,
             }),
         }),
         fromServer: (socket: typeof ClientSocket.Socket) => ({
-            onGameUpdate: frontendFromServer<IStractGameV1>(socket, {
+            onGameUpdate: frontendFromServer(socket, {
                 messageName: MessageNames.ON_GAME_UPDATE,
             }),
-            onRegisterPlayer: frontendFromServer<IPlayer>(socket, {
+            onRegisterPlayer: frontendFromServer(socket, {
                 messageName: MessageNames.ON_REGISTER_PLAYER,
             }),
         }),

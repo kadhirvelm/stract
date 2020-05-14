@@ -1,16 +1,25 @@
-import * as React from "react";
+import { Spinner } from "@blueprintjs/core";
 import { IStractGameV1 } from "@stract/api";
-import { GameTile } from "./gameTile";
+import * as React from "react";
+import { connect } from "react-redux";
+import { IStoreState } from "../store";
 import styles from "./gameBoard.module.scss";
+import { GameTile } from "./gameTile";
 
-interface IProps {
-    gameBoard: IStractGameV1;
+interface IStoreProps {
+    gameBoard?: IStractGameV1;
 }
+
+type IProps = IStoreProps;
 
 const MINIMUM_PADDING = 10;
 
-export function GameBoard(props: IProps) {
+function UnconnectedGameBoard(props: IProps) {
     const { gameBoard } = props;
+    if (gameBoard === undefined) {
+        return <Spinner />;
+    }
+
     const {
         metadata: {
             board: {
@@ -42,3 +51,11 @@ export function GameBoard(props: IProps) {
         </div>
     );
 }
+
+function mapStateToProps(state: IStoreState): IStoreProps {
+    return {
+        gameBoard: state.game.gameBoard,
+    };
+}
+
+export const GameBoard = connect(mapStateToProps)(UnconnectedGameBoard);

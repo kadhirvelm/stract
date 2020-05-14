@@ -44,7 +44,7 @@ export class StractGame implements IStractGame {
     public addPlayerToTeam = (stractPlayer: IStractPlayer) => {
         const team = this.maybeGetPlayerTeam(stractPlayer);
         if (team === undefined || stractPlayer.name === undefined) {
-            return;
+            throw new Error("Hum, it seems the game you're trying to connect to doesn't exist.");
         }
 
         const player = stractPlayer.getPlayer();
@@ -82,14 +82,16 @@ export class StractGame implements IStractGame {
         this.sendGameUpdateToAllPlayers();
     };
 
-    public sendGameUpdateToAllPlayers = () => this.toAllClients.onGameUpdate(this.currentGameState);
+    public sendGameUpdateToAllPlayers = () => {
+        this.toAllClients.onGameUpdate(this.currentGameState);
+    };
 
     /**
      * Private methods
      */
 
     private setupGameListeners = () => {
-        this.roomSocket.on("connection", socket => new StractPlayer(socket, this));
+        this.roomSocket.on("connect", socket => new StractPlayer(socket, this));
     };
 
     private maybeGetPlayerTeam = (stractPlayer: IStractPlayer) => {

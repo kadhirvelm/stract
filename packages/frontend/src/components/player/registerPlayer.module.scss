@@ -1,0 +1,43 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.register-player-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    width: 500px;
+    border-radius: 5px;
+    background: $gray5;
+    border: 1px solid $pt-divider-black;
+    padding: 10px;
+}
+
+.name-input {
+    :global(.bp3-input) {
+        animation: flash 500ms ease-out 750ms 2;
+        height: 40px;
+    }
+}
+
+@keyframes flash {
+    30% {
+        background: $white;
+    }
+    65% {
+        background: $gold3;
+    }
+}
+
+.register-button-container {
+    display: flex;
+
+    :global(.bp3-button) {
+        display: flex;
+        flex: 1;
+        height: 40px;
+    }
+}

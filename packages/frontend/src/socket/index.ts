@@ -15,15 +15,12 @@ export function sendServerMessage() {
 }
 
 export function instantiateStractGameSocketListener(dispatch: Dispatch) {
-    return new Promise(resolve => {
-        const socket = io(`http://${ORIGIN}:${PORT}/sample-game-room`);
+    const socket = io(`http://${ORIGIN}:${PORT}/sample-game-room`, { reconnection: true });
 
-        const fromServer = StractGameSocketService.frontend.fromServer(socket);
-        handleGameBoard(dispatch, fromServer);
+    const fromServer = StractGameSocketService.frontend.fromServer(socket);
 
-        toServer = StractGameSocketService.frontend.toServer(socket);
-        handlePlayerRegistration(fromServer, toServer, socket, dispatch);
+    toServer = StractGameSocketService.frontend.toServer(socket);
+    handleGameBoard(dispatch, fromServer);
 
-        resolve({});
-    });
+    handlePlayerRegistration(fromServer, toServer, socket, dispatch);
 }
