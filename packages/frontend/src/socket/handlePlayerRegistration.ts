@@ -8,6 +8,7 @@ function registerPlayer(toServer: IStractToServer["toServer"]) {
     return () => {
         const existingPlayer = getPlayer();
         if (existingPlayer == null) {
+            toServer.getGameUpdate({});
             return;
         }
 
@@ -36,8 +37,5 @@ export function handlePlayerRegistration(
     });
 
     const registerPlayerCallback = registerPlayer(toServer);
-    socket.on("connect", () => {
-        registerPlayerCallback();
-        toServer.getGameUpdate({});
-    });
+    socket.on("connect", () => registerPlayerCallback);
 }

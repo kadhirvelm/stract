@@ -6,6 +6,9 @@
     "strict": true,
     "moduleResolution": "node",
     "skipLibCheck": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
   },
   "include": [
     "src/**/*"
