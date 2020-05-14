@@ -16,8 +16,8 @@ export class StractPlayer implements IStractPlayer {
     public name: string | undefined;
     public team: ITeamRid | undefined;
 
-    public fromClient: IStractToServer["fromClient"];
-    public toClient: IStractFromServer["toClient"];
+    private fromClient: IStractToServer["fromClient"];
+    private toClient: IStractFromServer["toClient"];
 
     constructor(private socket: io.Socket, private game: IStractGame) {
         this.fromClient = StractGameSocketService.backend.fromClient(socket);

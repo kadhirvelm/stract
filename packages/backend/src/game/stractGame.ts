@@ -91,10 +91,7 @@ export class StractGame implements IStractGame {
      */
 
     private setupGameListeners = () => {
-        this.roomSocket.on("connect", socket => {
-            this.roomSocket.emit("test");
-            return new StractPlayer(socket, this);
-        });
+        this.roomSocket.on("connect", socket => new StractPlayer(socket, this));
     };
 
     private maybeGetPlayerTeam = (stractPlayer: IStractPlayer) => {
