@@ -10,7 +10,7 @@ import { Server } from "http";
 import io from "socket.io";
 import { StractPlayer } from "./stractPlayer";
 import { createNewGame } from "./utils/createNewGame";
-import { IStractGame } from "./types";
+import { IStractGame, IStractPlayer } from "./types";
 
 export class StractGame implements IStractGame {
     public currentGameState: IStractGameV1;
@@ -18,7 +18,7 @@ export class StractGame implements IStractGame {
     private roomSocket: io.Namespace;
     private teamToPlayersMapping: Map<
         ITeamRid,
-        { players: StractPlayer[]; teamKey: keyof IAllTeams<any>; teamSocket: io.Namespace }
+        { players: IStractPlayer[]; teamKey: keyof IAllTeams<any>; teamSocket: io.Namespace }
     >;
     private toAllClients: IStractFromServer["toClient"];
 
@@ -41,7 +41,7 @@ export class StractGame implements IStractGame {
         this.setupGameListeners();
     }
 
-    public addPlayerToTeam = (stractPlayer: StractPlayer) => {
+    public addPlayerToTeam = (stractPlayer: IStractPlayer) => {
         const team = this.maybeGetPlayerTeam(stractPlayer);
         if (team === undefined || stractPlayer.name === undefined) {
             return;
@@ -58,7 +58,7 @@ export class StractGame implements IStractGame {
         this.sendGameUpdateToAllPlayers();
     };
 
-    public addStagedAction = (stagedAction: IGameAction, stractPlayer: StractPlayer) => {
+    public addStagedAction = (stagedAction: IGameAction, stractPlayer: IStractPlayer) => {
         const team = this.maybeGetPlayerTeam(stractPlayer);
         if (team === undefined) {
             return;
@@ -68,7 +68,7 @@ export class StractGame implements IStractGame {
         this.sendGameUpdateToAllPlayers();
     };
 
-    public removePlayerFromTeam = (stractPlayer: StractPlayer) => {
+    public removePlayerFromTeam = (stractPlayer: IStractPlayer) => {
         const team = this.maybeGetPlayerTeam(stractPlayer);
         if (team === undefined) {
             return;
@@ -92,7 +92,7 @@ export class StractGame implements IStractGame {
         this.roomSocket.on("connection", socket => new StractPlayer(socket, this));
     };
 
-    private maybeGetPlayerTeam = (stractPlayer: StractPlayer) => {
+    private maybeGetPlayerTeam = (stractPlayer: IStractPlayer) => {
         if (stractPlayer.team === undefined) {
             return undefined;
         }

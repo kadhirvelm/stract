@@ -23,24 +23,54 @@ enum MessageNames {
 
 export interface IStractToServer {
     fromClient: {
+        /**
+         * A player has requested they want to add a staged action to their team's actions for the turn.
+         */
         addStagedAction: IFromClientCallback<IGameAction>;
+        /**
+         * A player has requested the current game state.
+         */
         getGameUpdate: IFromClientCallback<{}>;
+        /**
+         * A player has requested to register with the game.
+         */
         registerPlayer: IFromClientCallback<IRegisterPlayer>;
     };
     toServer: {
+        /**
+         * Request to add a staged action for the current turn.
+         */
         addStagedAction: IToClientCallback<IGameAction>;
+        /**
+         * Request the current game state.
+         */
         getGameUpdate: IToClientCallback<{}>;
+        /**
+         * Request to register with the game.
+         */
         registerPlayer: IToClientCallback<IRegisterPlayer>;
     };
 }
 
 export interface IStractFromServer {
     toClient: {
+        /**
+         * Sends a game update to the client.
+         */
         onGameUpdate: IToServerCallback<IStractGameV1>;
+        /**
+         * If a player has successfully registered (or re-registered) with the game, replies with the latest player registration.
+         */
         onRegisterPlayer: IToServerCallback<IPlayer>;
     };
     fromServer: {
+        /**
+         * The latest game state.
+         */
         onGameUpdate: IFromServerCallback<IStractGameV1>;
+        /**
+         * The player's registration. This message is sent when a player successfully registers (or re-registers) with the game.
+         */
         onRegisterPlayer: IFromServerCallback<IPlayer>;
     };
 }
