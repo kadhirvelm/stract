@@ -3,10 +3,10 @@ import { IStractGameV1 } from "@stract/api";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { instantiateStractGameSocketListener, sendServerMessage } from "./socket";
-import { IStoreState } from "./store";
 import { GameBoard } from "./components/gameBoard";
 import styles from "./game.module.scss";
+import { instantiateStractGameSocketListener, sendServerMessage } from "./socket";
+import { IStoreState } from "./store";
 
 interface IOwnProps {
     storeDispatch: Dispatch;
@@ -23,6 +23,15 @@ class UnconnectedGame extends React.PureComponent<IProps> {
         const { storeDispatch } = this.props;
         await instantiateStractGameSocketListener(storeDispatch);
         sendServerMessage().getGameUpdate({});
+    }
+
+    public componentDidUpdate() {
+        const { gameBoard } = this.props;
+        if (gameBoard?.teams === undefined) {
+            return;
+        }
+
+        sendServerMessage().registerPlayer({ name: "Sample player", team: gameBoard?.teams.north.id });
     }
 
     public render() {

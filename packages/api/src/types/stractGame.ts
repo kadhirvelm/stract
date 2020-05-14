@@ -1,8 +1,8 @@
-import { IGameTile } from "./gameTile";
-import { ITeamRid } from "./team";
 import { IGameAction } from "./gameAction";
-import { Brand, createBrandedGeneric } from "../common";
 import { IGamePieceType } from "./gamePiece";
+import { IGameTile } from "./gameTile";
+import { IPlayer } from "./player";
+import { ITeamRid, IStractBoardId } from "./idTypes";
 
 export interface IBoardMetadata {
     size: {
@@ -10,9 +10,6 @@ export interface IBoardMetadata {
         rows: number;
     };
 }
-
-export type IStractBoardId = Brand<string, "board-id">;
-export const stractBoardId = createBrandedGeneric<string, IStractBoardId>();
 
 export interface IBoardTeamPiecePool {
     total: number;
@@ -26,13 +23,10 @@ export interface IBoardTeamMetadata {
         available: IBoardTeamPiecePool[];
         total: IBoardTeamPiecePool[];
     };
+    players: IPlayer[];
 }
 
-export interface IBoardStagedAction {
-    ownedByTeam: ITeamRid;
-}
-
-interface IAllTeams<T> {
+export interface IAllTeams<T> {
     north: T;
     south: T;
 }
@@ -44,7 +38,7 @@ export interface IStractGameV1 {
         roomName: string;
     };
     board: Array<Array<IGameTile>>;
-    stagedActions: IAllTeams<Array<IGameAction & IBoardStagedAction>>;
+    stagedActions: IAllTeams<Array<IGameAction>>;
     teams: IAllTeams<IBoardTeamMetadata>;
     turnNumber: number;
 }

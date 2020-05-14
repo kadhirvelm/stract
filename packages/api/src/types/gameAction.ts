@@ -1,9 +1,6 @@
 import { v4 } from "uuid";
-import { IGamePieceId, IGamePieceType } from "./gamePiece";
-import { Brand, createBrandedGeneric } from "../common";
-
-export type IGameActionId = Brand<string, "game-action-id">;
-export const gameActionId = createBrandedGeneric<string, IGameActionId>();
+import { IGamePieceType } from "./gamePiece";
+import { gameActionId, IGameActionId, IGamePieceId } from "./idTypes";
 
 /**
  * All actions minimum.
