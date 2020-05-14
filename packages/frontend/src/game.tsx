@@ -20,9 +20,9 @@ interface IStoreProps {
 type IProps = IOwnProps & IStoreProps;
 
 class UnconnectedGame extends React.PureComponent<IProps> {
-    public async componentDidMount() {
+    public componentDidMount() {
         const { storeDispatch } = this.props;
-        await instantiateStractGameSocketListener(storeDispatch);
+        instantiateStractGameSocketListener(storeDispatch);
     }
 
     public render() {

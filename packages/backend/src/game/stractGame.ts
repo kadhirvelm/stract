@@ -82,14 +82,19 @@ export class StractGame implements IStractGame {
         this.sendGameUpdateToAllPlayers();
     };
 
-    public sendGameUpdateToAllPlayers = () => this.toAllClients.onGameUpdate(this.currentGameState);
+    public sendGameUpdateToAllPlayers = () => {
+        this.toAllClients.onGameUpdate(this.currentGameState);
+    };
 
     /**
      * Private methods
      */
 
     private setupGameListeners = () => {
-        this.roomSocket.on("connection", socket => new StractPlayer(socket, this));
+        this.roomSocket.on("connect", socket => {
+            this.roomSocket.emit("test");
+            return new StractPlayer(socket, this);
+        });
     };
 
     private maybeGetPlayerTeam = (stractPlayer: IStractPlayer) => {

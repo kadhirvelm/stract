@@ -10,9 +10,7 @@
             "webpack-env"
         ],
         "resolveJsonModule": true,
-        "moduleResolution": "node",
-        "declaration": true,
-        "declarationMap": true,
+        "moduleResolution": "node"
     },
     "include": [
         "./src/**/*",

@@ -34,8 +34,9 @@ export function handlePlayerRegistration(
                 message: "Oh no! The game you're connected to has ended. Please connect to a new one.",
             });
         }
+
+        toServer.getGameUpdate({});
     });
 
-    const registerPlayerCallback = registerPlayer(toServer);
-    socket.on("connect", () => registerPlayerCallback);
+    socket.on("connect", registerPlayer(toServer));
 }
