@@ -3,6 +3,7 @@ import { ITeamRid } from "./team";
 import { IGameAction } from "./gameAction";
 import { Brand, createBrandedGeneric } from "../common";
 import { IGamePieceType } from "./gamePiece";
+import { IPlayer } from "./player";
 
 export interface IBoardMetadata {
     size: {
@@ -26,13 +27,10 @@ export interface IBoardTeamMetadata {
         available: IBoardTeamPiecePool[];
         total: IBoardTeamPiecePool[];
     };
+    players: IPlayer[];
 }
 
-export interface IBoardStagedAction {
-    ownedByTeam: ITeamRid;
-}
-
-interface IAllTeams<T> {
+export interface IAllTeams<T> {
     north: T;
     south: T;
 }
@@ -44,7 +42,7 @@ export interface IStractGameV1 {
         roomName: string;
     };
     board: Array<Array<IGameTile>>;
-    stagedActions: IAllTeams<Array<IGameAction & IBoardStagedAction>>;
+    stagedActions: IAllTeams<Array<IGameAction>>;
     teams: IAllTeams<IBoardTeamMetadata>;
     turnNumber: number;
 }

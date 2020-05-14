@@ -44,6 +44,7 @@ module.exports = {
       "operator-linebreak": 0,
       "react/jsx-props-no-spreading": 0,
       "no-console": 2,
+      "lines-between-class-members": 0,
     },
 
     settings: {

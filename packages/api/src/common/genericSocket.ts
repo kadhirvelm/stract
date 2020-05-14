@@ -1,4 +1,4 @@
-import { Socket as ServerSocket } from "socket.io";
+import { Socket as ServerSocket, Namespace } from "socket.io";
 import * as ClientSocket from "socket.io-client";
 import { Brand, createBrandedGeneric } from "./brandType";
 
@@ -9,9 +9,7 @@ export interface INoMetadataSocketMessage {
 export type ISocketIdentifer = Brand<string, "socket-id">;
 export const socketId = createBrandedGeneric<string, ISocketIdentifer>();
 
-export interface ISocketMessageMetadata {
-    socketIdentifier: ISocketIdentifer;
-}
+export interface ISocketMessageMetadata {}
 
 export interface IWithMetadataSocketMessage extends INoMetadataSocketMessage {
     socketMetadata: ISocketMessageMetadata;
@@ -29,7 +27,7 @@ export function frontendToServer<Input>(socket: typeof ClientSocket.Socket, sock
     };
 }
 
-export function backendToClient<Input>(socket: ServerSocket, socketMessage: INoMetadataSocketMessage) {
+export function backendToClient<Input>(socket: ServerSocket | Namespace, socketMessage: INoMetadataSocketMessage) {
     return (payload: Input) => {
         socket.emit(socketMessage.messageName, payload);
     };
@@ -69,7 +67,7 @@ export interface ISocketService<
 > {
     backend: {
         fromClient: (socket: ServerSocket) => FromClient;
-        toClient: (socket: ServerSocket) => ToClient;
+        toClient: (socket: ServerSocket | Namespace) => ToClient;
     };
     frontend: {
         toServer: (socket: typeof ClientSocket.Socket, socketMetadata: ISocketMessageMetadata) => ToServer;
