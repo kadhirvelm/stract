@@ -1,8 +1,15 @@
 import io from "socket.io";
-import { StractGameSocketService, IStractToServer, IStractFromServer, ITeamRid, IPlayer } from "@stract/api";
+import {
+    StractGameSocketService,
+    IPlayerIdentifier,
+    playerIdentifier,
+    IStractToServer,
+    IStractFromServer,
+    ITeamRid,
+    IPlayer,
+} from "@stract/api";
 import { v4 } from "uuid";
 import { StractGame } from "./stractGame";
-import { IPlayerIdentifier, playerIdentifier } from "./types";
 
 export class StractPlayer {
     public id: IPlayerIdentifier | undefined;
@@ -40,12 +47,18 @@ export class StractPlayer {
                 return;
             }
 
-            this.id = playerIdentifier(player.id ?? v4());
+            // First we set the player identifiers
+            this.id = player.id ?? playerIdentifier(v4());
             this.name = player.name;
             this.team = player.team;
 
+            // Then we have the socket join the team's room
+            this.socket.join(this.team);
+
+            // Then we add the player to the game's teamToPlayersMapping
             this.game.addPlayerToTeam(this);
 
+            // Then we reply to the user they've been successfully registered and gives them their ID
             const thisPlayer = this.getPlayer();
             if (thisPlayer === undefined) {
                 // eslint-disable-next-line no-console

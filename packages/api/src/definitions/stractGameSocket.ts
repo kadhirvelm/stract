@@ -12,7 +12,7 @@ import {
     IFromClientCallback,
     IToClientCallback,
 } from "../common/genericSocket";
-import { IStractGameV1, IGameAction, IPlayer } from "../types";
+import { IStractGameV1, IGameAction, IPlayer, IRegisterPlayer } from "../types";
 
 enum MessageNames {
     ADD_STAGED_ACTION = "add-staged-action",
@@ -26,12 +26,12 @@ export interface IStractToServer {
     fromClient: {
         addStagedAction: IFromClientCallback<IGameAction>;
         getGameUpdate: IFromClientCallback<{}>;
-        registerPlayer: IFromClientCallback<IPlayer>;
+        registerPlayer: IFromClientCallback<IRegisterPlayer>;
     };
     toServer: {
         addStagedAction: IToClientCallback<IGameAction>;
         getGameUpdate: IToClientCallback<{}>;
-        registerPlayer: IToClientCallback<IPlayer>;
+        registerPlayer: IToClientCallback<IRegisterPlayer>;
     };
 }
 
@@ -56,7 +56,7 @@ export const StractGameSocketService: ISocketService<
         fromClient: (socket: ServerSocket) => ({
             addStagedAction: backendFromClient<IGameAction>(socket, { messageName: MessageNames.ADD_STAGED_ACTION }),
             getGameUpdate: backendFromClient<{}>(socket, { messageName: MessageNames.GET_GAME_UPDATE }),
-            registerPlayer: backendFromClient<IPlayer>(socket, { messageName: MessageNames.REGISTER_PLAYER }),
+            registerPlayer: backendFromClient<IRegisterPlayer>(socket, { messageName: MessageNames.REGISTER_PLAYER }),
         }),
         toClient: (socket: ServerSocket | Namespace) => ({
             onGameUpdate: backendToClient<IStractGameV1>(socket, {
@@ -72,7 +72,7 @@ export const StractGameSocketService: ISocketService<
                 socketMetadata,
             }),
             getGameUpdate: frontendToServer<{}>(socket, { messageName: MessageNames.GET_GAME_UPDATE, socketMetadata }),
-            registerPlayer: frontendToServer<IPlayer>(socket, {
+            registerPlayer: frontendToServer<IRegisterPlayer>(socket, {
                 messageName: MessageNames.REGISTER_PLAYER,
                 socketMetadata,
             }),

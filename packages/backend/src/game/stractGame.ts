@@ -15,7 +15,10 @@ export class StractGame {
     public currentGameState: IStractGameV1;
 
     private roomSocket: io.Namespace;
-    private teamToPlayersMapping: Map<ITeamRid, { teamKey: keyof IAllTeams<any>; players: StractPlayer[] }>;
+    private teamToPlayersMapping: Map<
+        ITeamRid,
+        { players: StractPlayer[]; teamKey: keyof IAllTeams<any>; teamSocket: io.Namespace }
+    >;
     private toAllClients: IStractFromServer["toClient"];
 
     constructor(server: Server, public roomName: string) {
@@ -24,8 +27,14 @@ export class StractGame {
         this.currentGameState = createNewGame();
 
         this.teamToPlayersMapping = new Map([
-            [this.currentGameState.teams.north.id, { teamKey: "north", players: [] }],
-            [this.currentGameState.teams.south.id, { teamKey: "south", players: [] }],
+            [
+                this.currentGameState.teams.north.id,
+                { players: [], teamKey: "north", teamSocket: this.roomSocket.to(this.currentGameState.teams.north.id) },
+            ],
+            [
+                this.currentGameState.teams.south.id,
+                { players: [], teamKey: "south", teamSocket: this.roomSocket.to(this.currentGameState.teams.south.id) },
+            ],
         ]);
 
         this.setupGameListeners();
