@@ -1,9 +1,5 @@
-import { ITeamRid } from "./team";
-import { Brand, createBrandedGeneric } from "../common/brandType";
 import { PartialBy } from "../common/partialBy";
-
-export type IPlayerIdentifier = Brand<string, "player-identifier">;
-export const playerIdentifier = createBrandedGeneric<string, IPlayerIdentifier>();
+import { IPlayerIdentifier, ITeamRid } from "./idTypes";
 
 export interface IPlayer {
     id: IPlayerIdentifier;

@@ -10,8 +10,9 @@ import { Server } from "http";
 import io from "socket.io";
 import { StractPlayer } from "./stractPlayer";
 import { createNewGame } from "./utils/createNewGame";
+import { IStractGame } from "./types";
 
-export class StractGame {
+export class StractGame implements IStractGame {
     public currentGameState: IStractGameV1;
 
     private roomSocket: io.Namespace;
@@ -40,10 +41,6 @@ export class StractGame {
         this.setupGameListeners();
     }
 
-    private setupGameListeners = () => {
-        this.roomSocket.on("connection", socket => new StractPlayer(socket, this));
-    };
-
     public addPlayerToTeam = (stractPlayer: StractPlayer) => {
         const team = this.maybeGetPlayerTeam(stractPlayer);
         if (team === undefined || stractPlayer.name === undefined) {
@@ -58,6 +55,16 @@ export class StractGame {
         team?.players.push(stractPlayer);
         this.currentGameState.teams[team.teamKey].players.push(player);
 
+        this.sendGameUpdateToAllPlayers();
+    };
+
+    public addStagedAction = (stagedAction: IGameAction, stractPlayer: StractPlayer) => {
+        const team = this.maybeGetPlayerTeam(stractPlayer);
+        if (team === undefined) {
+            return;
+        }
+
+        this.currentGameState.stagedActions[team.teamKey].push(stagedAction);
         this.sendGameUpdateToAllPlayers();
     };
 
@@ -77,14 +84,12 @@ export class StractGame {
 
     public sendGameUpdateToAllPlayers = () => this.toAllClients.onGameUpdate(this.currentGameState);
 
-    public addStagedAction = (stagedAction: IGameAction, stractPlayer: StractPlayer) => {
-        const team = this.maybeGetPlayerTeam(stractPlayer);
-        if (team === undefined) {
-            return;
-        }
+    /**
+     * Private methods
+     */
 
-        this.currentGameState.stagedActions[team.teamKey].push(stagedAction);
-        this.sendGameUpdateToAllPlayers();
+    private setupGameListeners = () => {
+        this.roomSocket.on("connection", socket => new StractPlayer(socket, this));
     };
 
     private maybeGetPlayerTeam = (stractPlayer: StractPlayer) => {

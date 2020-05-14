@@ -1,9 +1,8 @@
-import { IGameTile } from "./gameTile";
-import { ITeamRid } from "./team";
 import { IGameAction } from "./gameAction";
-import { Brand, createBrandedGeneric } from "../common";
 import { IGamePieceType } from "./gamePiece";
+import { IGameTile } from "./gameTile";
 import { IPlayer } from "./player";
+import { ITeamRid, IStractBoardId } from "./idTypes";
 
 export interface IBoardMetadata {
     size: {
@@ -11,9 +10,6 @@ export interface IBoardMetadata {
         rows: number;
     };
 }
-
-export type IStractBoardId = Brand<string, "board-id">;
-export const stractBoardId = createBrandedGeneric<string, IStractBoardId>();
 
 export interface IBoardTeamPiecePool {
     total: number;

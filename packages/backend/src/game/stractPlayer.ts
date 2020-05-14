@@ -9,9 +9,9 @@ import {
     IPlayer,
 } from "@stract/api";
 import { v4 } from "uuid";
-import { StractGame } from "./stractGame";
+import { IStractPlayer, IStractGame } from "./types";
 
-export class StractPlayer {
+export class StractPlayer implements IStractPlayer {
     public id: IPlayerIdentifier | undefined;
     public name: string | undefined;
     public team: ITeamRid | undefined;
@@ -19,7 +19,7 @@ export class StractPlayer {
     private fromClient: IStractToServer["fromClient"];
     private toClient: IStractFromServer["toClient"];
 
-    constructor(private socket: io.Socket, private game: StractGame) {
+    constructor(private socket: io.Socket, private game: IStractGame) {
         this.fromClient = StractGameSocketService.backend.fromClient(socket);
         this.toClient = StractGameSocketService.backend.toClient(socket);
 
