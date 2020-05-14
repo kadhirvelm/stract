@@ -44,7 +44,7 @@ export class StractGame implements IStractGame {
     public addPlayerToTeam = (stractPlayer: IStractPlayer) => {
         const team = this.maybeGetPlayerTeam(stractPlayer);
         if (team === undefined || stractPlayer.name === undefined) {
-            return;
+            throw new Error("Hum, it seems the game you're trying to connect to doesn't exist.");
         }
 
         const player = stractPlayer.getPlayer();

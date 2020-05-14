@@ -19,10 +19,10 @@ export function instantiateStractGameSocketListener(dispatch: Dispatch) {
         const socket = io(`http://${ORIGIN}:${PORT}/sample-game-room`);
 
         const fromServer = StractGameSocketService.frontend.fromServer(socket);
-        handleGameBoard(dispatch, fromServer);
-
         toServer = StractGameSocketService.frontend.toServer(socket);
+
         handlePlayerRegistration(fromServer, toServer, socket, dispatch);
+        handleGameBoard(dispatch, fromServer);
 
         resolve({});
     });

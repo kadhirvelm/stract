@@ -1,15 +1,13 @@
-import { IPlayer, IStractFromServer, IStractToServer } from "@stract/api";
+import { IStractFromServer, IStractToServer } from "@stract/api";
 import { Dispatch } from "redux";
 import { RegisterPlayer } from "../store";
-
-let existingPlayer: IPlayer | undefined;
-function setCurrentPlayer(newPlayer: IPlayer) {
-    existingPlayer = newPlayer;
-}
+import { getPlayer, storePlayer } from "../utils/sessionStorage";
+import { showToast } from "../utils/showToast";
 
 function registerPlayer(toServer: IStractToServer["toServer"]) {
     return () => {
-        if (existingPlayer === undefined) {
+        const existingPlayer = getPlayer();
+        if (existingPlayer == null) {
             return;
         }
 
@@ -24,9 +22,22 @@ export function handlePlayerRegistration(
     dispatch: Dispatch,
 ) {
     fromServer.onRegisterPlayer(player => {
-        setCurrentPlayer(player);
-        dispatch(RegisterPlayer.create(player));
+        const normalizedPlayer = player ?? undefined;
+
+        storePlayer(normalizedPlayer);
+        dispatch(RegisterPlayer.create(normalizedPlayer));
+
+        if (normalizedPlayer === undefined) {
+            showToast({
+                intent: "danger",
+                message: "Oh no! The game you're connected to has ended. Please connect to a new one.",
+            });
+        }
     });
 
-    socket.on("connect", registerPlayer(toServer));
+    const registerPlayerCallback = registerPlayer(toServer);
+    socket.on("connect", () => {
+        registerPlayerCallback();
+        toServer.getGameUpdate({});
+    });
 }

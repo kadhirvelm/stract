@@ -1,0 +1,13 @@
+@mixin boxed($color) {
+    box-shadow: 1px 0 $color, -1px 0 $color, 0 1px $color, 0 -1px $color;
+}
+
+$north-title: $vermilion1;
+$north-active: $vermilion3;
+$north-color: rgba($vermilion4, 0.75);
+$north-hover: rgba($vermilion5, 0.75);
+
+$south-title: $blue1;
+$south-active: $blue3;
+$south-color: rgba($blue4, 0.75);
+$south-hover: rgba($blue5, 0.75);

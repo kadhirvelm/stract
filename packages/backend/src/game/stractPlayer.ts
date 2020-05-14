@@ -43,7 +43,7 @@ export class StractPlayer implements IStractPlayer {
         this.fromClient.getGameUpdate(this.sendGameUpdate);
 
         this.fromClient.registerPlayer(player => {
-            if (this.name === player.name && this.team === player.team) {
+            if (player != null && this.name === player.name && this.team === player.team) {
                 return;
             }
 
@@ -54,9 +54,6 @@ export class StractPlayer implements IStractPlayer {
 
             // Then we have the socket join the team's room
             this.socket.join(this.team);
-
-            // Then we add the player to the game's teamToPlayersMapping
-            this.game.addPlayerToTeam(this);
 
             // Then we reply to the user they've been successfully registered and gives them their ID
             const thisPlayer = this.getPlayer();
@@ -72,6 +69,14 @@ export class StractPlayer implements IStractPlayer {
             }
 
             this.toClient.onRegisterPlayer(thisPlayer);
+
+            try {
+                // Then we add the player to the game's teamToPlayersMapping
+                this.game.addPlayerToTeam(this);
+            } catch {
+                // Which throws an error if the player is trying to connect to a game that doesn't exist anymore
+                this.toClient.onRegisterPlayer(undefined);
+            }
         });
 
         this.socket.on("disconnect", () => this.game.removePlayerFromTeam(this));
