@@ -1,45 +1,35 @@
 import { Socket as ServerSocket, Namespace } from "socket.io";
 import * as ClientSocket from "socket.io-client";
-import { Brand, createBrandedGeneric } from "./brandType";
 
-export interface INoMetadataSocketMessage {
+export interface ISocketMessage {
     messageName: string;
 }
 
-export type ISocketIdentifer = Brand<string, "socket-id">;
-export const socketId = createBrandedGeneric<string, ISocketIdentifer>();
-
-export interface ISocketMessageMetadata {}
-
-export interface IWithMetadataSocketMessage extends INoMetadataSocketMessage {
-    socketMetadata: ISocketMessageMetadata;
-}
-
-export function backendFromClient<Input>(socket: ServerSocket, socketMessage: INoMetadataSocketMessage) {
-    return (callback: (payload: Input, socketMetadata: ISocketMessageMetadata) => void) => {
-        socket.on(socketMessage.messageName, callback);
-    };
-}
-
-export function frontendToServer<Input>(socket: typeof ClientSocket.Socket, socketMessage: IWithMetadataSocketMessage) {
-    return (payload: Input) => {
-        socket.emit(socketMessage.messageName, payload, socketMessage.socketMetadata);
-    };
-}
-
-export function backendToClient<Input>(socket: ServerSocket | Namespace, socketMessage: INoMetadataSocketMessage) {
-    return (payload: Input) => {
-        socket.emit(socketMessage.messageName, payload);
-    };
-}
-
-export function frontendFromServer<Input>(socket: typeof ClientSocket.Socket, socketMessage: INoMetadataSocketMessage) {
+export function backendFromClient<Input>(socket: ServerSocket, socketMessage: ISocketMessage) {
     return (callback: (payload: Input) => void) => {
         socket.on(socketMessage.messageName, callback);
     };
 }
 
-export type IFromClientCallback<T> = (callback: (payload: T, socketMetadata: ISocketMessageMetadata) => void) => void;
+export function frontendToServer<Input>(socket: typeof ClientSocket.Socket, socketMessage: ISocketMessage) {
+    return (payload: Input) => {
+        socket.emit(socketMessage.messageName, payload);
+    };
+}
+
+export function backendToClient<Input>(socket: ServerSocket | Namespace, socketMessage: ISocketMessage) {
+    return (payload: Input) => {
+        socket.emit(socketMessage.messageName, payload);
+    };
+}
+
+export function frontendFromServer<Input>(socket: typeof ClientSocket.Socket, socketMessage: ISocketMessage) {
+    return (callback: (payload: Input) => void) => {
+        socket.on(socketMessage.messageName, callback);
+    };
+}
+
+export type IFromClientCallback<T> = (callback: (payload: T) => void) => void;
 export interface IFromClient {
     [messageName: string]: IFromClientCallback<any>;
 }
@@ -70,7 +60,7 @@ export interface ISocketService<
         toClient: (socket: ServerSocket | Namespace) => ToClient;
     };
     frontend: {
-        toServer: (socket: typeof ClientSocket.Socket, socketMetadata: ISocketMessageMetadata) => ToServer;
+        toServer: (socket: typeof ClientSocket.Socket) => ToServer;
         fromServer: (socket: typeof ClientSocket.Socket) => FromServer;
     };
 }

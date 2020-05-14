@@ -17,7 +17,7 @@ function registerPlayer(toServer: IStractToServer["toServer"]) {
     };
 }
 
-export function handleReconnects(
+export function handlePlayerRegistration(
     fromServer: IStractFromServer["fromServer"],
     toServer: IStractToServer["toServer"],
     socket: SocketIOClient.Socket,

@@ -21,10 +21,10 @@ export class StractGame {
     >;
     private toAllClients: IStractFromServer["toClient"];
 
-    constructor(server: Server, public roomName: string) {
+    constructor(server: Server, public roomName: string, existingBoard?: IStractGameV1) {
         this.roomSocket = io(server).of(roomName);
         this.toAllClients = StractGameSocketService.backend.toClient(this.roomSocket);
-        this.currentGameState = createNewGame();
+        this.currentGameState = existingBoard ?? createNewGame({ roomName });
 
         this.teamToPlayersMapping = new Map([
             [

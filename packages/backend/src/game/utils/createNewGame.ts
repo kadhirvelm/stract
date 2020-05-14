@@ -12,7 +12,9 @@ const startingPiecePool: IBoardTeamPiecePool[] = [
     { total: 10, type: "square" },
 ];
 
-export function createNewGame(): IStractGameV1 {
+export function createNewGame(options: { roomName: string }): IStractGameV1 {
+    const { roomName } = options;
+
     return {
         metadata: {
             board: {
@@ -22,7 +24,7 @@ export function createNewGame(): IStractGameV1 {
                 },
             },
             id: stractBoardId(v4()),
-            roomName: "Sample game board",
+            roomName,
         },
         board: createBoard(10, 10),
         stagedActions: {

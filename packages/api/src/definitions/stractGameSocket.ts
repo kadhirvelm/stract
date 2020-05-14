@@ -1,18 +1,17 @@
-import { Socket as ServerSocket, Namespace } from "socket.io";
+import { Namespace, Socket as ServerSocket } from "socket.io";
 import * as ClientSocket from "socket.io-client";
 import {
-    ISocketService,
     backendFromClient,
-    ISocketMessageMetadata,
-    frontendToServer,
     backendToClient,
     frontendFromServer,
-    IFromServerCallback,
-    IToServerCallback,
+    frontendToServer,
     IFromClientCallback,
+    IFromServerCallback,
+    ISocketService,
     IToClientCallback,
+    IToServerCallback,
 } from "../common/genericSocket";
-import { IStractGameV1, IGameAction, IPlayer, IRegisterPlayer } from "../types";
+import { IGameAction, IPlayer, IRegisterPlayer, IStractGameV1 } from "../types";
 
 enum MessageNames {
     ADD_STAGED_ACTION = "add-staged-action",
@@ -66,15 +65,13 @@ export const StractGameSocketService: ISocketService<
         }),
     },
     frontend: {
-        toServer: (socket: typeof ClientSocket.Socket, socketMetadata: ISocketMessageMetadata) => ({
+        toServer: (socket: typeof ClientSocket.Socket) => ({
             addStagedAction: frontendToServer<IGameAction>(socket, {
                 messageName: MessageNames.ADD_STAGED_ACTION,
-                socketMetadata,
             }),
-            getGameUpdate: frontendToServer<{}>(socket, { messageName: MessageNames.GET_GAME_UPDATE, socketMetadata }),
+            getGameUpdate: frontendToServer<{}>(socket, { messageName: MessageNames.GET_GAME_UPDATE }),
             registerPlayer: frontendToServer<IRegisterPlayer>(socket, {
                 messageName: MessageNames.REGISTER_PLAYER,
-                socketMetadata,
             }),
         }),
         fromServer: (socket: typeof ClientSocket.Socket) => ({

@@ -1,8 +1,8 @@
-import { ISocketMessageMetadata, IStractToServer, ORIGIN, PORT, StractGameSocketService } from "@stract/api";
+import { IStractToServer, ORIGIN, PORT, StractGameSocketService } from "@stract/api";
 import { Dispatch } from "redux";
 import io from "socket.io-client";
 import { handleGameBoard } from "./handleGameBoard";
-import { handleReconnects } from "./handlePlayer";
+import { handlePlayerRegistration } from "./handlePlayerRegistration";
 
 let toServer: IStractToServer["toServer"] | undefined;
 
@@ -14,8 +14,6 @@ export function sendServerMessage() {
     return toServer;
 }
 
-const socketMetadata: ISocketMessageMetadata = {};
-
 export function instantiateStractGameSocketListener(dispatch: Dispatch) {
     return new Promise(resolve => {
         const socket = io(`http://${ORIGIN}:${PORT}/sample-game-room`);
@@ -23,8 +21,8 @@ export function instantiateStractGameSocketListener(dispatch: Dispatch) {
         const fromServer = StractGameSocketService.frontend.fromServer(socket);
         handleGameBoard(dispatch, fromServer);
 
-        toServer = StractGameSocketService.frontend.toServer(socket, socketMetadata);
-        handleReconnects(fromServer, toServer, socket, dispatch);
+        toServer = StractGameSocketService.frontend.toServer(socket);
+        handlePlayerRegistration(fromServer, toServer, socket, dispatch);
 
         resolve({});
     });
