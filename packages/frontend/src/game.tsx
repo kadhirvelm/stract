@@ -7,6 +7,7 @@ import { RegisterPlayer } from "./components/player";
 import styles from "./game.module.scss";
 import { instantiateStractGameSocketListener } from "./socket";
 import { IStoreState } from "./store";
+import { SocketHealth } from "./components/socketHealth";
 
 interface IOwnProps {
     storeDispatch: Dispatch;
@@ -26,6 +27,15 @@ class UnconnectedGame extends React.PureComponent<IProps> {
     }
 
     public render() {
+        return (
+            <>
+                <SocketHealth />
+                {this.renderGameElement()}
+            </>
+        );
+    }
+
+    private renderGameElement() {
         const { player } = this.props;
         if (player == null) {
             return <RegisterPlayer />;

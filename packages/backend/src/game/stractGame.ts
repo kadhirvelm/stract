@@ -23,7 +23,7 @@ export class StractGame implements IStractGame {
     private toAllClients: IStractFromServer["toClient"];
 
     constructor(server: Server, public roomName: string, existingBoard?: IStractGameV1) {
-        this.roomSocket = io(server).of(roomName);
+        this.roomSocket = io(server, { pingInterval: 5000 }).of(roomName);
         this.toAllClients = StractGameSocketService.backend.toClient(this.roomSocket);
         this.currentGameState = existingBoard ?? createNewGame({ roomName });
 

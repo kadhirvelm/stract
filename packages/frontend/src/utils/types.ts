@@ -5,3 +5,8 @@ export interface IRegisterWithTeam {
     id: ITeamRid;
     otherPlayers: IPlayer[];
 }
+
+export interface ILastPong {
+    latency: number;
+    timeStamp: Date;
+}
