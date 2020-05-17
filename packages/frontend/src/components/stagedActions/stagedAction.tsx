@@ -68,7 +68,11 @@ function UnconnectedStagedAction(props: IProps) {
                 addedByPlayer={spawn.addedByPlayer}
                 currentPlayer={player}
                 gameBoard={gameBoard}
-                otherPlayerInfo={<div>Some spawn was made.</div>}
+                otherPlayerInfo={
+                    <div>
+                        Spawned a {spawn.spawnPiece.pieceType} at {spawn.spawnPiece.startColumn}
+                    </div>
+                }
                 samePlayerInfo={
                     <div>
                         Spawned a {spawn.spawnPiece.pieceType} at {spawn.spawnPiece.startColumn}
