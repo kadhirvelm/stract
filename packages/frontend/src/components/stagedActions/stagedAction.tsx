@@ -1,8 +1,8 @@
-import { IGameAction, IPlayer, IPlayerIdentifier, IStractGameV1 } from "@stract/api";
+import { IGameAction, IPlayerIdentifier, IStractGameV1 } from "@stract/api";
 import * as React from "react";
 import { connect } from "react-redux";
 import { IStoreState } from "../../store";
-import { IPlayerWithTeamKey, capitalizeFirst } from "../../utils";
+import { capitalizeFirst, IPlayerWithTeamKey } from "../../utils";
 
 interface IOwnProps {
     stagedAction: IGameAction;

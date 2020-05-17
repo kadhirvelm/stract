@@ -4,10 +4,10 @@ import classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 import { IStoreState } from "../../store";
-import { capitalizeFirst, getDimensions, IPlayerWithTeamKey } from "../../utils";
+import { getDimensions, IPlayerWithTeamKey } from "../../utils";
+import { StagedAction } from "../stagedActions";
 import styles from "./actionsSidebar.module.scss";
 import { PiecePool } from "./piecePool";
-import { StagedAction } from "../stagedActions";
 
 interface IStoreProps {
     gameBoard?: IStractGameV1;
