@@ -45,6 +45,7 @@ module.exports = {
       "react/jsx-props-no-spreading": 0,
       "no-console": 2,
       "lines-between-class-members": 0,
+      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "_" }],
     },
 
     settings: {

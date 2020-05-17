@@ -1,6 +1,8 @@
 @import "~@blueprintjs/core/lib/scss/variables";
+@import "../../utils/variables";
 
 .free-tile {
+    position: absolute;
     display: flex;
     flex: 1;
     align-items: center;
@@ -8,14 +10,12 @@
     
 }
 
-$north-line: rgba($red2, 0.15);
 .north-tile {
-    background: rgba($red4, 0.15);
+    background: $north-background;
     box-shadow: 1px 0 $north-line, -1px 0 $north-line, 0 -1px $north-line, 0 1px $north-line;
 }
 
-$south-line: rgba($blue2, 0.15);
 .south-tile {
-    background: rgba($blue4, 0.15);
+    background: $south-background;
     box-shadow: 1px 0 $south-line, -1px 0 $south-line, 0 -1px $south-line, 0 1px $south-line;
 }

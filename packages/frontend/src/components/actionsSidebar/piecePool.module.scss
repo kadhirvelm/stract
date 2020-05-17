@@ -1,0 +1,5 @@
+.piece-container {
+    :not(:last-child) {
+        padding-bottom: 5px;
+    }
+}

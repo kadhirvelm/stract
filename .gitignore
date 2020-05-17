@@ -15,3 +15,5 @@ production/*
 *.log
 logs/*
 logs
+
+.stract-game

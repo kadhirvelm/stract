@@ -1,0 +1,73 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+@import "../../utils/variables";
+
+.actions-sidebar {
+    display: flex;
+    flex-direction: column;
+    background: $light-gray4;
+    box-shadow: 1px 0 $pt-divider-black;
+}
+
+.section {
+    position: relative;
+    display: flex;
+    box-shadow: 0 1px $pt-divider-black;
+}
+
+.turn-and-game-section {
+    height: 60px;
+}
+
+.turn {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 5px;
+    box-shadow: 1px 0 $pt-divider-black;
+}
+
+.turn-title {
+    position: absolute;
+    font-size: 8px;
+}
+
+.turn-number {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.game-state {
+    display: flex;
+    flex: 1;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.both-team-information {
+    display: flex;
+    flex-direction: column;
+    background-image: linear-gradient(to right, $north-background, $south-background);
+}
+
+.one-team {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+}
+
+.one-team-score {
+    font-size: 16px;
+}
+
+.both-teams-container {
+    display: flex;
+    padding: 10px;
+}
+
+.staged-actions-container {
+    flex: 1;
+}

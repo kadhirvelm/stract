@@ -11,7 +11,7 @@ import {
     IToClientCallback,
     IToServerCallback,
 } from "../common/genericSocket";
-import { IGameAction, IPlayer, IRegisterPlayer, IStractGameV1 } from "../types";
+import { IGameAction, IPlayer, IRegisterPlayer, IStractGameV1, IPlayerIdentifier } from "../types";
 
 enum MessageNames {
     ADD_STAGED_ACTION = "add-staged-action",
@@ -19,6 +19,7 @@ enum MessageNames {
     ON_GAME_UPDATE = "on-game-update",
     ON_REGISTER_PLAYER = "on-register-player",
     REGISTER_PLAYER = "register-player",
+    UNREGISTER_PLAYER = "unregister-player",
 }
 
 export interface IStractToServer {
@@ -35,6 +36,10 @@ export interface IStractToServer {
          * A player has requested to register with the game.
          */
         registerPlayer: IFromClientCallback<IRegisterPlayer>;
+        /**
+         * Removes a player from the game so they can switch teams or change their name.
+         */
+        unregisterPlayer: IFromClientCallback<IPlayerIdentifier>;
     };
     toServer: {
         /**
@@ -49,6 +54,10 @@ export interface IStractToServer {
          * Request to register with the game.
          */
         registerPlayer: IToClientCallback<IRegisterPlayer>;
+        /**
+         * Removes a player from the game so they can switch teams or change their name.
+         */
+        unregisterPlayer: IToClientCallback<IPlayerIdentifier>;
     };
 }
 
@@ -62,7 +71,7 @@ export interface IStractFromServer {
          * If a player has successfully registered (or re-registered) with the game, replies with the latest player registration. It will
          * return undefined if the game the player is connecting to no longer exists.
          */
-        onRegisterPlayer: IToServerCallback<IPlayer | undefined | null>;
+        onRegisterPlayerUpdate: IToServerCallback<IPlayer | undefined | null>;
     };
     fromServer: {
         /**
@@ -73,7 +82,7 @@ export interface IStractFromServer {
          * The player's registration. This message is sent when a player successfully registers (or re-registers) with the game. It will
          * return undefined if the game the player is connecting to no longer exists.
          */
-        onRegisterPlayer: IFromServerCallback<IPlayer | undefined | null>;
+        onRegisterPlayerUpdate: IFromServerCallback<IPlayer | undefined | null>;
     };
 }
 
@@ -88,12 +97,13 @@ export const StractGameSocketService: ISocketService<
             addStagedAction: backendFromClient(socket, { messageName: MessageNames.ADD_STAGED_ACTION }),
             getGameUpdate: backendFromClient(socket, { messageName: MessageNames.GET_GAME_UPDATE }),
             registerPlayer: backendFromClient(socket, { messageName: MessageNames.REGISTER_PLAYER }),
+            unregisterPlayer: backendFromClient(socket, { messageName: MessageNames.UNREGISTER_PLAYER }),
         }),
         toClient: (socket: ServerSocket | Namespace) => ({
             onGameUpdate: backendToClient(socket, {
                 messageName: MessageNames.ON_GAME_UPDATE,
             }),
-            onRegisterPlayer: backendToClient(socket, {
+            onRegisterPlayerUpdate: backendToClient(socket, {
                 messageName: MessageNames.ON_REGISTER_PLAYER,
             }),
         }),
@@ -107,12 +117,13 @@ export const StractGameSocketService: ISocketService<
             registerPlayer: frontendToServer(socket, {
                 messageName: MessageNames.REGISTER_PLAYER,
             }),
+            unregisterPlayer: frontendToServer(socket, { messageName: MessageNames.UNREGISTER_PLAYER }),
         }),
         fromServer: (socket: typeof ClientSocket.Socket) => ({
             onGameUpdate: frontendFromServer(socket, {
                 messageName: MessageNames.ON_GAME_UPDATE,
             }),
-            onRegisterPlayer: frontendFromServer(socket, {
+            onRegisterPlayerUpdate: frontendFromServer(socket, {
                 messageName: MessageNames.ON_REGISTER_PLAYER,
             }),
         }),
