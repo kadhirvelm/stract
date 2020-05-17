@@ -68,6 +68,7 @@ function UnconnectedGameTile(props: IProps) {
                         [styles.isSelectedTile]:
                             selectedTile?.rowIndex === rowIndex && selectedTile?.columnIndex === columnIndex,
                     })}
+                    key={tile.occupiedBy?.[0].id ?? `${rowIndex}-${columnIndex}`}
                     onClick={maybeSelectTile}
                     style={{
                         height: dimension,
