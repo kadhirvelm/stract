@@ -12,6 +12,7 @@ import { IStoreState } from "./store";
 import { SocketHealth } from "./components/socketHealth";
 import { IDevice, IDeviceType } from "./utils";
 import { ActionsSidebar } from "./components/actionsSidebar";
+import { AddNewStagedAction } from "./components/stagedActions";
 
 interface IOwnProps {
     storeDispatch: Dispatch;
@@ -69,6 +70,7 @@ class UnconnectedGame extends React.PureComponent<IProps> {
             <div className={styles.gameContainer}>
                 <ActionsSidebar />
                 <GameBoard />
+                <AddNewStagedAction />
             </div>
         );
     };

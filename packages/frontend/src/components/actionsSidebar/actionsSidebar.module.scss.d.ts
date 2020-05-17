@@ -21,6 +21,8 @@ declare namespace ActionsSidebarModuleScssModule {
         southLine: string;
         southTitle: string;
         stagedActionsContainer: string;
+        stagedActionsList: string;
+        stagedActionsTitle: string;
         turn: string;
         turnAndGameSection: string;
         turnNumber: string;

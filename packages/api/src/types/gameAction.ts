@@ -1,11 +1,12 @@
 import { v4 } from "uuid";
 import { IGamePieceType } from "./gamePiece";
-import { gameActionId, IGameActionId, IGamePieceId } from "./idTypes";
+import { gameActionId, IGameActionId, IGamePieceId, IPlayerIdentifier } from "./idTypes";
 
 /**
  * All actions minimum.
  */
 interface IGenericGameAction {
+    addedByPlayer?: IPlayerIdentifier;
     id: IGameActionId;
     type: string;
 }

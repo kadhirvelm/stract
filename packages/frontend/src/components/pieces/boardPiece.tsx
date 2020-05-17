@@ -13,11 +13,11 @@ export function BoardPiece(props: IProps) {
     const { piece, team } = props;
     switch (piece) {
         case "circle":
-            return <Circle team={team} />;
+            return <Circle team={team} size="sidebar" />;
         case "square":
-            return <Square team={team} />;
+            return <Square team={team} size="sidebar" />;
         case "triangle":
-            return <Triangle team={team} />;
+            return <Triangle team={team} size="sidebar" />;
         default:
             return <div>Unknown</div>;
     }

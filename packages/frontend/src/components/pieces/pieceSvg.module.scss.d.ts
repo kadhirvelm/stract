@@ -7,6 +7,7 @@ declare namespace PieceSvgModuleScssModule {
         northColor: string;
         northHover: string;
         northLine: string;
+        northSpawn: string;
         northTitle: string;
         south: string;
         southActive: string;
@@ -14,6 +15,7 @@ declare namespace PieceSvgModuleScssModule {
         southColor: string;
         southHover: string;
         southLine: string;
+        southSpawn: string;
         southTitle: string;
     }
 }

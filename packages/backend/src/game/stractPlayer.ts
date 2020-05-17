@@ -37,7 +37,7 @@ export class StractPlayer implements IStractPlayer {
     };
 
     private addStagedAction = (gameAction: IGameAction) => {
-        this.game.addStagedAction(gameAction, this);
+        this.game.addStagedAction({ ...gameAction, addedByPlayer: this.id }, this);
     };
 
     private registerPlayer = (player: IRegisterPlayer) => {

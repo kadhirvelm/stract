@@ -72,3 +72,22 @@
 .staged-actions-container {
     flex: 1;
 }
+
+.staged-actions-list {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow-y: auto;
+
+    > :nth-child(even) {
+        background: $light-gray3;
+    }
+}
+
+.staged-actions-title {
+    display: flex;
+    justify-content: center;
+    padding: 15px;
+    font-size: 22px;
+    text-decoration: underline;
+}
