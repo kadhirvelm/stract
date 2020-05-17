@@ -7,6 +7,7 @@ import styles from "./socketHealth.module.scss";
 import { IStoreState } from "../../store";
 
 const toMilliseconds = (seconds: number) => 1000 * seconds;
+const CHECK_EVERY_SECONDS = toMilliseconds(15);
 
 interface IStoreProps {
     lastPong?: ILastPong;
@@ -14,8 +15,25 @@ interface IStoreProps {
 
 type IProps = IStoreProps;
 
+const updateOnlineState = (currentNumber: number, setOnlineState: (num: number) => void) => () =>
+    setOnlineState(currentNumber + 1);
+
 function UnconnectedSocketHealth(props: IProps) {
+    const [onlineState, setOnlineState] = React.useState(0);
+
+    setTimeout(updateOnlineState(onlineState, setOnlineState), CHECK_EVERY_SECONDS);
+
     const { lastPong } = props;
+    console.log(
+        "UPDATING!!!",
+        onlineState,
+        lastPong,
+        lastPong?.timeStamp.valueOf(),
+        new Date().valueOf(),
+        CHECK_EVERY_SECONDS,
+        new Date().valueOf() - (lastPong?.timeStamp.valueOf() ?? 0),
+    );
+
     if (lastPong === undefined) {
         return (
             <div className={styles.socketContainer}>
@@ -24,7 +42,9 @@ function UnconnectedSocketHealth(props: IProps) {
         );
     }
 
-    if (new Date().valueOf() - lastPong.timeStamp.valueOf() > toMilliseconds(15)) {
+    const isOnline = () => new Date().valueOf() - lastPong.timeStamp.valueOf() < CHECK_EVERY_SECONDS;
+
+    if (!isOnline()) {
         return (
             <div className={styles.socketContainer}>
                 --

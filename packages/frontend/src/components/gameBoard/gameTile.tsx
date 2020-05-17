@@ -2,7 +2,7 @@ import * as React from "react";
 import { IGameTile, IGameAction } from "@stract/api";
 import classNames from "classnames";
 import styles from "./gameTile.module.scss";
-import { sendServerMessage } from "../socket";
+import { sendServerMessage } from "../../socket";
 
 interface IProps {
     dimension: number;
@@ -30,7 +30,12 @@ export function GameTile(props: IProps) {
                     [styles.southTile]: rowIndex >= 5,
                 })}
                 onClick={addTileTest}
-                style={{ height: dimension, width: dimension }}
+                style={{
+                    height: dimension,
+                    width: dimension,
+                    top: rowIndex * dimension,
+                    left: columnIndex * dimension,
+                }}
             />
         );
     }

@@ -2,6 +2,7 @@
 declare namespace GameBoardModuleScssModule {
     export interface IGameBoardModuleScss {
         board: string;
+        boardContainer: string;
         row: string;
     }
 }

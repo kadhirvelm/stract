@@ -8,6 +8,14 @@
     flex: 1;
     border-radius: 5px;
     margin: 10px 0;
+
+    &:first-child {
+        border-radius: 5px;
+    }
+
+    &:last-child {
+        border-radius: 5px;
+    }
 }
 
 .individual-team {

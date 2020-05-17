@@ -1,12 +1,13 @@
-import { TypedReducer, setWith } from "redoodle";
-import { IStractGameV1, IPlayer } from "@stract/api";
-import { UpdateGameBoard, RegisterPlayer, UpdateSocketHealth } from "./gameActions";
-import { getPlayer, ILastPong } from "../../utils";
+import { IStractGameV1 } from "@stract/api";
+import { setWith, TypedReducer } from "redoodle";
+import { getPlayer, ILastPong, IPlayerWithTeamKey } from "../../utils";
+import { maybeAddTeamKeyToPlayer } from "../../utils/maybeAddTeamKeyToPlayer";
+import { RegisterPlayer, UpdateGameBoard, UpdateSocketHealth } from "./gameActions";
 
 export interface IGameState {
     gameBoard?: IStractGameV1;
     lastPong?: ILastPong;
-    player?: IPlayer;
+    player?: IPlayerWithTeamKey;
 }
 
 export const EMPTY_GAME_STATE: IGameState = {
@@ -14,7 +15,11 @@ export const EMPTY_GAME_STATE: IGameState = {
 };
 
 export const gameReducer = TypedReducer.builder<IGameState>()
-    .withHandler(UpdateGameBoard.TYPE, (state, gameBoard) => setWith(state, { gameBoard }))
-    .withHandler(RegisterPlayer.TYPE, (state, player) => setWith(state, { player }))
+    .withHandler(UpdateGameBoard.TYPE, (state, gameBoard) =>
+        setWith(state, { gameBoard, player: maybeAddTeamKeyToPlayer(gameBoard, state.player) }),
+    )
+    .withHandler(RegisterPlayer.TYPE, (state, player) =>
+        setWith(state, { player: maybeAddTeamKeyToPlayer(state.gameBoard, player) }),
+    )
     .withHandler(UpdateSocketHealth.TYPE, (state, lastPong) => setWith(state, { lastPong }))
     .build();

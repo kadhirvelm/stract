@@ -1,5 +1,6 @@
 export * from "./gameAction";
 export * from "./gamePiece";
+export * from "./gameState";
 export * from "./gameTile";
 export * from "./idTypes";
 export * from "./player";

@@ -54,17 +54,13 @@ export type IGameAction = IGameActionMovePiece | IGameActionSpawnPiece;
 /**
  * GameAction namespace.
  */
-interface IVisitor<Output = any> {
+interface IGameActionVisitor<Output = any> {
     movePiece: (gameAction: IGameActionMovePiece) => Output;
     spawnPiece: (gameAction: IGameActionSpawnPiece) => Output;
-    unknown: (gameAction: any) => Output;
+    unknown: (gameAction: IGameAction) => Output;
 }
 
 export namespace IGameAction {
-    /**
-     * Instantiators
-     */
-
     export const movePiece = (moveStractPiece: IMovePiece): IGameActionMovePiece => ({
         id: gameActionId(v4()),
         type: "move-piece",
@@ -77,23 +73,11 @@ export namespace IGameAction {
         spawnPiece: spawnStractPiece,
     });
 
-    /**
-     * Type guards
-     */
+    export const isMovePiece = (action: IGameAction): action is IGameActionMovePiece => action.type === "move-piece";
 
-    export const isMovePiece = (action: IGameAction): action is IGameActionMovePiece => {
-        return action.type === "move-piece";
-    };
+    export const isSpawnPiece = (action: IGameAction): action is IGameActionSpawnPiece => action.type === "spawn-piece";
 
-    export const isSpawnPiece = (action: IGameAction): action is IGameActionSpawnPiece => {
-        return action.type === "spawn-piece";
-    };
-
-    /**
-     * Visitor
-     */
-
-    export const visit = <T = any>(action: IGameAction, callbacks: IVisitor<T>) => {
+    export const visit = <T = any>(action: IGameAction, callbacks: IGameActionVisitor<T>) => {
         if (isMovePiece(action)) {
             return callbacks.movePiece(action);
         }

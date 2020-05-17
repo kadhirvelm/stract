@@ -1,4 +1,4 @@
-import { IPlayer, ITeamRid } from "@stract/api";
+import { IPlayer, ITeamRid, IAllTeams } from "@stract/api";
 
 export interface IRegisterWithTeam {
     teamName: string;
@@ -9,4 +9,8 @@ export interface IRegisterWithTeam {
 export interface ILastPong {
     latency: number;
     timeStamp: Date;
+}
+
+export interface IPlayerWithTeamKey extends IPlayer {
+    teamKey?: keyof IAllTeams<any>;
 }

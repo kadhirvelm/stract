@@ -1,42 +1,33 @@
-import {
-    IAllTeams,
-    IGameAction,
-    IStractFromServer,
-    IStractGameV1,
-    ITeamRid,
-    StractGameSocketService,
-} from "@stract/api";
+import { IGameAction, IStractFromServer, IStractGameV1, StractGameSocketService } from "@stract/api";
 import { Server } from "http";
 import io from "socket.io";
 import { StractPlayer } from "./stractPlayer";
-import { createNewGame } from "./utils/createNewGame";
 import { IStractGame, IStractPlayer } from "./types";
+import { createNewGame, createNewTeamToPlayerMapping, ITeamToPlayersMapping } from "./utils";
+import { sanitizeExistingBoard } from "./utils/sanitizeExistingBoard";
+
+const TIME_PER_TURN = 20;
+const TOTAL_TURNS = 45;
 
 export class StractGame implements IStractGame {
     public currentGameState: IStractGameV1;
 
     private roomSocket: io.Namespace;
-    private teamToPlayersMapping: Map<
-        ITeamRid,
-        { players: IStractPlayer[]; teamKey: keyof IAllTeams<any>; teamSocket: io.Namespace }
-    >;
+    private teamToPlayersMapping: ITeamToPlayersMapping;
     private toAllClients: IStractFromServer["toClient"];
 
-    constructor(server: Server, public roomName: string, existingBoard?: IStractGameV1) {
+    constructor(
+        server: Server,
+        public roomName: string,
+        existingBoard?: IStractGameV1,
+        private saveGame?: (game: IStractGameV1) => void,
+    ) {
         this.roomSocket = io(server, { pingInterval: 5000 }).of(roomName);
         this.toAllClients = StractGameSocketService.backend.toClient(this.roomSocket);
-        this.currentGameState = existingBoard ?? createNewGame({ roomName });
-
-        this.teamToPlayersMapping = new Map([
-            [
-                this.currentGameState.teams.north.id,
-                { players: [], teamKey: "north", teamSocket: this.roomSocket.to(this.currentGameState.teams.north.id) },
-            ],
-            [
-                this.currentGameState.teams.south.id,
-                { players: [], teamKey: "south", teamSocket: this.roomSocket.to(this.currentGameState.teams.south.id) },
-            ],
-        ]);
+        this.currentGameState =
+            sanitizeExistingBoard(existingBoard) ??
+            createNewGame({ roomName, timePerTurnInSeconds: TIME_PER_TURN, totalTurns: TOTAL_TURNS });
+        this.teamToPlayersMapping = createNewTeamToPlayerMapping(this.currentGameState, this.roomSocket);
 
         this.setupGameListeners();
     }
@@ -48,14 +39,18 @@ export class StractGame implements IStractGame {
         }
 
         const player = stractPlayer.getPlayer();
-        if (player === undefined) {
+        if (player === undefined || team.players.find(p => p.id === stractPlayer.id) !== undefined) {
             return;
         }
 
         team?.players.push(stractPlayer);
-        this.currentGameState.teams[team.teamKey].players.push(player);
+        this.modifyGameState(() => {
+            if (this.currentGameState.teams[team.teamKey].players.find(p => p.id === player.id) !== undefined) {
+                return;
+            }
 
-        this.sendGameUpdateToAllPlayers();
+            this.currentGameState.teams[team.teamKey].players.push(player);
+        });
     };
 
     public addStagedAction = (stagedAction: IGameAction, stractPlayer: IStractPlayer) => {
@@ -64,8 +59,7 @@ export class StractGame implements IStractGame {
             return;
         }
 
-        this.currentGameState.stagedActions[team.teamKey].push(stagedAction);
-        this.sendGameUpdateToAllPlayers();
+        this.modifyGameState(() => this.currentGameState.stagedActions[team.teamKey].push(stagedAction));
     };
 
     public removePlayerFromTeam = (stractPlayer: IStractPlayer) => {
@@ -75,11 +69,11 @@ export class StractGame implements IStractGame {
         }
 
         team.players = team.players.filter(player => player.id !== stractPlayer.id);
-        this.currentGameState.teams[team.teamKey].players = this.currentGameState.teams[team.teamKey].players.filter(
-            player => player.id !== stractPlayer.id,
-        );
-
-        this.sendGameUpdateToAllPlayers();
+        this.modifyGameState(() => {
+            this.currentGameState.teams[team.teamKey].players = this.currentGameState.teams[
+                team.teamKey
+            ].players.filter(player => player.id !== stractPlayer.id);
+        });
     };
 
     public sendGameUpdateToAllPlayers = () => {
@@ -100,5 +94,11 @@ export class StractGame implements IStractGame {
         }
 
         return this.teamToPlayersMapping.get(stractPlayer.team);
+    };
+
+    private modifyGameState = (modify: () => void) => {
+        modify();
+        this.saveGame?.(this.currentGameState);
+        this.sendGameUpdateToAllPlayers();
     };
 }

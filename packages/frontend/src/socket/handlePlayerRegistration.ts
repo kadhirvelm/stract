@@ -22,7 +22,7 @@ export function handlePlayerRegistration(
     socket: SocketIOClient.Socket,
     dispatch: Dispatch,
 ) {
-    fromServer.onRegisterPlayer(player => {
+    fromServer.onRegisterPlayerUpdate(player => {
         const normalizedPlayer = player ?? undefined;
 
         storePlayer(normalizedPlayer);
