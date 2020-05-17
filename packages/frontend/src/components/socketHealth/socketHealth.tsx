@@ -15,25 +15,10 @@ interface IStoreProps {
 
 type IProps = IStoreProps;
 
-const updateOnlineState = (currentNumber: number, setOnlineState: (num: number) => void) => () =>
-    setOnlineState(currentNumber + 1);
-
 function UnconnectedSocketHealth(props: IProps) {
-    const [onlineState, setOnlineState] = React.useState(0);
-
-    setTimeout(updateOnlineState(onlineState, setOnlineState), CHECK_EVERY_SECONDS);
+    const [checkOnlineState, incrementCheckOnlineState] = React.useState(0);
 
     const { lastPong } = props;
-    console.log(
-        "UPDATING!!!",
-        onlineState,
-        lastPong,
-        lastPong?.timeStamp.valueOf(),
-        new Date().valueOf(),
-        CHECK_EVERY_SECONDS,
-        new Date().valueOf() - (lastPong?.timeStamp.valueOf() ?? 0),
-    );
-
     if (lastPong === undefined) {
         return (
             <div className={styles.socketContainer}>
@@ -43,6 +28,10 @@ function UnconnectedSocketHealth(props: IProps) {
     }
 
     const isOnline = () => new Date().valueOf() - lastPong.timeStamp.valueOf() < CHECK_EVERY_SECONDS;
+
+    setTimeout(() => {
+        incrementCheckOnlineState(checkOnlineState + 1);
+    }, CHECK_EVERY_SECONDS);
 
     if (!isOnline()) {
         return (
