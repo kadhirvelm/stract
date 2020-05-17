@@ -2,20 +2,22 @@ import { Spinner } from "@blueprintjs/core";
 import { IStractGameV1 } from "@stract/api";
 import * as React from "react";
 import { connect } from "react-redux";
+import { canAddAnyStagedActionToTile } from "@stract/utils";
 import { IStoreState } from "../../store";
 import styles from "./gameBoard.module.scss";
 import { GameTile } from "./gameTile";
-import { getDimensions } from "../../utils";
+import { getDimensions, IPlayerWithTeamKey } from "../../utils";
 
 interface IStoreProps {
     gameBoard?: IStractGameV1;
+    player?: IPlayerWithTeamKey;
 }
 
 type IProps = IStoreProps;
 
 function UnconnectedGameBoard(props: IProps) {
-    const { gameBoard } = props;
-    if (gameBoard === undefined) {
+    const { gameBoard, player } = props;
+    if (gameBoard === undefined || player === undefined) {
         return <Spinner />;
     }
 
@@ -42,6 +44,12 @@ function UnconnectedGameBoard(props: IProps) {
                         {row.map((tile, columnIndex) => (
                             <GameTile
                                 dimension={squareDimension}
+                                canAddAnyStagedAction={canAddAnyStagedActionToTile(
+                                    player,
+                                    gameBoard,
+                                    rowIndex,
+                                    columnIndex,
+                                )}
                                 gameTile={tile}
                                 rowIndex={rowIndex}
                                 columnIndex={columnIndex}
@@ -57,6 +65,7 @@ function UnconnectedGameBoard(props: IProps) {
 function mapStateToProps(state: IStoreState): IStoreProps {
     return {
         gameBoard: state.game.gameBoard,
+        player: state.game.player,
     };
 }
 

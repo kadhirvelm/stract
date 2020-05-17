@@ -1,3 +1,5 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
 @mixin boxed($color) {
     box-shadow: 1px 0 $color, -1px 0 $color, 0 1px $color, 0 -1px $color;
 }
@@ -15,3 +17,19 @@ $south-color: rgba($blue4, 0.75);
 $south-hover: rgba($blue5, 0.75);
 $south-background: rgba($blue4, 0.15);
 $south-line: rgba($blue2, 0.15);
+
+:export {
+    northTitle: $north-title;
+    northActive: $north-active;
+    northColor: $north-color;
+    northHover: $north-hover;
+    northBackground: $north-background;
+    northLine: $north-line;
+
+    southTitle: $south-title;
+    southActive: $south-active;
+    southColor: $south-color;
+    southHover: $south-hover;
+    southBackground: $south-background;
+    southLine: $south-line;
+}

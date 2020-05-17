@@ -1,0 +1,17 @@
+@import "../../utils/variables";
+
+.north {
+    fill: $north-color;
+}
+
+.south {
+    fill: $south-color;
+}
+
+.north-spawn {
+    fill: $north-active;
+}
+
+.south-spawn {
+    fill: $south-active;
+}

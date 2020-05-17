@@ -1,0 +1,26 @@
+{
+  "name": "@stract/utils",
+  "version": "0.1.0",
+  "description": "Common utilities for stract",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "repository": "https://github.com/kadhirvelm/stract",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@stract/api": "^0.1.0",
+    "lodash-es": "^4.17.15",
+    "uuid": "^8.0.0"
+  },
+  "scripts": {
+    "build": "tsc -d",
+    "dev": "tsc -d --watch",
+    "dev:mobile": "tsc -d --watch",
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.3",
+    "@types/uuid": "^7.0.3",
+    "typescript": "^3.8.3"
+  }
+}

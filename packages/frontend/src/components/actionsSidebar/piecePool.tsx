@@ -1,20 +1,22 @@
+import { IBoardTeamPiecePool, IAllTeams } from "@stract/api";
 import * as React from "react";
-import { IBoardTeamPiecePool } from "@stract/api";
+import { BoardPiece } from "../pieces";
 import styles from "./piecePool.module.scss";
 
 interface IOwnProps {
     piecePool: IBoardTeamPiecePool[];
+    team: keyof IAllTeams<any>;
 }
 
 type IProps = IOwnProps;
 
 export function PiecePool(props: IProps) {
-    const { piecePool } = props;
+    const { piecePool, team } = props;
     return (
         <div className={styles.pieceContainer}>
             {piecePool.map(piece => (
-                <div>
-                    {piece.total} {piece.type}
+                <div className={styles.singlePiece}>
+                    <span className={styles.total}>{piece.total}</span> <BoardPiece piece={piece.type} team={team} />
                 </div>
             ))}
         </div>

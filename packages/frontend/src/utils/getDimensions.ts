@@ -1,10 +1,10 @@
 import { IBoardMetadata } from "@stract/api";
 
-const MARGIN_VERTICAL = 20;
-const MARGIN_HORIZONTAL = 60;
+export const MARGIN_VERTICAL = 20;
+export const MARGIN_HORIZONTAL = 60;
 
-const MINIMUM_SIDEBAR_WIDTH = 300;
-const MAXIMUM_WIDTH = 500;
+export const MINIMUM_SIDEBAR_WIDTH = 300;
+export const MAXIMUM_WIDTH = 500;
 
 export function getDimensions(boardMetadata: IBoardMetadata) {
     const { columns, rows } = boardMetadata.size;

@@ -4,7 +4,8 @@ import classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 import { IStoreState } from "../../store";
-import { capitalizeFirst, getDimensions, IPlayerWithTeamKey } from "../../utils";
+import { getDimensions, IPlayerWithTeamKey } from "../../utils";
+import { StagedAction } from "../stagedActions";
 import styles from "./actionsSidebar.module.scss";
 import { PiecePool } from "./piecePool";
 
@@ -53,10 +54,17 @@ function StagedActions(props: { player: IPlayerWithTeamKey; stagedActions: IAllT
 
     const teamActions = stagedActions[player.teamKey];
     if (teamActions.length === 0) {
-        return <NonIdealState title={`${capitalizeFirst(player.teamKey)} actions`} description="No staged actions" />;
+        return <NonIdealState description="Your team has no staged actions" />;
     }
 
-    return <div>{teamActions.length}</div>;
+    return (
+        <div className={styles.stagedActionsList}>
+            <div className={styles.stagedActionsTitle}>Your team&#39;s staged actions</div>
+            {teamActions.map(stagedAction => (
+                <StagedAction key={stagedAction.id} stagedAction={stagedAction} />
+            ))}
+        </div>
+    );
 }
 
 function TeamScores(props: { north: number; south: number }) {
@@ -74,10 +82,10 @@ function TeamPiecePools(props: { north: IBoardTeamMetadata; south: IBoardTeamMet
     return (
         <div className={styles.bothTeamsContainer}>
             <span className={styles.oneTeam}>
-                <PiecePool piecePool={north.piecePool.total} />
+                <PiecePool piecePool={north.piecePool.total} team="north" />
             </span>
             <span className={styles.oneTeam}>
-                <PiecePool piecePool={south.piecePool.total} />
+                <PiecePool piecePool={south.piecePool.total} team="south" />
             </span>
         </div>
     );

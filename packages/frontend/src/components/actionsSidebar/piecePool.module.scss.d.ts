@@ -2,6 +2,8 @@
 declare namespace PiecePoolModuleScssModule {
     export interface IPiecePoolModuleScss {
         pieceContainer: string;
+        singlePiece: string;
+        total: string;
     }
 }
 

@@ -1,4 +1,4 @@
-import { IPlayer, ITeamRid, IAllTeams } from "@stract/api";
+import { IPlayer, ITeamRid, IAllTeams, IGameTile } from "@stract/api";
 
 export interface IRegisterWithTeam {
     teamName: string;
@@ -13,4 +13,15 @@ export interface ILastPong {
 
 export interface IPlayerWithTeamKey extends IPlayer {
     teamKey?: keyof IAllTeams<any>;
+}
+
+export interface ITeamRidToTeamKey {
+    [teamRid: string]: keyof IAllTeams<any>;
+}
+
+export interface ISelectedTile {
+    columnIndex: number;
+    dimension: number;
+    gameTile: IGameTile;
+    rowIndex: number;
 }

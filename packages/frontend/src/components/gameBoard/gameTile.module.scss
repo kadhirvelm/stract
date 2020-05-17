@@ -7,15 +7,23 @@
     flex: 1;
     align-items: center;
     justify-content: center;
-    
+    transition: box-shadow 200ms ease-out;
 }
 
 .north-tile {
     background: $north-background;
-    box-shadow: 1px 0 $north-line, -1px 0 $north-line, 0 -1px $north-line, 0 1px $north-line;
+    border: 1px solid $north-line;
 }
 
 .south-tile {
     background: $south-background;
-    box-shadow: 1px 0 $south-line, -1px 0 $south-line, 0 -1px $south-line, 0 1px $south-line;
+    border: 1px solid $south-line;
+}
+
+.can-select-tile {
+    box-shadow: 0 0 5px 1px $gold5 inset;
+}
+
+.is-selected-tile {
+    box-shadow: 0 0 5px 2px $gold3 inset;
 }

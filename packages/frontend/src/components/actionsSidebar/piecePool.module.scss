@@ -1,5 +1,16 @@
 .piece-container {
-    :not(:last-child) {
-        padding-bottom: 5px;
+    display: flex;
+
+    > :not(:last-child) {
+        padding-right: 5px;
     }
+}
+
+.single-piece {
+    display: flex;
+    align-items: center;
+}
+
+.total {
+    margin-right: 5px;
 }

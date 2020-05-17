@@ -30,7 +30,7 @@ interface IGamePieceVisitor<Output> {
     unknown: (gamePiece: IGamePiece) => Output;
 }
 
-export namespace IGamePieceType {
+export namespace IGamePiece {
     export const circle = (gamePiece: Omit<IGeneralGamePiece, "type">): IGamePieceCircle => ({
         ...gamePiece,
         type: "circle",
