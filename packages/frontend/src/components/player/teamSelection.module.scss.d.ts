@@ -4,8 +4,18 @@ declare namespace TeamSelectionModuleScssModule {
         active: string;
         individualTeam: string;
         north: string;
+        northActive: string;
+        northBackground: string;
+        northColor: string;
+        northHover: string;
+        northLine: string;
         northTitle: string;
         south: string;
+        southActive: string;
+        southBackground: string;
+        southColor: string;
+        southHover: string;
+        southLine: string;
         southTitle: string;
         teamMember: string;
         teamMembersContainer: string;

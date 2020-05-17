@@ -74,10 +74,10 @@ function TeamPiecePools(props: { north: IBoardTeamMetadata; south: IBoardTeamMet
     return (
         <div className={styles.bothTeamsContainer}>
             <span className={styles.oneTeam}>
-                <PiecePool piecePool={north.piecePool.total} />
+                <PiecePool piecePool={north.piecePool.total} team="north" />
             </span>
             <span className={styles.oneTeam}>
-                <PiecePool piecePool={south.piecePool.total} />
+                <PiecePool piecePool={south.piecePool.total} team="south" />
             </span>
         </div>
     );
