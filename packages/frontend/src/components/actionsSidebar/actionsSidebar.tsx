@@ -1,4 +1,4 @@
-import { NonIdealState } from "@blueprintjs/core";
+import { NonIdealState, Button } from "@blueprintjs/core";
 import { IAllTeams, IBoardTeamMetadata, IGameAction, IGameState, IStractGameV1, ITurnsMetadata } from "@stract/api";
 import classNames from "classnames";
 import * as React from "react";
@@ -8,6 +8,8 @@ import { getDimensions, IPlayerWithTeamKey } from "../../utils";
 import { StagedAction } from "../stagedActions";
 import styles from "./actionsSidebar.module.scss";
 import { PiecePool } from "./piecePool";
+import { sendServerMessage } from "../../socket";
+import { SelfUpdatingTimer } from "../common";
 
 interface IStoreProps {
     gameBoard?: IStractGameV1;
@@ -30,18 +32,40 @@ function TurnNumber(props: { turn: number; turnMetadata: ITurnsMetadata }) {
     );
 }
 
-function GameState(props: { gameState: IGameState }) {
-    const { gameState } = props;
+function GameState(props: { gameState: IGameState; onChangeGameState: (newGameState: IGameState) => void }) {
+    const { gameState, onChangeGameState } = props;
+
+    const requestPause = () => {
+        if (!IGameState.isInPlay(gameState)) {
+            return;
+        }
+
+        onChangeGameState(IGameState.requestPause(gameState.nextTurnTimestamp));
+    };
+    const requestPlay = () => onChangeGameState(IGameState.requestPlay());
 
     return (
         <div className={styles.gameState}>
             {IGameState.visit(gameState, {
                 notStarted: () => <div>Waiting…</div>,
-                inPlay: () => <div>In play!</div>,
+                requestPlay: () => <div>Starting…</div>,
+                inPlay: inPlay => <SelfUpdatingTimer nextTurnTimestamp={inPlay.nextTurnTimestamp} />,
+                requestPause: requestForPause => (
+                    <div>
+                        <SelfUpdatingTimer nextTurnTimestamp={requestForPause.nextTurnTimestamp} /> Pausing…
+                    </div>
+                ),
                 paused: () => <div>Paused</div>,
                 ended: () => <div>Ended</div>,
                 unknown: () => <div>Unknown</div>,
             })}
+            <Button
+                className={styles.changeStateButton}
+                disabled={IGameState.isRequestPause(gameState) || IGameState.isRequestPlay(gameState)}
+                icon={IGameState.isInPlay(gameState) ? "pause" : "play"}
+                minimal
+                onClick={IGameState.isInPlay(gameState) ? requestPause : requestPlay}
+            />
         </div>
     );
 }
@@ -99,11 +123,13 @@ export function UnconnectedActionsSidebar(props: IProps) {
 
     const { sidebarWidth } = getDimensions(gameBoard.metadata.board);
 
+    const onChangeGameState = (newGameState: IGameState) => sendServerMessage().changeGameState(newGameState);
+
     return (
         <div className={styles.actionsSidebar} style={{ width: sidebarWidth }}>
             <div className={classNames(styles.section, styles.turnAndGameSection)}>
                 <TurnNumber turn={gameBoard.turnNumber} turnMetadata={gameBoard.metadata.turns} />
-                <GameState gameState={gameBoard.state} />
+                <GameState gameState={gameBoard.state} onChangeGameState={onChangeGameState} />
             </div>
             <div className={classNames(styles.section, styles.bothTeamInformation)}>
                 <div className={styles.bothTeamsContainer}>

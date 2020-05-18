@@ -1,4 +1,4 @@
-import { IPlayer, IPlayerIdentifier, ITeamRid, IStractGameV1, IGameAction } from "@stract/api";
+import { IPlayer, IPlayerIdentifier, ITeamRid, IStractGameV1, IGameAction, IGameState } from "@stract/api";
 
 export interface IStractPlayer {
     /**
@@ -32,6 +32,10 @@ export interface IStractGame {
      * Adds a staged action to the given player's team for current turn.
      */
     addStagedAction: (stagedAction: IGameAction, stractPlayer: IStractPlayer) => void;
+    /**
+     * Updates the game state, say from in-play to paused, or from not-started to in-play.
+     */
+    changeGameState: (newGameState: IGameState) => void;
     /**
      * When a player disconnect, this removes them from the currentGameState.
      */

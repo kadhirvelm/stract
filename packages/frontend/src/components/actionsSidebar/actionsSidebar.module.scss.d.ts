@@ -4,6 +4,7 @@ declare namespace ActionsSidebarModuleScssModule {
         actionsSidebar: string;
         bothTeamInformation: string;
         bothTeamsContainer: string;
+        changeStateButton: string;
         gameState: string;
         northActive: string;
         northBackground: string;

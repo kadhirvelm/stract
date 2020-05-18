@@ -8,6 +8,7 @@ import {
     ITeamRid,
     playerIdentifier,
     StractGameSocketService,
+    IGameState,
 } from "@stract/api";
 import io from "socket.io";
 import { v4 } from "uuid";
@@ -39,17 +40,30 @@ export class StractPlayer implements IStractPlayer {
 
     private addStagedAction = (gameAction: IGameAction) => {
         if (this.team === undefined) {
-            this.toClient.onError({ message: "Invalid team, please try refreshing your page.", intent: "danger" });
+            this.toClient.onMessage({ message: "Invalid team, please try refreshing your page.", intent: "danger" });
             return;
         }
 
         const isValidAction = isValidStagedAction(this.game.currentGameState, gameAction, this.team);
         if (!isValidAction.isValid) {
-            this.toClient.onError({ message: isValidAction.message ?? "Invalid action", intent: "danger" });
+            this.toClient.onMessage({ message: isValidAction.message ?? "Invalid action", intent: "danger" });
             return;
         }
 
         this.game.addStagedAction({ ...gameAction, addedByPlayer: this.id }, this);
+    };
+
+    private changeGameState = (gameState: IGameState) => {
+        if (IGameState.isEnded(this.game.currentGameState.state)) {
+            this.toClient.onMessage({
+                message: "Unfortunately your game has ended, try starting a new one.",
+                intent: "warning",
+            });
+            return;
+        }
+
+        this.toClient.onMessage({ message: "We'll update the game state right after this turn.", intent: "success" });
+        this.game.changeGameState(gameState);
     };
 
     private registerPlayer = (player: IRegisterPlayer) => {
@@ -93,6 +107,7 @@ export class StractPlayer implements IStractPlayer {
 
     private setupPlayerListeners = () => {
         this.fromClient.addStagedAction(this.addStagedAction);
+        this.fromClient.changeGameState(this.changeGameState);
         this.fromClient.getGameUpdate(this.sendGameUpdate);
         this.fromClient.registerPlayer(this.registerPlayer);
         this.fromClient.unregisterPlayer(this.unregisterPlayer);

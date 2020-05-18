@@ -8,7 +8,7 @@ export function handleGame(dispatch: Dispatch, fromServer: IStractFromServer["fr
         dispatch(UpdateGameBoard.create(gameBoard));
     });
 
-    fromServer.onError((error: IErrorMessage) => {
+    fromServer.onMessage((error: IErrorMessage) => {
         const { message, intent } = error;
         showToast({ message, intent });
     });

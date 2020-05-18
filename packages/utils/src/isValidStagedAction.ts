@@ -41,7 +41,7 @@ function isValidMoveAction(
     if (doAnyExistingStagedActionsMoveTheSamePiece !== undefined) {
         return {
             isValid: false,
-            message: "Unfortunately a teammate already moving the same piece. Try moving adding a different action.",
+            message: "Unfortunately a teammate is already moving the same piece. Try adding a different action.",
         };
     }
 

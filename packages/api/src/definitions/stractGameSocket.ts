@@ -11,17 +11,18 @@ import {
     IToClientCallback,
     IToServerCallback,
 } from "../common/genericSocket";
-import { IGameAction, IPlayer, IRegisterPlayer, IStractGameV1, IPlayerIdentifier } from "../types";
+import { IGameAction, IPlayer, IRegisterPlayer, IStractGameV1, IPlayerIdentifier, IGameState } from "../types";
 import { IErrorMessage } from "../types/general";
 
 enum MessageNames {
     ADD_STAGED_ACTION = "add-staged-action",
+    CHANGE_GAME_STATE = "change-game-state",
     GET_GAME_UPDATE = "get-game-update",
+    ON_ERROR = "on-error",
     ON_GAME_UPDATE = "on-game-update",
     ON_REGISTER_PLAYER = "on-register-player",
     REGISTER_PLAYER = "register-player",
     UNREGISTER_PLAYER = "unregister-player",
-    ON_ERROR = "on-error",
 }
 
 export interface IStractToServer {
@@ -30,6 +31,10 @@ export interface IStractToServer {
          * A player has requested they want to add a staged action to their team's actions for the turn.
          */
         addStagedAction: IFromClientCallback<IGameAction>;
+        /**
+         * Updates the current game state on the server side, from say in-play to pause.
+         */
+        changeGameState: IFromClientCallback<IGameState>;
         /**
          * A player has requested the current game state.
          */
@@ -48,6 +53,10 @@ export interface IStractToServer {
          * Request to add a staged action for the current turn.
          */
         addStagedAction: IToClientCallback<IGameAction>;
+        /**
+         * Updates the current game state. For example from in-play to pause.
+         */
+        changeGameState: IToClientCallback<IGameState>;
         /**
          * Request the current game state.
          */
@@ -77,7 +86,7 @@ export interface IStractFromServer {
         /**
          * Sends an error message to the client. Sometimes there will be an error code present that the frontend knows how to respond to.
          */
-        onError: IToServerCallback<IErrorMessage>;
+        onMessage: IToServerCallback<IErrorMessage>;
     };
     fromServer: {
         /**
@@ -92,7 +101,7 @@ export interface IStractFromServer {
         /**
          * Sends an error message to the client. Sometimes there will be an error code present that the frontend knows how to respond to.
          */
-        onError: IFromClientCallback<IErrorMessage>;
+        onMessage: IFromClientCallback<IErrorMessage>;
     };
 }
 
@@ -105,6 +114,7 @@ export const StractGameSocketService: ISocketService<
     backend: {
         fromClient: (socket: ServerSocket) => ({
             addStagedAction: backendFromClient(socket, { messageName: MessageNames.ADD_STAGED_ACTION }),
+            changeGameState: backendFromClient(socket, { messageName: MessageNames.CHANGE_GAME_STATE }),
             getGameUpdate: backendFromClient(socket, { messageName: MessageNames.GET_GAME_UPDATE }),
             registerPlayer: backendFromClient(socket, { messageName: MessageNames.REGISTER_PLAYER }),
             unregisterPlayer: backendFromClient(socket, { messageName: MessageNames.UNREGISTER_PLAYER }),
@@ -116,7 +126,7 @@ export const StractGameSocketService: ISocketService<
             onRegisterPlayerUpdate: backendToClient(socket, {
                 messageName: MessageNames.ON_REGISTER_PLAYER,
             }),
-            onError: backendToClient(socket, {
+            onMessage: backendToClient(socket, {
                 messageName: MessageNames.ON_ERROR,
             }),
         }),
@@ -126,6 +136,7 @@ export const StractGameSocketService: ISocketService<
             addStagedAction: frontendToServer(socket, {
                 messageName: MessageNames.ADD_STAGED_ACTION,
             }),
+            changeGameState: frontendToServer(socket, { messageName: MessageNames.CHANGE_GAME_STATE }),
             getGameUpdate: frontendToServer(socket, { messageName: MessageNames.GET_GAME_UPDATE }),
             registerPlayer: frontendToServer(socket, {
                 messageName: MessageNames.REGISTER_PLAYER,
@@ -139,7 +150,7 @@ export const StractGameSocketService: ISocketService<
             onRegisterPlayerUpdate: frontendFromServer(socket, {
                 messageName: MessageNames.ON_REGISTER_PLAYER,
             }),
-            onError: frontendFromServer(socket, {
+            onMessage: frontendFromServer(socket, {
                 messageName: MessageNames.ON_ERROR,
             }),
         }),
