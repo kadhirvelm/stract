@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { IStoreState } from "../../store";
 import { ChangeSelectedTile } from "../../store/interface/interfaceActions";
-import { ISelectedTile, IPlayerWithTeamKey } from "../../utils";
+import { ISelectedTile } from "../../utils";
 import { Piece } from "../pieces";
 import { Plus } from "../pieces/pieceSvg";
 import styles from "./gameTile.module.scss";
