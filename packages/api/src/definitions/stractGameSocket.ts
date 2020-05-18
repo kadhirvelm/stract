@@ -12,6 +12,7 @@ import {
     IToServerCallback,
 } from "../common/genericSocket";
 import { IGameAction, IPlayer, IRegisterPlayer, IStractGameV1, IPlayerIdentifier } from "../types";
+import { IErrorMessage } from "../types/general";
 
 enum MessageNames {
     ADD_STAGED_ACTION = "add-staged-action",
@@ -20,6 +21,7 @@ enum MessageNames {
     ON_REGISTER_PLAYER = "on-register-player",
     REGISTER_PLAYER = "register-player",
     UNREGISTER_PLAYER = "unregister-player",
+    ON_ERROR = "on-error",
 }
 
 export interface IStractToServer {
@@ -72,6 +74,10 @@ export interface IStractFromServer {
          * return undefined if the game the player is connecting to no longer exists.
          */
         onRegisterPlayerUpdate: IToServerCallback<IPlayer | undefined | null>;
+        /**
+         * Sends an error message to the client. Sometimes there will be an error code present that the frontend knows how to respond to.
+         */
+        onError: IToServerCallback<IErrorMessage>;
     };
     fromServer: {
         /**
@@ -83,6 +89,10 @@ export interface IStractFromServer {
          * return undefined if the game the player is connecting to no longer exists.
          */
         onRegisterPlayerUpdate: IFromServerCallback<IPlayer | undefined | null>;
+        /**
+         * Sends an error message to the client. Sometimes there will be an error code present that the frontend knows how to respond to.
+         */
+        onError: IFromClientCallback<IErrorMessage>;
     };
 }
 
@@ -106,6 +116,9 @@ export const StractGameSocketService: ISocketService<
             onRegisterPlayerUpdate: backendToClient(socket, {
                 messageName: MessageNames.ON_REGISTER_PLAYER,
             }),
+            onError: backendToClient(socket, {
+                messageName: MessageNames.ON_ERROR,
+            }),
         }),
     },
     frontend: {
@@ -125,6 +138,9 @@ export const StractGameSocketService: ISocketService<
             }),
             onRegisterPlayerUpdate: frontendFromServer(socket, {
                 messageName: MessageNames.ON_REGISTER_PLAYER,
+            }),
+            onError: frontendFromServer(socket, {
+                messageName: MessageNames.ON_ERROR,
             }),
         }),
     },

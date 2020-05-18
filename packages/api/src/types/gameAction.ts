@@ -2,13 +2,15 @@ import { v4 } from "uuid";
 import { IGamePieceType } from "./gamePiece";
 import { gameActionId, IGameActionId, IGamePieceId, IPlayerIdentifier } from "./idTypes";
 
+export type IGameActionType = "move-piece" | "spawn-piece";
+
 /**
  * All actions minimum.
  */
 interface IGenericGameAction {
     addedByPlayer?: IPlayerIdentifier;
     id: IGameActionId;
-    type: string;
+    type: IGameActionType;
 }
 
 /**
@@ -37,7 +39,8 @@ export interface IGameActionMovePiece extends IGenericGameAction {
  */
 
 export interface ISpawnPiece {
-    startColumn: number;
+    column: number;
+    row: number;
     pieceType: IGamePieceType;
 }
 

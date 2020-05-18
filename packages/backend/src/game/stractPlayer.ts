@@ -11,6 +11,7 @@ import {
 } from "@stract/api";
 import io from "socket.io";
 import { v4 } from "uuid";
+import { isValidStagedAction } from "@stract/utils";
 import { IStractGame, IStractPlayer } from "./types";
 
 export class StractPlayer implements IStractPlayer {
@@ -37,6 +38,17 @@ export class StractPlayer implements IStractPlayer {
     };
 
     private addStagedAction = (gameAction: IGameAction) => {
+        if (this.team === undefined) {
+            this.toClient.onError({ message: "Invalid team, please try refreshing your page.", intent: "danger" });
+            return;
+        }
+
+        const isValidAction = isValidStagedAction(this.game.currentGameState, gameAction, this.team);
+        if (!isValidAction.isValid) {
+            this.toClient.onError({ message: isValidAction.message ?? "Invalid action", intent: "danger" });
+            return;
+        }
+
         this.game.addStagedAction({ ...gameAction, addedByPlayer: this.id }, this);
     };
 

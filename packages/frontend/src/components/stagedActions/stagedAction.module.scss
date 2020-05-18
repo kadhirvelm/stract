@@ -1,0 +1,14 @@
+.staged-container {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.type-and-name {
+    display: flex;
+    justify-content: space-between;
+}
+
+.player-info {
+    padding-top: 5px;
+}

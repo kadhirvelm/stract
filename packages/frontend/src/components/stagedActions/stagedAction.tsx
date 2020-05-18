@@ -1,8 +1,9 @@
-import { IGameAction, IPlayerIdentifier, IStractGameV1 } from "@stract/api";
+import { IGameAction, IGameActionType, IPlayerIdentifier, IStractGameV1 } from "@stract/api";
 import * as React from "react";
 import { connect } from "react-redux";
 import { IStoreState } from "../../store";
-import { capitalizeFirst, IPlayerWithTeamKey } from "../../utils";
+import { IPlayerWithTeamKey } from "../../utils";
+import styles from "./stagedAction.module.scss";
 
 interface IOwnProps {
     stagedAction: IGameAction;
@@ -28,15 +29,25 @@ function Action(props: {
         return null;
     }
 
+    const humanReadableType = (type: IGameActionType) => {
+        if (type === "move-piece") {
+            return "Move";
+        }
+
+        return "Spawn";
+    };
+
     const playerName = gameBoard.teams[currentPlayer.teamKey].players.find(p => p.id === addedByPlayer);
 
     return (
-        <div>
-            <div>
-                <span>{capitalizeFirst(action.type)}</span>
+        <div className={styles.stagedContainer}>
+            <div className={styles.typeAndName}>
+                <span>{humanReadableType(action.type)}</span>
                 <span>{playerName?.name}</span>
             </div>
-            <div>{currentPlayer.id === addedByPlayer ? samePlayerInfo : otherPlayerInfo}</div>
+            <div className={styles.playerInfo}>
+                {currentPlayer.id === addedByPlayer ? samePlayerInfo : otherPlayerInfo}
+            </div>
         </div>
     );
 }
@@ -70,12 +81,12 @@ function UnconnectedStagedAction(props: IProps) {
                 gameBoard={gameBoard}
                 otherPlayerInfo={
                     <div>
-                        Spawned a {spawn.spawnPiece.pieceType} at {spawn.spawnPiece.startColumn}
+                        Create a {spawn.spawnPiece.pieceType} at {spawn.spawnPiece.row}, {spawn.spawnPiece.column}
                     </div>
                 }
                 samePlayerInfo={
                     <div>
-                        Spawned a {spawn.spawnPiece.pieceType} at {spawn.spawnPiece.startColumn}
+                        Create a {spawn.spawnPiece.pieceType} at {spawn.spawnPiece.row}, {spawn.spawnPiece.column}
                     </div>
                 }
             />

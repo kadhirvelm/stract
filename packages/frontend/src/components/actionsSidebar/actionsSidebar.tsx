@@ -59,7 +59,7 @@ function StagedActions(props: { player: IPlayerWithTeamKey; stagedActions: IAllT
 
     return (
         <div className={styles.stagedActionsList}>
-            <div className={styles.stagedActionsTitle}>Your team&#39;s staged actions</div>
+            <div className={styles.stagedActionsTitle}>Your team will:</div>
             {teamActions.map(stagedAction => (
                 <StagedAction key={stagedAction.id} stagedAction={stagedAction} />
             ))}

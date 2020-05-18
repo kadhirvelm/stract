@@ -72,7 +72,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
 
     const spawnTile = (pieceType: IGamePieceType) => () => {
         sendServerMessage().addStagedAction(
-            IGameAction.spawnPiece({ startColumn: selectedTile.columnIndex, pieceType }),
+            IGameAction.spawnPiece({ column: selectedTile.columnIndex, pieceType, row: selectedTile.rowIndex }),
         );
         removeSelectedTile();
     };
