@@ -9,8 +9,10 @@ import {
     ITeamToPlayersMapping,
     addSecondsToDate,
     isTurnOver,
+    executeStagedActions,
 } from "./utils";
 import { sanitizeExistingBoard } from "./utils/sanitizeExistingBoard";
+import { resolveGameBoard } from "./utils/resolveGameBoard";
 
 const TIME_PER_TURN = 20;
 const TOTAL_TURNS = 45;
@@ -175,11 +177,10 @@ export class StractGame implements IStractGame {
     };
 
     private incrementGameOneTurn = () => {
-        // go through all staged actions
-        // resolve game board
+        executeStagedActions(this.currentGameState);
+
+        resolveGameBoard(this.currentGameState);
 
         this.currentGameState.turnNumber += 1;
-        this.currentGameState.stagedActions.north = [];
-        this.currentGameState.stagedActions.south = [];
     };
 }
