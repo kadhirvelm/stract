@@ -68,7 +68,7 @@ export function Triangle(props: IProps) {
     return renderInsideSVG(
         <polygon
             className={classNames({ [styles.north]: team === "north", [styles.south]: team === "south" })}
-            points="10,90 50,0 90,90"
+            points="10,90 50,10 90,90"
             stroke={Colors.DARK_GRAY1}
             strokeWidth={2}
         />,
@@ -92,11 +92,11 @@ export function Arrow(props: IProps & { className: string; direction: IDirection
     const transform = () => {
         switch (direction) {
             case "north":
-                return `rotate(-90deg) translate(-${squareDimension}px, 0)`;
+                return "rotate(-90deg) translate(-100px, 0)";
             case "south":
-                return `rotate(90deg) translate(0, -${squareDimension}px)`;
+                return "rotate(90deg) translate(0, -100px)";
             case "west":
-                return `rotate(180deg) translate(-${squareDimension}px, -${squareDimension}px)`;
+                return "rotate(180deg) translate(-100px, -100px)";
             default:
                 return "";
         }

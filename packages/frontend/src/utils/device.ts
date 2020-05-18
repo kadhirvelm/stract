@@ -25,7 +25,11 @@ interface IDeviceTypeVisitor<T = any> {
 
 export namespace IDevice {
     export const getDeviceType = (device: { browser: IUAParser.IBrowser; type: string | undefined }): IDeviceType => {
-        if (device.browser.name !== "Chrome" && device.browser.name !== "Chromium") {
+        if (
+            device.browser.name !== "Chrome" &&
+            device.browser.name !== "Chromium" &&
+            device.browser.name !== "Safari"
+        ) {
             return {
                 type: "unknown",
             };
