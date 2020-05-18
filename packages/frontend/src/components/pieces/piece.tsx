@@ -1,10 +1,12 @@
 import { IGamePiece } from "@stract/api";
 import * as React from "react";
 import { connect } from "react-redux";
+import { Icon } from "@blueprintjs/core";
 import { IStoreState } from "../../store";
-import { ITeamRidToTeamKey } from "../../utils";
-import { Circle, Square, Triangle } from "./pieceSvg";
+import { ITeamRidToTeamKey, IPlayerWithTeamKey } from "../../utils";
+import { Circle, Square, Triangle, HiddenPiece } from "./pieceSvg";
 import { getTeamRidToTeamKey } from "../../selectors";
+import styles from "./piece.module.scss";
 
 interface IOwnProps {
     piece: IGamePiece;
@@ -12,30 +14,53 @@ interface IOwnProps {
 }
 
 interface IStateProps {
+    player?: IPlayerWithTeamKey;
     teamRidToTeamKey: ITeamRidToTeamKey;
 }
 
 type IProps = IOwnProps & IStateProps;
 
 function UnconnectedPiece(props: IProps) {
-    const { piece, squareDimension, teamRidToTeamKey } = props;
+    const { piece, squareDimension, player, teamRidToTeamKey } = props;
 
     const team = teamRidToTeamKey[piece.ownedByTeam];
 
-    if (team === undefined) {
-        return <div>No team</div>;
+    if (team === undefined || player === undefined) {
+        return <div>No team or player</div>;
     }
 
-    return IGamePiece.visit(piece, {
-        circle: () => <Circle team={team} squareDimension={squareDimension} size="board" />,
-        square: () => <Square team={team} squareDimension={squareDimension} size="board" />,
-        triangle: () => <Triangle team={team} squareDimension={squareDimension} size="board" />,
-        unknown: () => <div>Unknown</div>,
-    });
+    if (piece.ownedByTeam !== player.team && piece.isHidden) {
+        return <HiddenPiece team={team} squareDimension={squareDimension} size="board" />;
+    }
+
+    const maybeRenderHidden = () => {
+        if (!piece.isHidden) {
+            return null;
+        }
+
+        return (
+            <div className={styles.hidden}>
+                <Icon icon="eye-off" iconSize={Icon.SIZE_LARGE} />
+            </div>
+        );
+    };
+
+    return (
+        <div className={styles.pieceContainer}>
+            {IGamePiece.visit(piece, {
+                circle: () => <Circle team={team} squareDimension={squareDimension} size="board" />,
+                square: () => <Square team={team} squareDimension={squareDimension} size="board" />,
+                triangle: () => <Triangle team={team} squareDimension={squareDimension} size="board" />,
+                unknown: () => <div>Unknown</div>,
+            })}
+            {maybeRenderHidden()}
+        </div>
+    );
 }
 
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
+        player: state.game.player,
         teamRidToTeamKey: getTeamRidToTeamKey(state),
     };
 }

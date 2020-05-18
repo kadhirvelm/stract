@@ -117,7 +117,7 @@ function TeamPiecePools(props: { north: IBoardTeamMetadata; south: IBoardTeamMet
 
 export function UnconnectedActionsSidebar(props: IProps) {
     const { gameBoard, player } = props;
-    if (gameBoard === undefined || player === undefined) {
+    if (gameBoard === undefined || player === undefined || player.teamKey === undefined) {
         return null;
     }
 
@@ -139,6 +139,12 @@ export function UnconnectedActionsSidebar(props: IProps) {
                 </div>
                 <TeamScores north={gameBoard.teams.north.score} south={gameBoard.teams.south.score} />
                 <TeamPiecePools north={gameBoard.teams.north} south={gameBoard.teams.south} />
+            </div>
+            <div className={classNames(styles.section, styles.availablePieces)}>
+                <div className={styles.oneTeam}>Available pieces</div>
+                <div className={styles.oneTeam}>
+                    <PiecePool piecePool={gameBoard.teams[player.teamKey].piecePool.available} team={player.teamKey} />
+                </div>
             </div>
             <div className={classNames(styles.section, styles.stagedActionsContainer)}>
                 <StagedActions player={player} stagedActions={gameBoard.stagedActions} />

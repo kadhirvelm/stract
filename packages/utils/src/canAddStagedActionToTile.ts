@@ -25,6 +25,13 @@ function canMoveTile(
     return { isValid: tile.occupiedBy?.[0].ownedByTeam === playerTeamRid };
 }
 
+function canSpawnTile(gameBoard: IStractGameV1, playerTeamKey: keyof IAllTeams<any>, rowIndex: number) {
+    const canSpawn = playerTeamKey === "north" ? rowIndex === 0 : rowIndex === gameBoard.metadata.board.size.rows - 1;
+    const hasTilesAvailable = gameBoard.teams[playerTeamKey].piecePool.available.some(piecePool => piecePool.total > 0);
+
+    return { isValid: canSpawn && hasTilesAvailable, canSpawn };
+}
+
 export function canAddAnyStagedActionToTile(
     player: IPlayer,
     gameBoard: IStractGameV1,
@@ -42,10 +49,14 @@ export function canAddAnyStagedActionToTile(
         return { isValid: false };
     }
 
+    let isValid = false;
     if (tile?.occupiedBy !== undefined && tile?.occupiedBy.length > 0) {
-        return canMoveTile(tile, rowIndex, columnIndex, player.team, gameBoard.stagedActions[playerTeamKey]);
+        isValid = canMoveTile(tile, rowIndex, columnIndex, player.team, gameBoard.stagedActions[playerTeamKey]).isValid;
     }
 
-    const canSpawn = playerTeamKey === "north" ? rowIndex === 0 : rowIndex === gameBoard.metadata.board.size.rows - 1;
-    return { isValid: canSpawn, canSpawn };
+    const getCanSpawn = canSpawnTile(gameBoard, playerTeamKey, rowIndex);
+    return {
+        isValid: getCanSpawn.isValid || isValid,
+        canSpawn: getCanSpawn.canSpawn,
+    };
 }

@@ -1,18 +1,27 @@
-import { IGameAction, IStractFromServer, IStractGameV1, StractGameSocketService, IGameState } from "@stract/api";
+import {
+    IGameAction,
+    IGameActionId,
+    IGameState,
+    IStractFromServer,
+    IStractGameV1,
+    ITeamRid,
+    StractGameSocketService,
+} from "@stract/api";
+import { getTeamKeyFromRid } from "@stract/utils";
 import { Server } from "http";
 import io from "socket.io";
 import { StractPlayer } from "./stractPlayer";
 import { IStractGame, IStractPlayer } from "./types";
 import {
+    addSecondsToDate,
     createNewGame,
     createNewTeamToPlayerMapping,
-    ITeamToPlayersMapping,
-    addSecondsToDate,
-    isTurnOver,
     executeStagedActions,
+    isTurnOver,
+    ITeamToPlayersMapping,
 } from "./utils";
-import { sanitizeExistingBoard } from "./utils/sanitizeExistingBoard";
 import { resolveGameBoard } from "./utils/resolveGameBoard";
+import { sanitizeExistingBoard } from "./utils/sanitizeExistingBoard";
 
 const TIME_PER_TURN = 20;
 const TOTAL_TURNS = 45;
@@ -102,6 +111,15 @@ export class StractGame implements IStractGame {
         });
     };
 
+    public removeStagedAction = (teamRid: ITeamRid, actionId: IGameActionId) => {
+        const teamKey = getTeamKeyFromRid(teamRid, this.currentGameState.teams);
+        this.modifyGameState(() => {
+            this.currentGameState.stagedActions[teamKey] = this.currentGameState.stagedActions[teamKey].filter(
+                action => action.id !== actionId,
+            );
+        });
+    };
+
     public sendGameUpdateToAllPlayers = () => {
         this.toAllClients.onGameUpdate(this.currentGameState);
     };
@@ -134,9 +152,7 @@ export class StractGame implements IStractGame {
 
     private startOrContinueGame = () => {
         this.changeGameState(
-            IGameState.inPlay(
-                addSecondsToDate(this.currentGameState.metadata.turns.timePerTurnInSeconds * 1.5).valueOf(),
-            ),
+            IGameState.inPlay(addSecondsToDate(this.currentGameState.metadata.turns.timePerTurnInSeconds).valueOf()),
         );
         this.maybeGoToNextTurn();
     };

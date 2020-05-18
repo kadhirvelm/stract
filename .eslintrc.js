@@ -46,6 +46,7 @@ module.exports = {
       "no-console": 2,
       "lines-between-class-members": 0,
       "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "_" }],
+      "react/prop-types": 0,
     },
 
     settings: {

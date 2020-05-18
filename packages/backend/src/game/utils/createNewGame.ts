@@ -10,7 +10,7 @@ import {
 import _ from "lodash";
 import { v4 } from "uuid";
 
-function createBoard(x: number, y: number): IGameTile[][] {
+export function createBoard(x: number, y: number): IGameTile[][] {
     return _.range(0, x).map(() => _.range(0, y).map(() => IGameTile.free({})));
 }
 
@@ -25,8 +25,8 @@ function startingTeam(teamName: string) {
         id: teamId(v4()),
         name: teamName,
         piecePool: {
-            available: startingPiecePool,
-            total: startingPiecePool,
+            available: _.cloneDeep(startingPiecePool),
+            total: _.cloneDeep(startingPiecePool),
         },
         players: [],
         score: 0,

@@ -11,7 +11,15 @@ import {
     IToClientCallback,
     IToServerCallback,
 } from "../common/genericSocket";
-import { IGameAction, IPlayer, IRegisterPlayer, IStractGameV1, IPlayerIdentifier, IGameState } from "../types";
+import {
+    IGameAction,
+    IPlayer,
+    IRegisterPlayer,
+    IStractGameV1,
+    IPlayerIdentifier,
+    IGameState,
+    IGameActionId,
+} from "../types";
 import { IErrorMessage } from "../types/general";
 
 enum MessageNames {
@@ -22,6 +30,7 @@ enum MessageNames {
     ON_GAME_UPDATE = "on-game-update",
     ON_REGISTER_PLAYER = "on-register-player",
     REGISTER_PLAYER = "register-player",
+    REMOVE_STAGED_ACTION = "remove-staged-action",
     UNREGISTER_PLAYER = "unregister-player",
 }
 
@@ -44,6 +53,10 @@ export interface IStractToServer {
          */
         registerPlayer: IFromClientCallback<IRegisterPlayer>;
         /**
+         * Removes a staged action, has to be from the same player who first created the action.
+         */
+        removeStagedAction: IFromClientCallback<{ id: IGameActionId; player: IPlayerIdentifier }>;
+        /**
          * Removes a player from the game so they can switch teams or change their name.
          */
         unregisterPlayer: IFromClientCallback<IPlayerIdentifier>;
@@ -65,6 +78,10 @@ export interface IStractToServer {
          * Request to register with the game.
          */
         registerPlayer: IToClientCallback<IRegisterPlayer>;
+        /**
+         * Removes a staged action, has to be from the same player who first created the action.
+         */
+        removeStagedAction: IToClientCallback<{ id: IGameActionId; player: IPlayerIdentifier }>;
         /**
          * Removes a player from the game so they can switch teams or change their name.
          */
@@ -117,6 +134,7 @@ export const StractGameSocketService: ISocketService<
             changeGameState: backendFromClient(socket, { messageName: MessageNames.CHANGE_GAME_STATE }),
             getGameUpdate: backendFromClient(socket, { messageName: MessageNames.GET_GAME_UPDATE }),
             registerPlayer: backendFromClient(socket, { messageName: MessageNames.REGISTER_PLAYER }),
+            removeStagedAction: backendFromClient(socket, { messageName: MessageNames.REMOVE_STAGED_ACTION }),
             unregisterPlayer: backendFromClient(socket, { messageName: MessageNames.UNREGISTER_PLAYER }),
         }),
         toClient: (socket: ServerSocket | Namespace) => ({
@@ -140,6 +158,9 @@ export const StractGameSocketService: ISocketService<
             getGameUpdate: frontendToServer(socket, { messageName: MessageNames.GET_GAME_UPDATE }),
             registerPlayer: frontendToServer(socket, {
                 messageName: MessageNames.REGISTER_PLAYER,
+            }),
+            removeStagedAction: frontendToServer(socket, {
+                messageName: MessageNames.REMOVE_STAGED_ACTION,
             }),
             unregisterPlayer: frontendToServer(socket, { messageName: MessageNames.UNREGISTER_PLAYER }),
         }),

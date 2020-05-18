@@ -76,6 +76,13 @@
     padding: 10px;
 }
 
+.available-pieces {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+}
+
 .staged-actions-container {
     flex: 1;
 }

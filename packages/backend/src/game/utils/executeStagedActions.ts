@@ -1,5 +1,12 @@
 /* eslint-disable no-param-reassign */
-import { IGameAction, IGameActionMovePiece, IGameActionSpawnPiece, IStractGameV1, ITeamRid } from "@stract/api";
+import {
+    IGameAction,
+    IGameActionMovePiece,
+    IGameActionSpawnPiece,
+    IStractGameV1,
+    ITeamRid,
+    IAllTeams,
+} from "@stract/api";
 import { getGamePieceFromType, checkIsIndexInBounds, adjustColumnAndRowByDirection } from "@stract/utils";
 import _ from "lodash";
 
@@ -30,29 +37,44 @@ function executeMovePiece(currentGameState: IStractGameV1, movePieceAction: IGam
     );
 }
 
-function executeSpawnPiece(currentGameState: IStractGameV1, spawnPieceAction: IGameActionSpawnPiece, team: ITeamRid) {
+function executeSpawnPiece(
+    currentGameState: IStractGameV1,
+    spawnPieceAction: IGameActionSpawnPiece,
+    team: ITeamRid,
+    teamKey: keyof IAllTeams<any>,
+) {
     const { column, row, pieceType } = spawnPieceAction.spawnPiece;
 
     currentGameState.board[row][column].occupiedBy = (currentGameState.board[row][column].occupiedBy ?? []).concat(
         getGamePieceFromType(pieceType, team),
     );
+
+    currentGameState.teams[teamKey].piecePool.available = currentGameState.teams[teamKey].piecePool.available.map(
+        piece => {
+            if (piece.type === pieceType) {
+                piece.total -= 1;
+            }
+
+            return piece;
+        },
+    );
 }
 
 export function executeStagedActions(currentGameState: IStractGameV1) {
-    const northTeamRid = currentGameState.teams.north.id;
-    const southTeamRid = currentGameState.teams.south.id;
-
-    const appendNorthId = (action: IGameAction) => ({ id: northTeamRid, action });
-    const appendSouthId = (action: IGameAction) => ({ id: southTeamRid, action });
+    const appendId = (action: IGameAction, teamKey: keyof IAllTeams<any>) => ({
+        id: currentGameState.teams[teamKey].id,
+        teamKey,
+        action,
+    });
 
     const allActions = currentGameState.stagedActions.north
-        .map(appendNorthId)
-        .concat(currentGameState.stagedActions.south.map(appendSouthId));
+        .map(action => appendId(action, "north"))
+        .concat(currentGameState.stagedActions.south.map(action => appendId(action, "south")));
 
     allActions.forEach(actionWithTeam => {
         IGameAction.visit(actionWithTeam.action, {
             movePiece: mp => executeMovePiece(currentGameState, mp, actionWithTeam.id),
-            spawnPiece: sp => executeSpawnPiece(currentGameState, sp, actionWithTeam.id),
+            spawnPiece: sp => executeSpawnPiece(currentGameState, sp, actionWithTeam.id, actionWithTeam.teamKey),
             unknown: _.noop,
         });
     });

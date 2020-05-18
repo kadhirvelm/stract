@@ -20,6 +20,7 @@ export interface ITeamRidToTeamKey {
 }
 
 export interface ISelectedTile {
+    canSpawn?: boolean;
     columnIndex: number;
     dimension: number;
     gameTile: IGameTile;

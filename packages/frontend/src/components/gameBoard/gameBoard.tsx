@@ -3,6 +3,7 @@ import { IStractGameV1 } from "@stract/api";
 import * as React from "react";
 import { connect } from "react-redux";
 import { canAddAnyStagedActionToTile } from "@stract/utils";
+import { isEqual } from "lodash-es";
 import { IStoreState } from "../../store";
 import styles from "./gameBoard.module.scss";
 import { GameTile } from "./gameTile";
@@ -15,51 +16,65 @@ interface IStoreProps {
 
 type IProps = IStoreProps;
 
-function UnconnectedGameBoard(props: IProps) {
-    const { gameBoard, player } = props;
-    if (gameBoard === undefined || player === undefined) {
-        return <Spinner />;
+class UnconnectedGameBoard extends React.Component<IProps> {
+    public shouldComponentUpdate(nextProps: IProps) {
+        const { gameBoard } = this.props;
+
+        return (
+            !isEqual(nextProps.gameBoard?.board, gameBoard?.board) ||
+            !isEqual(nextProps.gameBoard?.stagedActions, gameBoard?.stagedActions)
+        );
     }
 
-    const { metadata, board } = gameBoard;
+    public render() {
+        const { gameBoard, player } = this.props;
+        if (gameBoard === undefined || player === undefined) {
+            return <Spinner />;
+        }
 
-    const { additionalGameBoardHorizontalPadding, additionalGameBoardVerticalPadding, squareDimension } = getDimensions(
-        metadata.board,
-    );
+        const { metadata, board } = gameBoard;
 
-    const boardWidth = squareDimension * metadata.board.size.columns;
+        const {
+            additionalGameBoardHorizontalPadding,
+            additionalGameBoardVerticalPadding,
+            squareDimension,
+        } = getDimensions(metadata.board);
 
-    return (
-        <div className={styles.boardContainer}>
-            <div
-                className={styles.board}
-                style={{
-                    maxWidth: boardWidth,
-                    top: additionalGameBoardVerticalPadding,
-                    left: additionalGameBoardHorizontalPadding,
-                }}
-            >
-                {board.map((row, rowIndex) => (
-                    <div className={styles.row}>
-                        {row.map((tile, columnIndex) => (
-                            <GameTile
-                                dimension={squareDimension}
-                                canAddAnyStagedAction={canAddAnyStagedActionToTile(
-                                    player,
-                                    gameBoard,
-                                    rowIndex,
-                                    columnIndex,
-                                )}
-                                gameTile={tile}
-                                rowIndex={rowIndex}
-                                columnIndex={columnIndex}
-                            />
-                        ))}
-                    </div>
-                ))}
+        const boardWidth = squareDimension * metadata.board.size.columns;
+
+        return (
+            <div className={styles.boardContainer}>
+                <div
+                    className={styles.board}
+                    style={{
+                        maxWidth: boardWidth,
+                        top: additionalGameBoardVerticalPadding,
+                        left: additionalGameBoardHorizontalPadding,
+                    }}
+                >
+                    {board.map((row, rowIndex) => (
+                        <div className={styles.row}>
+                            {row.map((tile, columnIndex) => (
+                                <GameTile
+                                    dimension={squareDimension}
+                                    canAddAnyStagedAction={canAddAnyStagedActionToTile(
+                                        player,
+                                        gameBoard,
+                                        rowIndex,
+                                        columnIndex,
+                                    )}
+                                    gameTile={tile}
+                                    key={tile.occupiedBy?.[0]?.id ?? `${rowIndex}-${columnIndex}`}
+                                    rowIndex={rowIndex}
+                                    columnIndex={columnIndex}
+                                />
+                            ))}
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
-    );
+        );
+    }
 }
 
 function mapStateToProps(state: IStoreState): IStoreProps {

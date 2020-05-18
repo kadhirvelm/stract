@@ -1,4 +1,6 @@
 import * as React from "react";
+import classNames from "classnames";
+import styles from "./selfUpdatingTimer.module.scss";
 
 interface IOwnProps {
     nextTurnTimestamp: number;
@@ -17,6 +19,16 @@ export function SelfUpdatingTimer(props: IProps) {
         }, 1000);
     }, [ticker]);
 
-    const secondsLeft = Math.max(Math.round(Math.abs(new Date().valueOf() - nextTurnTimestamp) / 1000), 0);
-    return <div>{secondsLeft} s</div>;
+    const secondsLeft = Math.abs(Math.min(Math.round((new Date().valueOf() - nextTurnTimestamp) / 1000), 0));
+    return (
+        <span
+            className={classNames({
+                [styles.green]: secondsLeft > 10,
+                [styles.yellow]: secondsLeft > 3 && secondsLeft <= 10,
+                [styles.red]: secondsLeft <= 3,
+            })}
+        >
+            {secondsLeft} s
+        </span>
+    );
 }

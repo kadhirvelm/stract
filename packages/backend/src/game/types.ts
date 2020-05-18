@@ -1,4 +1,12 @@
-import { IPlayer, IPlayerIdentifier, ITeamRid, IStractGameV1, IGameAction, IGameState } from "@stract/api";
+import {
+    IPlayer,
+    IPlayerIdentifier,
+    ITeamRid,
+    IStractGameV1,
+    IGameAction,
+    IGameState,
+    IGameActionId,
+} from "@stract/api";
 
 export interface IStractPlayer {
     /**
@@ -40,6 +48,10 @@ export interface IStractGame {
      * When a player disconnect, this removes them from the currentGameState.
      */
     removePlayerFromTeam: (stractPlayer: IStractPlayer) => void;
+    /**
+     * Removes a staged action from the current turn.
+     */
+    removeStagedAction: (team: ITeamRid, id: IGameActionId) => void;
     /**
      * Updates all players connected to the game with the latest game state.
      */
