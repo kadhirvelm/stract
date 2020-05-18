@@ -59,12 +59,14 @@ function isValidSpawnAction(
         };
     }
 
-    const otherStagedActionsSpawningSamePiece = gameBoard.stagedActions[team].filter(action => IGameAction.isSpawnPiece(action) && action.spawnPiece.pieceType === spawnAction.spawnPiece.pieceType);
-    if ((availablePiecesOfType.total - otherStagedActionsSpawningSamePiece.length) <= 0) {
+    const otherStagedActionsSpawningSamePiece = gameBoard.stagedActions[team].filter(
+        action => IGameAction.isSpawnPiece(action) && action.spawnPiece.pieceType === spawnAction.spawnPiece.pieceType,
+    );
+    if (availablePiecesOfType.total - otherStagedActionsSpawningSamePiece.length <= 0) {
         return {
             isValid: false,
-            message: `Your teammate is also spawning a ${spawnAction.spawnPiece.pieceType}, which causes your team to run out. Try spawning a different piece.`;
-        }
+            message: `Your teammate is also spawning a ${spawnAction.spawnPiece.pieceType}, which causes your team to run out. Try spawning a different piece.`,
+        };
     }
 
     return checkIsIndexInBounds(spawnAction.spawnPiece.column, spawnAction.spawnPiece.row, gameBoard.metadata.board);
