@@ -5,7 +5,7 @@ import { IStoreState } from "../store";
 
 /**
  * In order to get the CSS transitions to work reliably, we need to paint them at the same time, not row by row, and
- * we need to paint the tiles with tokens on them first to ensure tokens moving south work. I'm not entirely certain why
+ * we need to paint the tiles with tokens in the same order to ensure tokens moving south work. I'm not entirely certain why
  * the sort is what fixes that, but it does?
  */
 export const flattenBoard = createSelector(

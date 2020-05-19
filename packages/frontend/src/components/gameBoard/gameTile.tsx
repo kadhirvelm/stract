@@ -1,6 +1,7 @@
-import { IAllTeams, IBoardMetadata, IGamePiece, IGameTile } from "@stract/api";
+import { IAllTeams, IGamePiece, IGameTile } from "@stract/api";
 import { ICanAddStagedActionToTile } from "@stract/utils";
 import classNames from "classnames";
+import { isEqual, pick } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -12,7 +13,7 @@ import { Plus } from "../pieces/pieceSvg";
 import styles from "./gameTile.module.scss";
 
 interface IOwnProps {
-    boardMetadata: IBoardMetadata;
+    totalBoardRows: number;
     canAddAnyStagedAction: ICanAddStagedActionToTile;
     dimension: number;
     gameTile: IGameTile;
@@ -39,10 +40,16 @@ function MaybeRenderOccupiedBy(props: { dimension: number; occupiedBy: IGamePiec
     return <Piece piece={occupiedBy[0]} squareDimension={dimension} />;
 }
 
-export class UnconnectedGameTile extends React.PureComponent<IProps> {
+export class UnconnectedGameTile extends React.Component<IProps> {
+    // We need to check for deep referential equality before re-rendering, this should be a cheap action since these pieces are small
+    public shouldComponentUpdate(nextProps: IProps) {
+        const keysToCompare: Array<keyof IProps> = ["canAddAnyStagedAction", "gameTile"];
+        return !isEqual(pick(nextProps, keysToCompare), pick(this.props, keysToCompare));
+    }
+
     public render() {
         const {
-            boardMetadata,
+            totalBoardRows,
             canAddAnyStagedAction,
             changeSelectedTile,
             columnIndex,
@@ -66,7 +73,7 @@ export class UnconnectedGameTile extends React.PureComponent<IProps> {
             });
         };
 
-        const teamOwner: keyof IAllTeams<any> = rowIndex < boardMetadata.size.rows / 2 ? "north" : "south";
+        const teamOwner: keyof IAllTeams<any> = rowIndex < totalBoardRows / 2 ? "north" : "south";
 
         return IGameTile.visit(gameTile, {
             free: tile => {

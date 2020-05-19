@@ -46,7 +46,7 @@ class UnconnectedGameBoard extends React.PureComponent<IProps> {
                 >
                     {flattenedBoard.map(({ tile, columnIndex, rowIndex }) => (
                         <GameTile
-                            boardMetadata={metadata.board}
+                            totalBoardRows={metadata.board.size.rows}
                             dimension={squareDimension}
                             canAddAnyStagedAction={canAddAnyStagedActionToTile(
                                 player,
