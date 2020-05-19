@@ -1,7 +1,6 @@
 import { Spinner } from "@blueprintjs/core";
 import { IStractGameV1, IGameTile } from "@stract/api";
 import { canAddAnyStagedActionToTile } from "@stract/utils";
-import { flatten } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
 import { IStoreState } from "../../store";

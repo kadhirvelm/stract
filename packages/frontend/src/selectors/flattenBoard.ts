@@ -20,11 +20,22 @@ export const flattenBoard = createSelector(
         );
 
         return flattenedArray.sort((a, b) => {
-            if (a.tile.occupiedBy.length === b.tile.occupiedBy.length) {
+            const idA = a.tile.occupiedBy[0]?.id;
+            const idB = b.tile.occupiedBy[0]?.id;
+
+            if (idA === idB) {
                 return 0;
             }
 
-            return a.tile.occupiedBy.length > b.tile.occupiedBy.length ? 1 : -1;
+            if (idA === undefined && idB !== undefined) {
+                return -1;
+            }
+
+            if (idA !== undefined && idB === undefined) {
+                return 1;
+            }
+
+            return idA.localeCompare(idB);
         });
     },
 );
