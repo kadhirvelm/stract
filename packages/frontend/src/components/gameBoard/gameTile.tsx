@@ -1,7 +1,6 @@
-import { IGamePiece, IGameTile } from "@stract/api";
+import { IAllTeams, IBoardMetadata, IGamePiece, IGameTile } from "@stract/api";
 import { ICanAddStagedActionToTile } from "@stract/utils";
 import classNames from "classnames";
-import { isEqual } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -13,6 +12,7 @@ import { Plus } from "../pieces/pieceSvg";
 import styles from "./gameTile.module.scss";
 
 interface IOwnProps {
+    boardMetadata: IBoardMetadata;
     canAddAnyStagedAction: ICanAddStagedActionToTile;
     dimension: number;
     gameTile: IGameTile;
@@ -39,19 +39,10 @@ function MaybeRenderOccupiedBy(props: { dimension: number; occupiedBy: IGamePiec
     return <Piece piece={occupiedBy[0]} squareDimension={dimension} />;
 }
 
-class UnconnectedGameTile extends React.Component<IProps> {
-    public shouldComponentUpdate(nextProps: IProps) {
-        const { gameTile, canAddAnyStagedAction, selectedTile } = this.props;
-
-        return (
-            !isEqual(nextProps.gameTile.occupiedBy, gameTile.occupiedBy) ||
-            !isEqual(nextProps.canAddAnyStagedAction, canAddAnyStagedAction) ||
-            !isEqual(nextProps.selectedTile, selectedTile)
-        );
-    }
-
+class UnconnectedGameTile extends React.PureComponent<IProps> {
     public render() {
         const {
+            boardMetadata,
             canAddAnyStagedAction,
             changeSelectedTile,
             columnIndex,
@@ -75,18 +66,19 @@ class UnconnectedGameTile extends React.Component<IProps> {
             });
         };
 
+        const teamOwner: keyof IAllTeams<any> = rowIndex < boardMetadata.size.rows / 2 ? "north" : "south";
+
         return IGameTile.visit(gameTile, {
             free: tile => {
                 return (
                     <div
                         className={classNames(styles.freeTile, {
-                            [styles.northTile]: rowIndex < 5,
-                            [styles.southTile]: rowIndex >= 5,
+                            [styles.northTile]: teamOwner === "north",
+                            [styles.southTile]: teamOwner === "south",
                             [styles.canSelectTile]: canAddAnyStagedAction.isValid && selectedTile === undefined,
                             [styles.isSelectedTile]:
                                 selectedTile?.rowIndex === rowIndex && selectedTile?.columnIndex === columnIndex,
                         })}
-                        key={tile.occupiedBy?.[0]?.id ?? `${rowIndex}-${columnIndex}`}
                         onClick={maybeSelectTile}
                         style={{
                             height: dimension,
@@ -96,7 +88,7 @@ class UnconnectedGameTile extends React.Component<IProps> {
                         }}
                     >
                         {canAddAnyStagedAction.canSpawn && (
-                            <Plus squareDimension={dimension} size="board" team={rowIndex < 5 ? "north" : "south"} />
+                            <Plus squareDimension={dimension} size="board" team={teamOwner} />
                         )}
                         <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={tile.occupiedBy} />
                     </div>

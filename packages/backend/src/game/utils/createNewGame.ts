@@ -6,9 +6,17 @@ import {
     teamId,
     CURRENT_GAME_STATE_VERSION,
     IGameState,
+    IBoardMetadata,
 } from "@stract/api";
 import _ from "lodash";
 import { v4 } from "uuid";
+
+const BOARD_SIZE: IBoardMetadata = {
+    size: {
+        columns: 6,
+        rows: 6,
+    },
+};
 
 export function createBoard(x: number, y: number): IGameTile[][] {
     return _.range(0, x).map(() => _.range(0, y).map(() => IGameTile.free({})));
@@ -42,12 +50,7 @@ export function createNewGame(options: {
 
     return {
         metadata: {
-            board: {
-                size: {
-                    columns: 10,
-                    rows: 10,
-                },
-            },
+            board: BOARD_SIZE,
             id: stractBoardId(v4()),
             roomName,
             turns: {
@@ -55,7 +58,7 @@ export function createNewGame(options: {
                 totalTurns,
             },
         },
-        board: createBoard(10, 10),
+        board: createBoard(BOARD_SIZE.size.rows, BOARD_SIZE.size.columns),
         stagedActions: {
             north: [],
             south: [],

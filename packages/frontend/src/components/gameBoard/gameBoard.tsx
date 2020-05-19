@@ -1,13 +1,12 @@
 import { Spinner } from "@blueprintjs/core";
 import { IStractGameV1 } from "@stract/api";
+import { canAddAnyStagedActionToTile } from "@stract/utils";
 import * as React from "react";
 import { connect } from "react-redux";
-import { canAddAnyStagedActionToTile } from "@stract/utils";
-import { isEqual } from "lodash-es";
 import { IStoreState } from "../../store";
+import { getDimensions, IPlayerWithTeamKey } from "../../utils";
 import styles from "./gameBoard.module.scss";
 import { GameTile } from "./gameTile";
-import { getDimensions, IPlayerWithTeamKey } from "../../utils";
 
 interface IStoreProps {
     gameBoard?: IStractGameV1;
@@ -16,16 +15,7 @@ interface IStoreProps {
 
 type IProps = IStoreProps;
 
-class UnconnectedGameBoard extends React.Component<IProps> {
-    public shouldComponentUpdate(nextProps: IProps) {
-        const { gameBoard } = this.props;
-
-        return (
-            !isEqual(nextProps.gameBoard?.board, gameBoard?.board) ||
-            !isEqual(nextProps.gameBoard?.stagedActions, gameBoard?.stagedActions)
-        );
-    }
-
+class UnconnectedGameBoard extends React.PureComponent<IProps> {
     public render() {
         const { gameBoard, player } = this.props;
         if (gameBoard === undefined || player === undefined) {
@@ -52,25 +42,24 @@ class UnconnectedGameBoard extends React.Component<IProps> {
                         left: additionalGameBoardHorizontalPadding,
                     }}
                 >
-                    {board.map((row, rowIndex) => (
-                        <div className={styles.row}>
-                            {row.map((tile, columnIndex) => (
-                                <GameTile
-                                    dimension={squareDimension}
-                                    canAddAnyStagedAction={canAddAnyStagedActionToTile(
-                                        player,
-                                        gameBoard,
-                                        rowIndex,
-                                        columnIndex,
-                                    )}
-                                    gameTile={tile}
-                                    key={tile.occupiedBy?.[0]?.id ?? `${rowIndex}-${columnIndex}`}
-                                    rowIndex={rowIndex}
-                                    columnIndex={columnIndex}
-                                />
-                            ))}
-                        </div>
-                    ))}
+                    {board.map((row, rowIndex) => {
+                        return row.map((tile, columnIndex) => (
+                            <GameTile
+                                boardMetadata={metadata.board}
+                                dimension={squareDimension}
+                                canAddAnyStagedAction={canAddAnyStagedActionToTile(
+                                    player,
+                                    gameBoard,
+                                    rowIndex,
+                                    columnIndex,
+                                )}
+                                key={tile.occupiedBy?.[0]?.id}
+                                gameTile={tile}
+                                rowIndex={rowIndex}
+                                columnIndex={columnIndex}
+                            />
+                        ));
+                    })}
                 </div>
             </div>
         );

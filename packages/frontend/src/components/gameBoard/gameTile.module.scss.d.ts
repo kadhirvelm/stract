@@ -2,6 +2,7 @@
 declare namespace GameTileModuleScssModule {
     export interface IGameTileModuleScss {
         canSelectTile: string;
+        fadeIn: string;
         freeTile: string;
         isSelectedTile: string;
         northActive: string;
