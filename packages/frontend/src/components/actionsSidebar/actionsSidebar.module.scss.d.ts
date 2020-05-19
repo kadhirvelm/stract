@@ -2,8 +2,10 @@
 declare namespace ActionsSidebarModuleScssModule {
     export interface IActionsSidebarModuleScss {
         actionsSidebar: string;
+        availablePieces: string;
         bothTeamInformation: string;
         bothTeamsContainer: string;
+        changeStateButton: string;
         gameState: string;
         northActive: string;
         northBackground: string;

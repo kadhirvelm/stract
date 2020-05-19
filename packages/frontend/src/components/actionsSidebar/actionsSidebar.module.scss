@@ -40,11 +40,18 @@
 }
 
 .game-state {
+    position: relative;
     display: flex;
     flex: 1;
     padding: 10px;
     align-items: center;
     justify-content: center;
+}
+
+.change-state-button {
+    position: absolute;
+    right: 5px;
+    top: 14px;
 }
 
 .both-team-information {
@@ -67,6 +74,13 @@
 .both-teams-container {
     display: flex;
     padding: 10px;
+}
+
+.available-pieces {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
 }
 
 .staged-actions-container {

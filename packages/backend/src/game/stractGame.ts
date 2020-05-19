@@ -1,13 +1,30 @@
-import { IGameAction, IStractFromServer, IStractGameV1, StractGameSocketService } from "@stract/api";
+import {
+    IGameAction,
+    IGameActionId,
+    IGameState,
+    IStractFromServer,
+    IStractGameV1,
+    ITeamRid,
+    StractGameSocketService,
+} from "@stract/api";
+import { getTeamKeyFromRid } from "@stract/utils";
 import { Server } from "http";
 import io from "socket.io";
 import { StractPlayer } from "./stractPlayer";
 import { IStractGame, IStractPlayer } from "./types";
-import { createNewGame, createNewTeamToPlayerMapping, ITeamToPlayersMapping } from "./utils";
+import {
+    addSecondsToDate,
+    createNewGame,
+    createNewTeamToPlayerMapping,
+    executeStagedActions,
+    isTurnOver,
+    ITeamToPlayersMapping,
+} from "./utils";
+import { resolveGameBoard } from "./utils/resolveGameBoard";
 import { sanitizeExistingBoard } from "./utils/sanitizeExistingBoard";
 
-const TIME_PER_TURN = 20;
-const TOTAL_TURNS = 45;
+const TIME_PER_TURN = 10;
+const TOTAL_TURNS = 50;
 
 export class StractGame implements IStractGame {
     public currentGameState: IStractGameV1;
@@ -30,6 +47,14 @@ export class StractGame implements IStractGame {
         this.teamToPlayersMapping = createNewTeamToPlayerMapping(this.currentGameState, this.roomSocket);
 
         this.setupGameListeners();
+
+        if (IGameState.isRequestPlay(this.currentGameState.state)) {
+            this.startOrContinueGame();
+        }
+
+        if (IGameState.isInPlay(this.currentGameState.state)) {
+            this.maybeGoToNextTurn();
+        }
     }
 
     public addPlayerToTeam = (stractPlayer: IStractPlayer) => {
@@ -62,6 +87,16 @@ export class StractGame implements IStractGame {
         this.modifyGameState(() => this.currentGameState.stagedActions[team.teamKey].push(stagedAction));
     };
 
+    public changeGameState = (newGameState: IGameState) => {
+        this.modifyGameState(() => {
+            this.currentGameState.state = newGameState;
+        });
+
+        if (IGameState.isRequestPlay(this.currentGameState.state)) {
+            this.startOrContinueGame();
+        }
+    };
+
     public removePlayerFromTeam = (stractPlayer: IStractPlayer) => {
         const team = this.maybeGetPlayerTeam(stractPlayer);
         if (team === undefined) {
@@ -73,6 +108,15 @@ export class StractGame implements IStractGame {
             this.currentGameState.teams[team.teamKey].players = this.currentGameState.teams[
                 team.teamKey
             ].players.filter(player => player.id !== stractPlayer.id);
+        });
+    };
+
+    public removeStagedAction = (teamRid: ITeamRid, actionId: IGameActionId) => {
+        const teamKey = getTeamKeyFromRid(teamRid, this.currentGameState.teams);
+        this.modifyGameState(() => {
+            this.currentGameState.stagedActions[teamKey] = this.currentGameState.stagedActions[teamKey].filter(
+                action => action.id !== actionId,
+            );
         });
     };
 
@@ -100,5 +144,59 @@ export class StractGame implements IStractGame {
         modify();
         this.saveGame?.(this.currentGameState);
         this.sendGameUpdateToAllPlayers();
+    };
+
+    /**
+     * Game turn logic
+     */
+
+    private startOrContinueGame = () => {
+        this.changeGameState(
+            IGameState.inPlay(addSecondsToDate(this.currentGameState.metadata.turns.timePerTurnInSeconds).valueOf()),
+        );
+        this.maybeGoToNextTurn();
+    };
+
+    private maybeGoToNextTurn = () => {
+        if (
+            !IGameState.isInPlay(this.currentGameState.state) &&
+            !IGameState.isRequestPause(this.currentGameState.state)
+        ) {
+            return;
+        }
+
+        if (isTurnOver(this.currentGameState.state.nextTurnTimestamp)) {
+            this.incrementGameOneTurn();
+            const nextGameState = this.getNextGameState();
+            this.changeGameState(nextGameState);
+        }
+
+        setTimeout(this.maybeGoToNextTurn, 1000);
+    };
+
+    private getNextGameState = () => {
+        if (this.currentGameState.turnNumber === this.currentGameState.metadata.turns.totalTurns) {
+            return IGameState.ended();
+        }
+
+        if (IGameState.isInPlay(this.currentGameState.state)) {
+            return IGameState.inPlay(
+                addSecondsToDate(this.currentGameState.metadata.turns.timePerTurnInSeconds).valueOf(),
+            );
+        }
+
+        if (IGameState.isRequestPause(this.currentGameState.state)) {
+            return IGameState.paused();
+        }
+
+        return this.currentGameState.state;
+    };
+
+    private incrementGameOneTurn = () => {
+        executeStagedActions(this.currentGameState);
+
+        resolveGameBoard(this.currentGameState);
+
+        this.currentGameState.turnNumber += 1;
     };
 }

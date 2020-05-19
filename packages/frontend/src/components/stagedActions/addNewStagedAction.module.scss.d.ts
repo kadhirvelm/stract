@@ -2,6 +2,7 @@
 declare namespace AddNewStagedActionModuleScssModule {
     export interface IAddNewStagedActionModuleScss {
         addNewStagedAction: string;
+        direction: string;
         spawnNewTilesContainer: string;
     }
 }

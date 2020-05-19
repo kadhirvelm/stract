@@ -8,9 +8,12 @@ import {
     ITeamRid,
     playerIdentifier,
     StractGameSocketService,
+    IGameState,
+    IGameActionId,
 } from "@stract/api";
 import io from "socket.io";
 import { v4 } from "uuid";
+import { isValidStagedAction } from "@stract/utils";
 import { IStractGame, IStractPlayer } from "./types";
 
 export class StractPlayer implements IStractPlayer {
@@ -37,7 +40,29 @@ export class StractPlayer implements IStractPlayer {
     };
 
     private addStagedAction = (gameAction: IGameAction) => {
+        if (this.team === undefined) {
+            this.toClient.onMessage({ message: "Invalid team, please try refreshing your page.", intent: "danger" });
+            return;
+        }
+
+        const isValidAction = isValidStagedAction(this.game.currentGameState, gameAction, this.team);
+        if (!isValidAction.isValid) {
+            this.toClient.onMessage({ message: isValidAction.message ?? "Invalid action", intent: "danger" });
+            return;
+        }
+
         this.game.addStagedAction({ ...gameAction, addedByPlayer: this.id }, this);
+    };
+
+    private changeGameState = (gameState: IGameState) => {
+        if (IGameState.isRequestPause(gameState)) {
+            this.toClient.onMessage({
+                message: "We'll update the game state right after this turn.",
+                intent: "success",
+            });
+        }
+
+        this.game.changeGameState(gameState);
     };
 
     private registerPlayer = (player: IRegisterPlayer) => {
@@ -77,12 +102,28 @@ export class StractPlayer implements IStractPlayer {
         }
     };
 
+    private removeStagedAction = (removeStagedAction: { id: IGameActionId; player: IPlayerIdentifier }) => {
+        const { player, id } = removeStagedAction;
+        if (this.id !== player) {
+            this.toClient.onMessage({ message: "You cannot remove an action from another player.", intent: "danger" });
+            return;
+        }
+
+        if (this.team === undefined) {
+            return;
+        }
+
+        this.game.removeStagedAction(this.team, id);
+    };
+
     private unregisterPlayer = (_playerIdentifier: IPlayerIdentifier) => this.game.removePlayerFromTeam(this);
 
     private setupPlayerListeners = () => {
         this.fromClient.addStagedAction(this.addStagedAction);
+        this.fromClient.changeGameState(this.changeGameState);
         this.fromClient.getGameUpdate(this.sendGameUpdate);
         this.fromClient.registerPlayer(this.registerPlayer);
+        this.fromClient.removeStagedAction(this.removeStagedAction);
         this.fromClient.unregisterPlayer(this.unregisterPlayer);
 
         this.socket.on("disconnect", () => this.game.removePlayerFromTeam(this));

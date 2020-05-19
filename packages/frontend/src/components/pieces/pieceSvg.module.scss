@@ -15,3 +15,16 @@
 .south-spawn {
     fill: $south-active;
 }
+
+.north-line {
+    stroke: $north-active;
+}
+
+.south-line {
+    stroke: $south-active;
+}
+
+.hidden {
+    fill: $gray4;
+    cursor: not-allowed;
+}

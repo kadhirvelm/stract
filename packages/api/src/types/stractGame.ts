@@ -5,8 +5,8 @@ import { IPlayer } from "./player";
 import { ITeamRid, IStractBoardId } from "./idTypes";
 import { IGameState } from "./gameState";
 
-export type CURRENT_GAME_STATE_VERSION = "1.3.0";
-export const CURRENT_GAME_STATE_VERSION = "1.3.0";
+export type CURRENT_GAME_STATE_VERSION = "1.4.0";
+export const CURRENT_GAME_STATE_VERSION = "1.4.0";
 
 export interface IBoardMetadata {
     size: {

@@ -1,4 +1,5 @@
-import { IGamePieceId, ITeamRid } from "./idTypes";
+import { v4 } from "uuid";
+import { IGamePieceId, ITeamRid, gamePieceId } from "./idTypes";
 
 export type IGamePieceType = "circle" | "triangle" | "square";
 
@@ -31,16 +32,19 @@ interface IGamePieceVisitor<Output> {
 }
 
 export namespace IGamePiece {
-    export const circle = (gamePiece: Omit<IGeneralGamePiece, "type">): IGamePieceCircle => ({
+    export const circle = (gamePiece: Omit<IGeneralGamePiece, "type" | "id">): IGamePieceCircle => ({
         ...gamePiece,
+        id: gamePieceId(v4()),
         type: "circle",
     });
-    export const triangle = (gamePiece: Omit<IGeneralGamePiece, "type">): IGamePieceTriangle => ({
+    export const triangle = (gamePiece: Omit<IGeneralGamePiece, "type" | "id">): IGamePieceTriangle => ({
         ...gamePiece,
+        id: gamePieceId(v4()),
         type: "triangle",
     });
-    export const square = (gamePiece: Omit<IGeneralGamePiece, "type">): IGamePieceSquare => ({
+    export const square = (gamePiece: Omit<IGeneralGamePiece, "type" | "id">): IGamePieceSquare => ({
         ...gamePiece,
+        id: gamePieceId(v4()),
         type: "square",
     });
 

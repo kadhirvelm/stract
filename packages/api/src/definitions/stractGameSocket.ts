@@ -11,14 +11,26 @@ import {
     IToClientCallback,
     IToServerCallback,
 } from "../common/genericSocket";
-import { IGameAction, IPlayer, IRegisterPlayer, IStractGameV1, IPlayerIdentifier } from "../types";
+import {
+    IGameAction,
+    IPlayer,
+    IRegisterPlayer,
+    IStractGameV1,
+    IPlayerIdentifier,
+    IGameState,
+    IGameActionId,
+} from "../types";
+import { IErrorMessage } from "../types/general";
 
 enum MessageNames {
     ADD_STAGED_ACTION = "add-staged-action",
+    CHANGE_GAME_STATE = "change-game-state",
     GET_GAME_UPDATE = "get-game-update",
+    ON_ERROR = "on-error",
     ON_GAME_UPDATE = "on-game-update",
     ON_REGISTER_PLAYER = "on-register-player",
     REGISTER_PLAYER = "register-player",
+    REMOVE_STAGED_ACTION = "remove-staged-action",
     UNREGISTER_PLAYER = "unregister-player",
 }
 
@@ -29,6 +41,10 @@ export interface IStractToServer {
          */
         addStagedAction: IFromClientCallback<IGameAction>;
         /**
+         * Updates the current game state on the server side, from say in-play to pause.
+         */
+        changeGameState: IFromClientCallback<IGameState>;
+        /**
          * A player has requested the current game state.
          */
         getGameUpdate: IFromClientCallback<{}>;
@@ -36,6 +52,10 @@ export interface IStractToServer {
          * A player has requested to register with the game.
          */
         registerPlayer: IFromClientCallback<IRegisterPlayer>;
+        /**
+         * Removes a staged action, has to be from the same player who first created the action.
+         */
+        removeStagedAction: IFromClientCallback<{ id: IGameActionId; player: IPlayerIdentifier }>;
         /**
          * Removes a player from the game so they can switch teams or change their name.
          */
@@ -47,6 +67,10 @@ export interface IStractToServer {
          */
         addStagedAction: IToClientCallback<IGameAction>;
         /**
+         * Updates the current game state. For example from in-play to pause.
+         */
+        changeGameState: IToClientCallback<IGameState>;
+        /**
          * Request the current game state.
          */
         getGameUpdate: IToClientCallback<{}>;
@@ -54,6 +78,10 @@ export interface IStractToServer {
          * Request to register with the game.
          */
         registerPlayer: IToClientCallback<IRegisterPlayer>;
+        /**
+         * Removes a staged action, has to be from the same player who first created the action.
+         */
+        removeStagedAction: IToClientCallback<{ id: IGameActionId; player: IPlayerIdentifier }>;
         /**
          * Removes a player from the game so they can switch teams or change their name.
          */
@@ -72,6 +100,10 @@ export interface IStractFromServer {
          * return undefined if the game the player is connecting to no longer exists.
          */
         onRegisterPlayerUpdate: IToServerCallback<IPlayer | undefined | null>;
+        /**
+         * Sends an error message to the client. Sometimes there will be an error code present that the frontend knows how to respond to.
+         */
+        onMessage: IToServerCallback<IErrorMessage>;
     };
     fromServer: {
         /**
@@ -83,6 +115,10 @@ export interface IStractFromServer {
          * return undefined if the game the player is connecting to no longer exists.
          */
         onRegisterPlayerUpdate: IFromServerCallback<IPlayer | undefined | null>;
+        /**
+         * Sends an error message to the client. Sometimes there will be an error code present that the frontend knows how to respond to.
+         */
+        onMessage: IFromClientCallback<IErrorMessage>;
     };
 }
 
@@ -95,8 +131,10 @@ export const StractGameSocketService: ISocketService<
     backend: {
         fromClient: (socket: ServerSocket) => ({
             addStagedAction: backendFromClient(socket, { messageName: MessageNames.ADD_STAGED_ACTION }),
+            changeGameState: backendFromClient(socket, { messageName: MessageNames.CHANGE_GAME_STATE }),
             getGameUpdate: backendFromClient(socket, { messageName: MessageNames.GET_GAME_UPDATE }),
             registerPlayer: backendFromClient(socket, { messageName: MessageNames.REGISTER_PLAYER }),
+            removeStagedAction: backendFromClient(socket, { messageName: MessageNames.REMOVE_STAGED_ACTION }),
             unregisterPlayer: backendFromClient(socket, { messageName: MessageNames.UNREGISTER_PLAYER }),
         }),
         toClient: (socket: ServerSocket | Namespace) => ({
@@ -106,6 +144,9 @@ export const StractGameSocketService: ISocketService<
             onRegisterPlayerUpdate: backendToClient(socket, {
                 messageName: MessageNames.ON_REGISTER_PLAYER,
             }),
+            onMessage: backendToClient(socket, {
+                messageName: MessageNames.ON_ERROR,
+            }),
         }),
     },
     frontend: {
@@ -113,9 +154,13 @@ export const StractGameSocketService: ISocketService<
             addStagedAction: frontendToServer(socket, {
                 messageName: MessageNames.ADD_STAGED_ACTION,
             }),
+            changeGameState: frontendToServer(socket, { messageName: MessageNames.CHANGE_GAME_STATE }),
             getGameUpdate: frontendToServer(socket, { messageName: MessageNames.GET_GAME_UPDATE }),
             registerPlayer: frontendToServer(socket, {
                 messageName: MessageNames.REGISTER_PLAYER,
+            }),
+            removeStagedAction: frontendToServer(socket, {
+                messageName: MessageNames.REMOVE_STAGED_ACTION,
             }),
             unregisterPlayer: frontendToServer(socket, { messageName: MessageNames.UNREGISTER_PLAYER }),
         }),
@@ -125,6 +170,9 @@ export const StractGameSocketService: ISocketService<
             }),
             onRegisterPlayerUpdate: frontendFromServer(socket, {
                 messageName: MessageNames.ON_REGISTER_PLAYER,
+            }),
+            onMessage: frontendFromServer(socket, {
+                messageName: MessageNames.ON_ERROR,
             }),
         }),
     },

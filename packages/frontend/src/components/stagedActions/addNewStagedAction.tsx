@@ -1,14 +1,12 @@
-import { IAllTeams, IBoardMetadata, IGameAction, IGamePieceType, IStractGameV1 } from "@stract/api";
+import { IAllTeams, IBoardMetadata, IDirection, IGameAction, IGamePieceType, IStractGameV1 } from "@stract/api";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { sendServerMessage } from "../../socket";
 import { ChangeSelectedTile, IStoreState } from "../../store";
 import { getDimensions, IPlayerWithTeamKey, ISelectedTile, MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../utils";
-import { Circle, Square, Triangle } from "../pieces/pieceSvg";
+import { Arrow, Circle, Square, Triangle, IPieceSVGProps } from "../pieces/pieceSvg";
 import styles from "./addNewStagedAction.module.scss";
-
-const VERTICAL_OFFSET = 10;
 
 interface IStateProps {
     gameBoard: IStractGameV1 | undefined;
@@ -35,11 +33,9 @@ const getTopAndLeft = (gameBoardMetadata: IBoardMetadata, selectedTile: ISelecte
         dimensions.additionalGameBoardHorizontalPadding +
         dimensions.squareDimension * selectedTile.columnIndex;
 
-    const topOffset = selectedTile.rowIndex < 5 ? dimensions.squareDimension + VERTICAL_OFFSET : -VERTICAL_OFFSET;
-
     return {
         squareDimension: dimensions.squareDimension,
-        top: top + topOffset,
+        top,
         left,
     };
 };
@@ -50,16 +46,72 @@ function SpawnOptions(props: {
     rowIndex: number;
     spawnTile: (pieceType: IGamePieceType) => () => void;
 }) {
-    const { teamKey, squareDimension, rowIndex, spawnTile } = props;
+    const { teamKey, rowIndex, squareDimension, spawnTile } = props;
+
+    const topOffset = rowIndex < 5 ? squareDimension : -25;
 
     return (
-        <div
-            className={styles.spawnNewTilesContainer}
-            style={{ width: squareDimension, top: rowIndex > 4 ? "-20px" : "-5px" }}
-        >
+        <div className={styles.spawnNewTilesContainer} style={{ width: squareDimension, top: `${topOffset}px` }}>
             <Circle team={teamKey} size="sidebar" onClick={spawnTile("circle")} />
             <Triangle team={teamKey} size="sidebar" onClick={spawnTile("triangle")} />
             <Square team={teamKey} size="sidebar" onClick={spawnTile("square")} />
+        </div>
+    );
+}
+
+function MoveOptions(props: {
+    gameSize: IBoardMetadata;
+    selectedTile: ISelectedTile;
+    squareDimension: number;
+    teamKey: keyof IAllTeams<any>;
+    moveTile: (direction: IDirection) => () => void;
+}) {
+    const { gameSize, moveTile, selectedTile, squareDimension, teamKey } = props;
+
+    const isValidRow = (rowIndex: number) => rowIndex >= 0 && rowIndex < gameSize.size.rows;
+    const isValidColumn = (columnIndex: number) => columnIndex >= 0 && columnIndex < gameSize.size.columns;
+
+    const commonProps: IPieceSVGProps & { className: string } = {
+        className: styles.direction,
+        team: teamKey,
+        size: "board",
+        squareDimension,
+    };
+
+    return (
+        <div>
+            {isValidRow(selectedTile.rowIndex - 1) && (
+                <Arrow
+                    {...commonProps}
+                    direction="north"
+                    onClick={moveTile("north")}
+                    style={{ top: `-${squareDimension}px` }}
+                />
+            )}
+            {isValidColumn(selectedTile.columnIndex + 1) && (
+                <Arrow
+                    {...commonProps}
+                    direction="east"
+                    onClick={moveTile("east")}
+                    style={{ left: `${squareDimension}px` }}
+                />
+            )}
+            {isValidRow(selectedTile.rowIndex + 1) && (
+                <Arrow
+                    {...commonProps}
+                    direction="south"
+                    onClick={moveTile("south")}
+                    style={{ top: `${squareDimension}px` }}
+                />
+            )}
+            {isValidColumn(selectedTile.columnIndex - 1) && (
+                <Arrow
+                    {...commonProps}
+                    direction="west"
+                    onClick={moveTile("west")}
+                    style={{ left: `-${squareDimension}px` }}
+                />
+            )}
         </div>
     );
 }
@@ -72,7 +124,24 @@ function UnconnectedAddNewStagedAction(props: IProps) {
 
     const spawnTile = (pieceType: IGamePieceType) => () => {
         sendServerMessage().addStagedAction(
-            IGameAction.spawnPiece({ startColumn: selectedTile.columnIndex, pieceType }),
+            IGameAction.spawnPiece({ column: selectedTile.columnIndex, pieceType, row: selectedTile.rowIndex }),
+        );
+        removeSelectedTile();
+    };
+
+    const moveTile = (direction: IDirection) => () => {
+        const id = selectedTile.gameTile.occupiedBy[0]?.id;
+        if (id === undefined) {
+            return;
+        }
+
+        sendServerMessage().addStagedAction(
+            IGameAction.movePiece({
+                gamePieceId: id,
+                startRow: selectedTile.rowIndex,
+                startColumn: selectedTile.columnIndex,
+                direction,
+            }),
         );
         removeSelectedTile();
     };
@@ -81,12 +150,23 @@ function UnconnectedAddNewStagedAction(props: IProps) {
 
     return (
         <div className={styles.addNewStagedAction} style={{ top, left }}>
-            <SpawnOptions
-                squareDimension={squareDimension}
-                teamKey={player.teamKey}
-                spawnTile={spawnTile}
-                rowIndex={selectedTile.rowIndex}
-            />
+            {selectedTile.gameTile.occupiedBy !== undefined && selectedTile.gameTile.occupiedBy.length > 0 && (
+                <MoveOptions
+                    gameSize={gameBoard.metadata.board}
+                    selectedTile={selectedTile}
+                    moveTile={moveTile}
+                    squareDimension={squareDimension}
+                    teamKey={player.teamKey}
+                />
+            )}
+            {selectedTile.canSpawn && (
+                <SpawnOptions
+                    squareDimension={squareDimension}
+                    teamKey={player.teamKey}
+                    spawnTile={spawnTile}
+                    rowIndex={selectedTile.rowIndex}
+                />
+            )}
         </div>
     );
 }

@@ -1,19 +1,19 @@
 import * as React from "react";
-import { IAllTeams } from "@stract/api";
+import { IAllTeams, IDirection } from "@stract/api";
 import { Colors } from "@blueprintjs/core";
 import classNames from "classnames";
 import styles from "./pieceSvg.module.scss";
 
 type IPieceSize = "board" | "sidebar";
 
-interface IOwnProps {
+export interface IPieceSVGProps {
     squareDimension?: number;
     onClick?: () => void;
     team: keyof IAllTeams<any>;
     size: IPieceSize;
 }
 
-type IProps = IOwnProps;
+type IProps = IPieceSVGProps;
 
 function renderInsideSVG(
     element: React.ReactElement,
@@ -39,7 +39,7 @@ export function Circle(props: IProps) {
             cy="50"
             r="40"
             stroke={Colors.DARK_GRAY1}
-            strokeWidth={10}
+            strokeWidth={2}
         />,
         { onClick, squareDimension, size },
     );
@@ -56,7 +56,7 @@ export function Square(props: IProps) {
             width={80}
             height={80}
             stroke={Colors.DARK_GRAY1}
-            strokeWidth={10}
+            strokeWidth={2}
             rx={5}
         />,
         { onClick, squareDimension, size },
@@ -68,9 +68,9 @@ export function Triangle(props: IProps) {
     return renderInsideSVG(
         <polygon
             className={classNames({ [styles.north]: team === "north", [styles.south]: team === "south" })}
-            points="10,90 50,0 90,90"
+            points="10,90 50,10 90,90"
             stroke={Colors.DARK_GRAY1}
-            strokeWidth={10}
+            strokeWidth={2}
         />,
         { onClick, squareDimension, size },
     );
@@ -85,4 +85,49 @@ export function Plus(props: IProps) {
         </g>,
         { onClick, squareDimension, size },
     );
+}
+
+export function Arrow(props: IProps & { className: string; direction: IDirection; style: React.CSSProperties }) {
+    const { className, direction, onClick, squareDimension, size, style, team } = props;
+    const transform = () => {
+        switch (direction) {
+            case "north":
+                return "rotate(-90deg) translate(-100px, 0)";
+            case "south":
+                return "rotate(90deg) translate(0, -100px)";
+            case "west":
+                return "rotate(180deg) translate(-100px, -100px)";
+            default:
+                return "";
+        }
+    };
+
+    return (
+        <div className={className} style={style}>
+            {renderInsideSVG(
+                <g
+                    className={classNames({
+                        [styles.northLine]: team === "north",
+                        [styles.southLine]: team === "south",
+                    })}
+                    style={{ transform: transform() }}
+                >
+                    <line x1="15" y1="50" x2="85" y2="50" strokeWidth={8} strokeLinecap="round" />
+                    <line x1="60" y1="25" x2="85" y2="50" strokeWidth={8} strokeLinecap="round" />
+                    <line x1="60" y1="75" x2="85" y2="50" strokeWidth={8} strokeLinecap="round" />
+                </g>,
+                { onClick, squareDimension, size },
+            )}
+        </div>
+    );
+}
+
+export function HiddenPiece(props: IProps) {
+    const { onClick, squareDimension, size } = props;
+
+    return renderInsideSVG(<rect className={styles.hidden} width={100} height={100} />, {
+        onClick,
+        squareDimension,
+        size,
+    });
 }
