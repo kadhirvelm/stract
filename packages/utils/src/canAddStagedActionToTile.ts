@@ -22,7 +22,7 @@ function canMoveTile(
         return { isValid: false };
     }
 
-    return { isValid: tile.occupiedBy?.[0].ownedByTeam === playerTeamRid };
+    return { isValid: tile.occupiedBy[0]?.ownedByTeam === playerTeamRid };
 }
 
 function canSpawnTile(gameBoard: IStractGameV1, playerTeamKey: keyof IAllTeams<any>, rowIndex: number) {

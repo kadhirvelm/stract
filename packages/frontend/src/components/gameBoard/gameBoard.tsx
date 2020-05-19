@@ -1,15 +1,18 @@
 import { Spinner } from "@blueprintjs/core";
-import { IStractGameV1 } from "@stract/api";
+import { IStractGameV1, IGameTile } from "@stract/api";
 import { canAddAnyStagedActionToTile } from "@stract/utils";
+import { flatten } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
 import { IStoreState } from "../../store";
 import { getDimensions, IPlayerWithTeamKey } from "../../utils";
 import styles from "./gameBoard.module.scss";
 import { GameTile } from "./gameTile";
+import { flattenBoard } from "../../selectors/flattenBoard";
 
 interface IStoreProps {
     gameBoard?: IStractGameV1;
+    flattenedBoard: Array<{ tile: IGameTile; columnIndex: number; rowIndex: number }>;
     player?: IPlayerWithTeamKey;
 }
 
@@ -17,12 +20,12 @@ type IProps = IStoreProps;
 
 class UnconnectedGameBoard extends React.PureComponent<IProps> {
     public render() {
-        const { gameBoard, player } = this.props;
+        const { gameBoard, flattenedBoard, player } = this.props;
         if (gameBoard === undefined || player === undefined) {
             return <Spinner />;
         }
 
-        const { metadata, board } = gameBoard;
+        const { metadata } = gameBoard;
 
         const {
             additionalGameBoardHorizontalPadding,
@@ -42,24 +45,22 @@ class UnconnectedGameBoard extends React.PureComponent<IProps> {
                         left: additionalGameBoardHorizontalPadding,
                     }}
                 >
-                    {board.map((row, rowIndex) => {
-                        return row.map((tile, columnIndex) => (
-                            <GameTile
-                                boardMetadata={metadata.board}
-                                dimension={squareDimension}
-                                canAddAnyStagedAction={canAddAnyStagedActionToTile(
-                                    player,
-                                    gameBoard,
-                                    rowIndex,
-                                    columnIndex,
-                                )}
-                                key={tile.occupiedBy?.[0]?.id}
-                                gameTile={tile}
-                                rowIndex={rowIndex}
-                                columnIndex={columnIndex}
-                            />
-                        ));
-                    })}
+                    {flattenedBoard.map(({ tile, columnIndex, rowIndex }) => (
+                        <GameTile
+                            boardMetadata={metadata.board}
+                            dimension={squareDimension}
+                            canAddAnyStagedAction={canAddAnyStagedActionToTile(
+                                player,
+                                gameBoard,
+                                rowIndex,
+                                columnIndex,
+                            )}
+                            key={tile.occupiedBy[0]?.id ?? `${rowIndex}-${columnIndex}`}
+                            gameTile={tile}
+                            rowIndex={rowIndex}
+                            columnIndex={columnIndex}
+                        />
+                    ))}
                 </div>
             </div>
         );
@@ -69,6 +70,7 @@ class UnconnectedGameBoard extends React.PureComponent<IProps> {
 function mapStateToProps(state: IStoreState): IStoreProps {
     return {
         gameBoard: state.game.gameBoard,
+        flattenedBoard: flattenBoard(state),
         player: state.game.player,
     };
 }

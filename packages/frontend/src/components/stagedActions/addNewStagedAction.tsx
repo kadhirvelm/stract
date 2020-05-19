@@ -130,7 +130,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
     };
 
     const moveTile = (direction: IDirection) => () => {
-        const id = selectedTile.gameTile.occupiedBy?.[0].id;
+        const id = selectedTile.gameTile.occupiedBy[0]?.id;
         if (id === undefined) {
             return;
         }

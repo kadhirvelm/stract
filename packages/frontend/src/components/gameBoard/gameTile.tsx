@@ -39,7 +39,7 @@ function MaybeRenderOccupiedBy(props: { dimension: number; occupiedBy: IGamePiec
     return <Piece piece={occupiedBy[0]} squareDimension={dimension} />;
 }
 
-class UnconnectedGameTile extends React.PureComponent<IProps> {
+export class UnconnectedGameTile extends React.PureComponent<IProps> {
     public render() {
         const {
             boardMetadata,
@@ -79,6 +79,7 @@ class UnconnectedGameTile extends React.PureComponent<IProps> {
                             [styles.isSelectedTile]:
                                 selectedTile?.rowIndex === rowIndex && selectedTile?.columnIndex === columnIndex,
                         })}
+                        key={tile.occupiedBy[0]?.id ?? `${rowIndex}-${columnIndex}`}
                         onClick={maybeSelectTile}
                         style={{
                             height: dimension,

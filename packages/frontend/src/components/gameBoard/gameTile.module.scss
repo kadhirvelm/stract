@@ -3,12 +3,13 @@
 
 .free-tile {
     position: absolute;
+    transition: box-shadow 200ms ease-out, top 650ms ease-out, left 650ms ease-out;
+    animation: fade-in 200ms ease-out;
+    transform: translate(0,0);
     display: flex;
     flex: 1;
     align-items: center;
     justify-content: center;
-    transition: box-shadow 200ms ease-out, top 200ms ease-out, left 200ms ease-out;
-    animation: fade-in 200ms ease-out;
 }
 
 @keyframes fade-in {

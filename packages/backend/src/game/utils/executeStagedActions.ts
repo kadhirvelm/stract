@@ -13,7 +13,7 @@ import _ from "lodash";
 function executeMovePiece(currentGameState: IStractGameV1, movePieceAction: IGameActionMovePiece, team: ITeamRid) {
     const { gamePieceId, startRow, startColumn, direction } = movePieceAction.movePiece;
 
-    const gamePiece = currentGameState.board[startRow][startColumn].occupiedBy?.find(p => p.id === gamePieceId);
+    const gamePiece = currentGameState.board[startRow][startColumn].occupiedBy.find(p => p.id === gamePieceId);
     if (gamePiece === undefined || gamePiece.ownedByTeam !== team) {
         // eslint-disable-next-line no-console
         console.error("Attempted to move a piece not owned by a team.");
@@ -22,7 +22,7 @@ function executeMovePiece(currentGameState: IStractGameV1, movePieceAction: IGam
 
     currentGameState.board[startRow][startColumn].occupiedBy = currentGameState.board[startRow][
         startColumn
-    ].occupiedBy?.filter(p => p.id !== gamePieceId);
+    ].occupiedBy.filter(p => p.id !== gamePieceId);
 
     const { column, row } = adjustColumnAndRowByDirection(startColumn, startRow, direction);
     const { isValid } = checkIsIndexInBounds(column, row, currentGameState.metadata.board);
@@ -32,9 +32,7 @@ function executeMovePiece(currentGameState: IStractGameV1, movePieceAction: IGam
         return;
     }
 
-    currentGameState.board[row][column].occupiedBy = (currentGameState.board[row][column].occupiedBy ?? []).concat(
-        gamePiece,
-    );
+    currentGameState.board[row][column].occupiedBy = currentGameState.board[row][column].occupiedBy.concat(gamePiece);
 }
 
 function executeSpawnPiece(
@@ -45,7 +43,7 @@ function executeSpawnPiece(
 ) {
     const { column, row, pieceType } = spawnPieceAction.spawnPiece;
 
-    currentGameState.board[row][column].occupiedBy = (currentGameState.board[row][column].occupiedBy ?? []).concat(
+    currentGameState.board[row][column].occupiedBy = currentGameState.board[row][column].occupiedBy.concat(
         getGamePieceFromType(pieceType, team),
     );
 

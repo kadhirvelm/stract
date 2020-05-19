@@ -46,7 +46,7 @@ function removePiecesFromAvailablePool(losingPieces: IGamePiece[], currentGameSt
 }
 
 function maybeScorePiece(currentGameState: IStractGameV1, gameTile: IGameTile, rowIndex: number) {
-    const teamRid = gameTile.occupiedBy?.[0].ownedByTeam;
+    const teamRid = gameTile.occupiedBy[0].ownedByTeam;
     if (teamRid === undefined) {
         return;
     }
@@ -73,7 +73,7 @@ export function resolveGameBoard(currentGameState: IStractGameV1) {
                 return;
             }
 
-            if (tile.occupiedBy?.length > 2) {
+            if (tile.occupiedBy.length > 2) {
                 tile.occupiedBy = [];
                 removePiecesFromAvailablePool(tile.occupiedBy, currentGameState);
                 return;

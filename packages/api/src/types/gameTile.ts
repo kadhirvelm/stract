@@ -4,7 +4,7 @@ export type IGameTileType = "free";
 
 export interface IGeneralGameTile {
     type: IGameTileType;
-    occupiedBy?: IGamePiece[];
+    occupiedBy: IGamePiece[];
 }
 
 export interface IGameTileFree extends IGeneralGameTile {

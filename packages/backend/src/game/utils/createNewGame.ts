@@ -19,7 +19,7 @@ const BOARD_SIZE: IBoardMetadata = {
 };
 
 export function createBoard(x: number, y: number): IGameTile[][] {
-    return _.range(0, x).map(() => _.range(0, y).map(() => IGameTile.free({})));
+    return _.range(0, x).map(() => _.range(0, y).map(() => IGameTile.free({ occupiedBy: [] })));
 }
 
 const startingPiecePool: IBoardTeamPiecePool[] = [
