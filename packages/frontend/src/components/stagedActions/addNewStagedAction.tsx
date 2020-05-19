@@ -5,7 +5,7 @@ import { Dispatch } from "redux";
 import { sendServerMessage } from "../../socket";
 import { ChangeSelectedTile, IStoreState } from "../../store";
 import { getDimensions, IPlayerWithTeamKey, ISelectedTile, MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../utils";
-import { Arrow, Circle, Square, Triangle, IPieceSVGProps } from "../pieces/pieceSvg";
+import { Arrow, Fire, Earth, Water, IPieceSVGProps } from "../pieces/pieceSvg";
 import styles from "./addNewStagedAction.module.scss";
 
 interface IStateProps {
@@ -52,9 +52,9 @@ function SpawnOptions(props: {
 
     return (
         <div className={styles.spawnNewTilesContainer} style={{ width: squareDimension, top: `${topOffset}px` }}>
-            <Circle team={teamKey} size="sidebar" onClick={spawnTile("circle")} />
-            <Triangle team={teamKey} size="sidebar" onClick={spawnTile("triangle")} />
-            <Square team={teamKey} size="sidebar" onClick={spawnTile("square")} />
+            <Fire team={teamKey} size="sidebar" onClick={spawnTile("fire")} />
+            <Water team={teamKey} size="sidebar" onClick={spawnTile("water")} />
+            <Earth team={teamKey} size="sidebar" onClick={spawnTile("earth")} />
         </div>
     );
 }

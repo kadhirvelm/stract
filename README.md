@@ -23,22 +23,22 @@ During a turn, all team members can take one of two actions:
 1. Spawn a new piece in their team's end zone
 2. Move an existing piece
 
-Pieces come in three forms: a triangle, a circle, a square.
+Pieces come in three forms: water, fire, or earth.
 
 All pieces can move freely in any of the 4 cardinal directions. In addition each piece has a special move:
-1. Triangles can move 1 tile diagonally
-2. Circles can move up to 2 tiles in any cardinal direction
-2. Squares can switch places with any piece (including an opponent's) on an adjacent tile
+1. Waters can move 1 tile diagonally
+2. Fires can move up to 2 tiles in any cardinal direction
+2. Earths can switch places with any piece (including an opponent's) on an adjacent tile
 
-Action resolution happens in the following order: first all spawns and all movement, then all square switching, then piece destruction, which leads to a few nuances:
-1. Circles can jump over other pieces
-2. Square switching can miss because it targets a tile, not a piece. If it misses, the square will do nothing
-3. If a square attempts to switch with a tile that has more than one piece, it will switch places will all of them. Piece destruction will happen after the switch
+Action resolution happens in the following order: first all spawns and all movement, then all earth switching, then piece destruction, which leads to a few nuances:
+1. Fires can jump over other pieces
+2. Earth switching can miss because it targets a tile, not a piece. If it misses, the earth will do nothing
+3. If a earth attempts to switch with a tile that has more than one piece, it will switch places will all of them. Piece destruction will happen after the switch
 
 If two pieces occupy the same tile, the following happens:
-1. Triangles destroy circles
-2. Circles destroy squares
-3. Squares destroy triangles
+1. Water destroy Fire
+2. Fire destroy Earth
+3. Earth destroy Water
 4. If the two pieces are the same, or there are more than three pieces, they will all destroy each other. Teams will get points equal to the number of enemy team's pieces that were destroyed
 
 If your team moves a piece into the opponent's end zone, it will score 10 points and if your team destroys an enemy piece, it will score 2 points. Please note if two or more of your pieces occupy the same tile, the piece destruction will resolve normally, except your team will score -2 points per tile destroyed instead. This only happens if there are no opponent pieces on the tile.

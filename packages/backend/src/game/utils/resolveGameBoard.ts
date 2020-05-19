@@ -11,15 +11,15 @@ function getWinningPiece(
         return { occupiedBy: [], losingPieces: [pieceOne, pieceTwo] };
     }
 
-    if (IGamePiece.isCircle(pieceOne) && IGamePiece.isSquare(pieceTwo)) {
+    if (IGamePiece.isFire(pieceOne) && IGamePiece.isEarth(pieceTwo)) {
         return { occupiedBy: [{ ...pieceOne, isHidden: false }], losingPieces: [pieceTwo] };
     }
 
-    if (IGamePiece.isSquare(pieceOne) && IGamePiece.isTriangle(pieceTwo)) {
+    if (IGamePiece.isEarth(pieceOne) && IGamePiece.isWater(pieceTwo)) {
         return { occupiedBy: [{ ...pieceOne, isHidden: false }], losingPieces: [pieceTwo] };
     }
 
-    if (IGamePiece.isTriangle(pieceOne) && IGamePiece.isCircle(pieceTwo)) {
+    if (IGamePiece.isWater(pieceOne) && IGamePiece.isFire(pieceTwo)) {
         return { occupiedBy: [{ ...pieceOne, isHidden: false }], losingPieces: [pieceTwo] };
     }
 
