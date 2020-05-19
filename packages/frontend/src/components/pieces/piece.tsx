@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Icon } from "@blueprintjs/core";
 import { IStoreState } from "../../store";
 import { ITeamRidToTeamKey, IPlayerWithTeamKey } from "../../utils";
-import { Circle, Square, Triangle, HiddenPiece } from "./pieceSvg";
+import { Fire, Earth, Water, HiddenPiece } from "./pieceSvg";
 import { getTeamRidToTeamKey } from "../../selectors";
 import styles from "./piece.module.scss";
 
@@ -48,9 +48,9 @@ function UnconnectedPiece(props: IProps) {
     return (
         <div className={styles.pieceContainer}>
             {IGamePiece.visit(piece, {
-                circle: () => <Circle team={team} squareDimension={squareDimension} size="board" />,
-                square: () => <Square team={team} squareDimension={squareDimension} size="board" />,
-                triangle: () => <Triangle team={team} squareDimension={squareDimension} size="board" />,
+                fire: () => <Fire team={team} squareDimension={squareDimension} size="board" />,
+                earth: () => <Earth team={team} squareDimension={squareDimension} size="board" />,
+                water: () => <Water team={team} squareDimension={squareDimension} size="board" />,
                 unknown: () => <div>Unknown</div>,
             })}
             {maybeRenderHidden()}

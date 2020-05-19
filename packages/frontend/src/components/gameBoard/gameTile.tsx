@@ -9,7 +9,7 @@ import { IStoreState } from "../../store";
 import { ChangeSelectedTile } from "../../store/interface/interfaceActions";
 import { ISelectedTile } from "../../utils";
 import { Piece } from "../pieces";
-import { Plus } from "../pieces/pieceSvg";
+import { Spawn } from "../pieces/pieceSvg";
 import styles from "./gameTile.module.scss";
 
 interface IOwnProps {
@@ -96,7 +96,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                         }}
                     >
                         {canAddAnyStagedAction.canSpawn && (
-                            <Plus squareDimension={dimension} size="board" team={teamOwner} />
+                            <Spawn squareDimension={dimension} size="board" team={teamOwner} />
                         )}
                         <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={tile.occupiedBy} />
                     </div>

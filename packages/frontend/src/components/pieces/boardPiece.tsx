@@ -1,6 +1,6 @@
 import * as React from "react";
 import { IGamePieceType, IAllTeams } from "@stract/api";
-import { Circle, Square, Triangle } from "./pieceSvg";
+import { Fire, Earth, Water } from "./pieceSvg";
 
 interface IOwnProps {
     piece: IGamePieceType;
@@ -12,12 +12,12 @@ type IProps = IOwnProps;
 export function BoardPiece(props: IProps) {
     const { piece, team } = props;
     switch (piece) {
-        case "circle":
-            return <Circle team={team} size="sidebar" />;
-        case "square":
-            return <Square team={team} size="sidebar" />;
-        case "triangle":
-            return <Triangle team={team} size="sidebar" />;
+        case "fire":
+            return <Fire team={team} size="sidebar" />;
+        case "earth":
+            return <Earth team={team} size="sidebar" />;
+        case "water":
+            return <Water team={team} size="sidebar" />;
         default:
             return <div>Unknown</div>;
     }

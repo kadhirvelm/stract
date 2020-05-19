@@ -23,9 +23,9 @@ export function createBoard(x: number, y: number): IGameTile[][] {
 }
 
 const startingPiecePool: IBoardTeamPiecePool[] = [
-    { total: 10, type: "triangle" },
-    { total: 10, type: "circle" },
-    { total: 10, type: "square" },
+    { total: 10, type: "water" },
+    { total: 10, type: "fire" },
+    { total: 10, type: "earth" },
 ];
 
 function startingTeam(teamName: string) {

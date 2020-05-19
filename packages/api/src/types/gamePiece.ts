@@ -1,7 +1,7 @@
 import { v4 } from "uuid";
 import { IGamePieceId, ITeamRid, gamePieceId } from "./idTypes";
 
-export type IGamePieceType = "circle" | "triangle" | "square";
+export type IGamePieceType = "fire" | "water" | "earth";
 
 export interface IGeneralGamePiece {
     id: IGamePieceId;
@@ -10,59 +10,59 @@ export interface IGeneralGamePiece {
     type: IGamePieceType;
 }
 
-export interface IGamePieceCircle extends IGeneralGamePiece {
-    type: "circle";
+export interface IGamePieceFire extends IGeneralGamePiece {
+    type: "fire";
 }
 
-export interface IGamePieceTriangle extends IGeneralGamePiece {
-    type: "triangle";
+export interface IGamePieceWater extends IGeneralGamePiece {
+    type: "water";
 }
 
-export interface IGamePieceSquare extends IGeneralGamePiece {
-    type: "square";
+export interface IGamePieceEarth extends IGeneralGamePiece {
+    type: "earth";
 }
 
-export type IGamePiece = IGamePieceCircle | IGamePieceTriangle | IGamePieceSquare;
+export type IGamePiece = IGamePieceFire | IGamePieceWater | IGamePieceEarth;
 
 interface IGamePieceVisitor<Output> {
-    circle: (gamePiece: IGamePieceCircle) => Output;
-    triangle: (gamePiece: IGamePieceTriangle) => Output;
-    square: (gamePiece: IGamePieceSquare) => Output;
+    fire: (gamePiece: IGamePieceFire) => Output;
+    water: (gamePiece: IGamePieceWater) => Output;
+    earth: (gamePiece: IGamePieceEarth) => Output;
     unknown: (gamePiece: IGamePiece) => Output;
 }
 
 export namespace IGamePiece {
-    export const circle = (gamePiece: Omit<IGeneralGamePiece, "type" | "id">): IGamePieceCircle => ({
+    export const fire = (gamePiece: Omit<IGeneralGamePiece, "type" | "id">): IGamePieceFire => ({
         ...gamePiece,
         id: gamePieceId(v4()),
-        type: "circle",
+        type: "fire",
     });
-    export const triangle = (gamePiece: Omit<IGeneralGamePiece, "type" | "id">): IGamePieceTriangle => ({
+    export const water = (gamePiece: Omit<IGeneralGamePiece, "type" | "id">): IGamePieceWater => ({
         ...gamePiece,
         id: gamePieceId(v4()),
-        type: "triangle",
+        type: "water",
     });
-    export const square = (gamePiece: Omit<IGeneralGamePiece, "type" | "id">): IGamePieceSquare => ({
+    export const earth = (gamePiece: Omit<IGeneralGamePiece, "type" | "id">): IGamePieceEarth => ({
         ...gamePiece,
         id: gamePieceId(v4()),
-        type: "square",
+        type: "earth",
     });
 
-    export const isCircle = (gamePiece: IGamePiece): gamePiece is IGamePieceCircle => gamePiece.type === "circle";
-    export const isTriangle = (gamePiece: IGamePiece): gamePiece is IGamePieceTriangle => gamePiece.type === "triangle";
-    export const isSquare = (gamePiece: IGamePiece): gamePiece is IGamePieceSquare => gamePiece.type === "square";
+    export const isFire = (gamePiece: IGamePiece): gamePiece is IGamePieceFire => gamePiece.type === "fire";
+    export const isWater = (gamePiece: IGamePiece): gamePiece is IGamePieceWater => gamePiece.type === "water";
+    export const isEarth = (gamePiece: IGamePiece): gamePiece is IGamePieceEarth => gamePiece.type === "earth";
 
     export const visit = <T = any>(gamePiece: IGamePiece, callbacks: IGamePieceVisitor<T>) => {
-        if (isCircle(gamePiece)) {
-            return callbacks.circle(gamePiece);
+        if (isFire(gamePiece)) {
+            return callbacks.fire(gamePiece);
         }
 
-        if (isTriangle(gamePiece)) {
-            return callbacks.triangle(gamePiece);
+        if (isWater(gamePiece)) {
+            return callbacks.water(gamePiece);
         }
 
-        if (isSquare(gamePiece)) {
-            return callbacks.square(gamePiece);
+        if (isEarth(gamePiece)) {
+            return callbacks.earth(gamePiece);
         }
 
         return callbacks.unknown(gamePiece);
