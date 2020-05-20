@@ -2,7 +2,7 @@ import { v4 } from "uuid";
 import { IGamePieceType } from "./gamePiece";
 import { gameActionId, IGameActionId, IGamePieceId, IPlayerIdentifier } from "./idTypes";
 
-export type IGameActionType = "move-piece" | "spawn-piece";
+export type IGameActionType = "move-piece" | "spawn-piece" | "special-move-piece";
 
 /**
  * All actions minimum.
@@ -18,14 +18,17 @@ interface IGenericGameAction {
  */
 export type IDirection = "north" | "west" | "south" | "east";
 
+export interface IGenericMovePiece {
+    gamePieceId: IGamePieceId;
+    startRow: number;
+    startColumn: number;
+}
+
 /**
  * Moving a basic piece.
  */
 
-export interface IMovePiece {
-    gamePieceId: IGamePieceId;
-    startRow: number;
-    startColumn: number;
+export interface IMovePiece extends IGenericMovePiece {
     direction: IDirection;
 }
 
@@ -50,10 +53,23 @@ export interface IGameActionSpawnPiece extends IGenericGameAction {
 }
 
 /**
+ * Moving a basic piece.
+ */
+
+export interface ISpecialMovePiece extends IGenericMovePiece {
+    directions: [IDirection, IDirection];
+}
+
+export interface IGameActionSpecialMovePiece extends IGenericGameAction {
+    specialMove: ISpecialMovePiece;
+    type: "special-move-piece";
+}
+
+/**
  * All actions.
  */
 
-export type IGameAction = IGameActionMovePiece | IGameActionSpawnPiece;
+export type IGameAction = IGameActionMovePiece | IGameActionSpawnPiece | IGameActionSpecialMovePiece;
 
 /**
  * GameAction namespace.
@@ -61,25 +77,35 @@ export type IGameAction = IGameActionMovePiece | IGameActionSpawnPiece;
 interface IGameActionVisitor<Output = any> {
     movePiece: (gameAction: IGameActionMovePiece) => Output;
     spawnPiece: (gameAction: IGameActionSpawnPiece) => Output;
+    specialMovePiece: (gameAction: IGameActionSpecialMovePiece) => Output;
     unknown: (gameAction: IGameAction) => Output;
 }
 
 export namespace IGameAction {
-    export const movePiece = (moveStractPiece: IMovePiece): IGameActionMovePiece => ({
+    export const movePiece = (newMovePiece: IMovePiece): IGameActionMovePiece => ({
         id: gameActionId(v4()),
         type: "move-piece",
-        movePiece: moveStractPiece,
+        movePiece: newMovePiece,
     });
 
-    export const spawnPiece = (spawnStractPiece: ISpawnPiece): IGameActionSpawnPiece => ({
+    export const spawnPiece = (newSpawnPiece: ISpawnPiece): IGameActionSpawnPiece => ({
         id: gameActionId(v4()),
         type: "spawn-piece",
-        spawnPiece: spawnStractPiece,
+        spawnPiece: newSpawnPiece,
+    });
+
+    export const specialMove = (newSpecialMove: ISpecialMovePiece): IGameActionSpecialMovePiece => ({
+        id: gameActionId(v4()),
+        type: "special-move-piece",
+        specialMove: newSpecialMove,
     });
 
     export const isMovePiece = (action: IGameAction): action is IGameActionMovePiece => action.type === "move-piece";
 
     export const isSpawnPiece = (action: IGameAction): action is IGameActionSpawnPiece => action.type === "spawn-piece";
+
+    export const isSpecialMovePiece = (action: IGameAction): action is IGameActionSpecialMovePiece =>
+        action.type === "special-move-piece";
 
     export const visit = <T = any>(action: IGameAction, callbacks: IGameActionVisitor<T>) => {
         if (isMovePiece(action)) {
@@ -88,6 +114,10 @@ export namespace IGameAction {
 
         if (isSpawnPiece(action)) {
             return callbacks.spawnPiece(action);
+        }
+
+        if (isSpecialMovePiece(action)) {
+            return callbacks.specialMovePiece(action);
         }
 
         return callbacks.unknown(action);

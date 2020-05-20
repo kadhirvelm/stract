@@ -6,23 +6,57 @@ import {
     IStractGameV1,
     ITeamRid,
     IAllTeams,
+    IGameActionSpecialMovePiece,
+    IGameTile,
+    IGamePieceId,
+    IGamePiece,
 } from "@stract/api";
-import { getGamePieceFromType, checkIsIndexInBounds, adjustColumnAndRowByDirection } from "@stract/utils";
+import {
+    getGamePieceFromType,
+    checkIsIndexInBounds,
+    adjustColumnAndRowByDirection,
+    adjustColumnAndRowByMultipleDirections,
+} from "@stract/utils";
 import _ from "lodash";
+
+function getPieceOwnedByTeam(
+    board: IGameTile[][],
+    row: number,
+    column: number,
+    gamePieceId: IGamePieceId,
+    ownedByTeam: ITeamRid,
+) {
+    const gamePiece = board[row][column].occupiedBy.find(p => p.id === gamePieceId);
+    if (gamePiece === undefined || gamePiece.ownedByTeam !== ownedByTeam) {
+        return undefined;
+    }
+
+    return gamePiece;
+}
+
+function movePieceToNewLocation(
+    board: IGameTile[][],
+    startRow: number,
+    startColumn: number,
+    newRow: number,
+    newColumn: number,
+    gamePiece: IGamePiece,
+) {
+    board[startRow][startColumn].occupiedBy = board[startRow][startColumn].occupiedBy.filter(
+        p => p.id !== gamePiece.id,
+    );
+
+    board[newRow][newColumn].occupiedBy = board[newRow][newColumn].occupiedBy.concat(gamePiece);
+}
 
 function executeMovePiece(currentGameState: IStractGameV1, movePieceAction: IGameActionMovePiece, team: ITeamRid) {
     const { gamePieceId, startRow, startColumn, direction } = movePieceAction.movePiece;
-
-    const gamePiece = currentGameState.board[startRow][startColumn].occupiedBy.find(p => p.id === gamePieceId);
-    if (gamePiece === undefined || gamePiece.ownedByTeam !== team) {
+    const gamePiece = getPieceOwnedByTeam(currentGameState.board, startRow, startColumn, gamePieceId, team);
+    if (gamePiece === undefined) {
         // eslint-disable-next-line no-console
         console.error("Attempted to move a piece not owned by a team.");
         return;
     }
-
-    currentGameState.board[startRow][startColumn].occupiedBy = currentGameState.board[startRow][
-        startColumn
-    ].occupiedBy.filter(p => p.id !== gamePieceId);
 
     const { column, row } = adjustColumnAndRowByDirection(startColumn, startRow, direction);
     const { isValid } = checkIsIndexInBounds(column, row, currentGameState.metadata.board);
@@ -32,7 +66,7 @@ function executeMovePiece(currentGameState: IStractGameV1, movePieceAction: IGam
         return;
     }
 
-    currentGameState.board[row][column].occupiedBy = currentGameState.board[row][column].occupiedBy.concat(gamePiece);
+    movePieceToNewLocation(currentGameState.board, startRow, startColumn, column, row, gamePiece);
 }
 
 function executeSpawnPiece(
@@ -58,6 +92,30 @@ function executeSpawnPiece(
     );
 }
 
+function executeSpecialMovePiece(
+    currentGameState: IStractGameV1,
+    specialMovePiece: IGameActionSpecialMovePiece,
+    team: ITeamRid,
+) {
+    const { gamePieceId, startRow, startColumn, directions } = specialMovePiece.specialMove;
+    const gamePiece = getPieceOwnedByTeam(currentGameState.board, startRow, startColumn, gamePieceId, team);
+    if (gamePiece === undefined) {
+        // eslint-disable-next-line no-console
+        console.error("Attempted to move a piece not owned by a team.");
+        return;
+    }
+
+    const { column, row } = adjustColumnAndRowByMultipleDirections(startColumn, startRow, directions);
+    const { isValid } = checkIsIndexInBounds(column, row, currentGameState.metadata.board);
+    if (!isValid) {
+        // eslint-disable-next-line no-console
+        console.error("Attempted to move a piece to an invalid location.");
+        return;
+    }
+
+    movePieceToNewLocation(currentGameState.board, startRow, startColumn, column, row, gamePiece);
+}
+
 export function executeStagedActions(currentGameState: IStractGameV1) {
     const appendId = (action: IGameAction, teamKey: keyof IAllTeams<any>) => ({
         id: currentGameState.teams[teamKey].id,
@@ -73,6 +131,7 @@ export function executeStagedActions(currentGameState: IStractGameV1) {
         IGameAction.visit(actionWithTeam.action, {
             movePiece: mp => executeMovePiece(currentGameState, mp, actionWithTeam.id),
             spawnPiece: sp => executeSpawnPiece(currentGameState, sp, actionWithTeam.id, actionWithTeam.teamKey),
+            specialMovePiece: sm => executeSpecialMovePiece(currentGameState, sm, actionWithTeam.id),
             unknown: _.noop,
         });
     });

@@ -1,5 +1,6 @@
 import { v4 } from "uuid";
 import { IGamePieceId, ITeamRid, gamePieceId } from "./idTypes";
+import { IDirection, ISpecialMovePiece, IGameAction, IGameActionSpecialMovePiece } from "./gameAction";
 
 export type IGamePieceType = "fire" | "water" | "earth";
 
@@ -66,5 +67,24 @@ export namespace IGamePiece {
         }
 
         return callbacks.unknown(gamePiece);
+    };
+}
+
+export namespace ISpecialActions {
+    export const fire = <T extends IDirection>(
+        directions: [T, T],
+        specialMovePiece: Omit<ISpecialMovePiece, "directions">,
+    ): IGameActionSpecialMovePiece => {
+        return IGameAction.specialMove({ ...specialMovePiece, directions });
+    };
+
+    export const water = <T = Pick<IDirection, "north" & "south">, S = Pick<IDirection, "east" & "west">>(
+        directions: [T, S],
+        specialMovePiece: Omit<ISpecialMovePiece, "directions">,
+    ) => {
+        return IGameAction.specialMove({
+            ...specialMovePiece,
+            directions: (directions as unknown) as [IDirection, IDirection],
+        });
     };
 }
