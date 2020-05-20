@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import { IDirection } from "./gameAction";
+import { IDirection } from "./general";
 import { gamePieceId, IGamePieceId, ITeamRid } from "./idTypes";
 
 export type IGamePieceType = "fire" | "water" | "earth";

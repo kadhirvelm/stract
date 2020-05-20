@@ -3,3 +3,8 @@ export interface IErrorMessage {
     intent: "success" | "danger" | "warning";
     message: string;
 }
+
+/**
+ * Valid directions to push a piece in.
+ */
+export type IDirection = "north" | "west" | "south" | "east";

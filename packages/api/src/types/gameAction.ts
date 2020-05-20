@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import { IGamePieceType } from "./gamePiece";
+import { IDirection } from "./general";
 import { gameActionId, IGameActionId, IGamePieceId, IPlayerIdentifier } from "./idTypes";
 
 export type IGameActionType = "move-piece" | "spawn-piece" | "special-move-piece";
@@ -12,11 +12,6 @@ interface IGenericGameAction {
     id: IGameActionId;
     type: IGameActionType;
 }
-
-/**
- * Valid directions to push a piece in.
- */
-export type IDirection = "north" | "west" | "south" | "east";
 
 export interface IGenericMovePiece {
     gamePieceId: IGamePieceId;
