@@ -89,9 +89,14 @@ export function Spawn(props: IProps) {
 }
 
 export function Arrow(
-    props: IProps & { className: string; direction: IDirection | IWaterDirections; style: React.CSSProperties },
+    props: IProps & {
+        className: string;
+        direction: IDirection | IWaterDirections;
+        isSpecial?: boolean;
+        style: React.CSSProperties;
+    },
 ) {
-    const { className, direction, onClick, squareDimension, size, style, team } = props;
+    const { className, direction, isSpecial, onClick, squareDimension, size, style, team } = props;
     const transform = () => {
         switch (direction) {
             case "north":
@@ -118,8 +123,10 @@ export function Arrow(
             {renderInsideSVG(
                 <g
                     className={classNames({
-                        [styles.northLine]: team === "north",
-                        [styles.southLine]: team === "south",
+                        [styles.northLine]: team === "north" && !isSpecial,
+                        [styles.northSpecial]: team === "north" && isSpecial,
+                        [styles.southLine]: team === "south" && !isSpecial,
+                        [styles.southSpecial]: team === "south" && isSpecial,
                     })}
                     style={{ transform: transform(), transformOrigin: "center" }}
                 >
@@ -140,8 +147,8 @@ export function SwitchArrows(props: IProps & { className: string; style: React.C
             {renderInsideSVG(
                 <g
                     className={classNames({
-                        [styles.northSpawn]: team === "north",
-                        [styles.southSpawn]: team === "south",
+                        [styles.northSpecial]: team === "north",
+                        [styles.southSpecial]: team === "south",
                     })}
                     xmlns="http://www.w3.org/2000/svg"
                     transform="translate(0,75) scale(0.1,-0.1)"

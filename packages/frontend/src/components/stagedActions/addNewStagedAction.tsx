@@ -138,8 +138,9 @@ function MaybeSpecialMoveOptions(props: {
     const isValidColumn = (columnIndex: number) => columnIndex >= 0 && columnIndex < gameSize.size.columns;
     const isValidIndex = (rowIndex: number, columnIndex: number) => isValidRow(rowIndex) && isValidColumn(columnIndex);
 
-    const commonProps: IPieceSVGProps & { className: string } = {
+    const commonProps: IPieceSVGProps & { className: string; isSpecial?: boolean } = {
         className: styles.direction,
+        isSpecial: true,
         team: teamKey,
         size: "board",
         squareDimension,
