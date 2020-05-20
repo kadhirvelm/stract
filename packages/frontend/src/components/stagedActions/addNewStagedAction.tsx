@@ -157,7 +157,7 @@ function MaybeSpecialMoveOptions(props: {
                     <Arrow
                         {...commonProps}
                         direction="north"
-                        onClick={specialMoveTile(ISpecialActions.fire(["north", "north"]))}
+                        onClick={specialMoveTile(ISpecialActions.fire("north"))}
                         style={{ top: `-${squareDimension * 2}px` }}
                     />
                 )}
@@ -165,7 +165,7 @@ function MaybeSpecialMoveOptions(props: {
                     <Arrow
                         {...commonProps}
                         direction="east"
-                        onClick={specialMoveTile(ISpecialActions.fire(["east", "east"]))}
+                        onClick={specialMoveTile(ISpecialActions.fire("east"))}
                         style={{ left: `${squareDimension * 2}px` }}
                     />
                 )}
@@ -173,7 +173,7 @@ function MaybeSpecialMoveOptions(props: {
                     <Arrow
                         {...commonProps}
                         direction="south"
-                        onClick={specialMoveTile(ISpecialActions.fire(["south", "south"]))}
+                        onClick={specialMoveTile(ISpecialActions.fire("south"))}
                         style={{ top: `${squareDimension * 2}px` }}
                     />
                 )}
@@ -181,7 +181,7 @@ function MaybeSpecialMoveOptions(props: {
                     <Arrow
                         {...commonProps}
                         direction="west"
-                        onClick={specialMoveTile(ISpecialActions.fire(["west", "west"]))}
+                        onClick={specialMoveTile(ISpecialActions.fire("west"))}
                         style={{ left: `-${squareDimension * 2}px` }}
                     />
                 )}
@@ -196,7 +196,7 @@ function MaybeSpecialMoveOptions(props: {
                     <Arrow
                         {...commonProps}
                         direction="north east"
-                        onClick={specialMoveTile(ISpecialActions.water(["north", "east"]))}
+                        onClick={specialMoveTile(ISpecialActions.water("north", "east"))}
                         style={{ top: `-${squareDimension}px`, left: `${squareDimension}px` }}
                     />
                 )}
@@ -204,7 +204,7 @@ function MaybeSpecialMoveOptions(props: {
                     <Arrow
                         {...commonProps}
                         direction="south east"
-                        onClick={specialMoveTile(ISpecialActions.water(["south", "east"]))}
+                        onClick={specialMoveTile(ISpecialActions.water("south", "east"))}
                         style={{ top: `${squareDimension}px`, left: `${squareDimension}px` }}
                     />
                 )}
@@ -212,7 +212,7 @@ function MaybeSpecialMoveOptions(props: {
                     <Arrow
                         {...commonProps}
                         direction="south west"
-                        onClick={specialMoveTile(ISpecialActions.water(["south", "west"]))}
+                        onClick={specialMoveTile(ISpecialActions.water("south", "west"))}
                         style={{ top: `${squareDimension}px`, left: `-${squareDimension}px` }}
                     />
                 )}
@@ -220,7 +220,7 @@ function MaybeSpecialMoveOptions(props: {
                     <Arrow
                         {...commonProps}
                         direction="north west"
-                        onClick={specialMoveTile(ISpecialActions.water(["north", "west"]))}
+                        onClick={specialMoveTile(ISpecialActions.water("north", "west"))}
                         style={{ top: `-${squareDimension}px`, left: `-${squareDimension}px` }}
                     />
                 )}
