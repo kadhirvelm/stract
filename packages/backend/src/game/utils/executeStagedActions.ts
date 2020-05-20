@@ -168,7 +168,9 @@ function executeSwitchPlacesWithPiece(
     // Then we set the target tile to just be occupied by the single earth tile
     currentGameState.board[targetPosition.row][targetPosition.column].occupiedBy = [gamePiece];
     // Then we add the target pieces to the starting tile
-    currentGameState.board[startingPosition.row][startingPosition.column].occupiedBy = targetTiles;
+    currentGameState.board[startingPosition.row][startingPosition.column].occupiedBy = currentGameState.board[
+        startingPosition.row
+    ][startingPosition.column].occupiedBy.concat(targetTiles);
 }
 
 export function executeStagedActions(currentGameState: IStractGameV1) {
