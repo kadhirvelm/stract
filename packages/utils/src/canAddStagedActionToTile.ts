@@ -5,25 +5,31 @@ export interface ICanAddStagedActionToTile {
     canSpawn?: boolean;
 }
 
-function canMoveTile(
+/**
+ * This works for moving a piece, special moving a piece, or switching places with a piece.
+ */
+function canExecuteActionFromTile(
     tile: IGameTileFree,
     rowIndex: number,
     columnIndex: number,
     playerTeamRid: ITeamRid,
     playerTeamStagedActions: IGameAction[],
 ) {
-    const doAnyExistingStagedActionsMoveTheSamePiece = playerTeamStagedActions.find(a => {
+    const doAnyExistingStagedActionsMoveTheSamePiece = playerTeamStagedActions.some(a => {
         return (
             (IGameAction.isMovePiece(a) &&
                 a.movePiece.startRow === rowIndex &&
                 a.movePiece.startColumn === columnIndex) ||
             (IGameAction.isSpecialMovePiece(a) &&
                 a.specialMove.startRow === rowIndex &&
-                a.specialMove.startColumn === columnIndex)
+                a.specialMove.startColumn === columnIndex) ||
+            (IGameAction.isSwitchPlacesWithPiece(a) &&
+                a.switchPlaces.start.row === rowIndex &&
+                a.switchPlaces.start.column === columnIndex)
         );
     });
 
-    if (doAnyExistingStagedActionsMoveTheSamePiece !== undefined) {
+    if (doAnyExistingStagedActionsMoveTheSamePiece) {
         return { isValid: false };
     }
 
@@ -56,7 +62,13 @@ export function canAddAnyStagedActionToTile(
 
     let isValid = false;
     if (tile?.occupiedBy !== undefined && tile?.occupiedBy.length > 0) {
-        isValid = canMoveTile(tile, rowIndex, columnIndex, player.team, gameBoard.stagedActions[playerTeamKey]).isValid;
+        isValid = canExecuteActionFromTile(
+            tile,
+            rowIndex,
+            columnIndex,
+            player.team,
+            gameBoard.stagedActions[playerTeamKey],
+        ).isValid;
     }
 
     const getCanSpawn = canSpawnTile(gameBoard, playerTeamKey, rowIndex);

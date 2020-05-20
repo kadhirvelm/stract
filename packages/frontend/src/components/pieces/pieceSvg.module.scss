@@ -24,6 +24,16 @@
     stroke: $south-active;
 }
 
+.north-special {
+    stroke: $north-title;
+    fill: $north-title;
+}
+
+.south-special {
+    stroke: $south-title;
+    fill: $south-title;
+}
+
 .hidden {
     fill: $gray4;
     cursor: not-allowed;

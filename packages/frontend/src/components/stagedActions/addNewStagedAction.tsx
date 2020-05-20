@@ -14,7 +14,7 @@ import { Dispatch } from "redux";
 import { sendServerMessage } from "../../socket";
 import { ChangeSelectedTile, IStoreState } from "../../store";
 import { getDimensions, IPlayerWithTeamKey, ISelectedTile, MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../utils";
-import { Arrow, Earth, Fire, IPieceSVGProps, Water } from "../pieces/pieceSvg";
+import { Arrow, Earth, Fire, IPieceSVGProps, Water, SwitchArrows } from "../pieces/pieceSvg";
 import styles from "./addNewStagedAction.module.scss";
 
 interface IStateProps {
@@ -138,8 +138,9 @@ function MaybeSpecialMoveOptions(props: {
     const isValidColumn = (columnIndex: number) => columnIndex >= 0 && columnIndex < gameSize.size.columns;
     const isValidIndex = (rowIndex: number, columnIndex: number) => isValidRow(rowIndex) && isValidColumn(columnIndex);
 
-    const commonProps: IPieceSVGProps & { className: string } = {
+    const commonProps: IPieceSVGProps & { className: string; isSpecial?: boolean } = {
         className: styles.direction,
+        isSpecial: true,
         team: teamKey,
         size: "board",
         squareDimension,
@@ -231,6 +232,121 @@ function MaybeSpecialMoveOptions(props: {
     return null;
 }
 
+function MaybeSwitchPlacesWithPieceOptions(props: {
+    gameSize: IBoardMetadata;
+    selectedTile: ISelectedTile;
+    squareDimension: number;
+    teamKey: keyof IAllTeams<any>;
+    switchPlacesWithPiece: (directions: [IDirection, IDirection] | [IDirection]) => () => void;
+}) {
+    const { gameSize, switchPlacesWithPiece, selectedTile, squareDimension, teamKey } = props;
+
+    const isValidRow = (rowIndex: number) => rowIndex >= 0 && rowIndex < gameSize.size.rows;
+    const isValidColumn = (columnIndex: number) => columnIndex >= 0 && columnIndex < gameSize.size.columns;
+    const isValidIndex = (rowIndex: number, columnIndex: number) => isValidRow(rowIndex) && isValidColumn(columnIndex);
+
+    const commonProps: IPieceSVGProps & { className: string } = {
+        className: styles.direction,
+        team: teamKey,
+        size: "board",
+        squareDimension,
+    };
+
+    const tile = selectedTile.gameTile.occupiedBy[0];
+    if (!IGamePiece.isEarth(tile)) {
+        return null;
+    }
+
+    return (
+        <div>
+            {isValidRow(selectedTile.rowIndex - 1) && (
+                <SwitchArrows
+                    {...commonProps}
+                    onClick={switchPlacesWithPiece(ISpecialActions.earth(["north"]))}
+                    style={{ top: `-${squareDimension}px` }}
+                />
+            )}
+            {isValidColumn(selectedTile.columnIndex + 1) && (
+                <SwitchArrows
+                    {...commonProps}
+                    onClick={switchPlacesWithPiece(ISpecialActions.earth(["east"]))}
+                    style={{ left: `${squareDimension}px` }}
+                />
+            )}
+            {isValidRow(selectedTile.rowIndex + 1) && (
+                <SwitchArrows
+                    {...commonProps}
+                    onClick={switchPlacesWithPiece(ISpecialActions.earth(["south"]))}
+                    style={{ top: `${squareDimension}px` }}
+                />
+            )}
+            {isValidColumn(selectedTile.columnIndex - 1) && (
+                <SwitchArrows
+                    {...commonProps}
+                    onClick={switchPlacesWithPiece(ISpecialActions.earth(["west"]))}
+                    style={{ left: `-${squareDimension}px` }}
+                />
+            )}
+            {isValidRow(selectedTile.rowIndex - 2) && (
+                <SwitchArrows
+                    {...commonProps}
+                    onClick={switchPlacesWithPiece(ISpecialActions.earth(["north", "north"]))}
+                    style={{ top: `-${squareDimension * 2}px` }}
+                />
+            )}
+            {isValidColumn(selectedTile.columnIndex + 2) && (
+                <SwitchArrows
+                    {...commonProps}
+                    onClick={switchPlacesWithPiece(ISpecialActions.earth(["east", "east"]))}
+                    style={{ left: `${squareDimension * 2}px` }}
+                />
+            )}
+            {isValidRow(selectedTile.rowIndex + 2) && (
+                <SwitchArrows
+                    {...commonProps}
+                    onClick={switchPlacesWithPiece(ISpecialActions.earth(["south", "south"]))}
+                    style={{ top: `${squareDimension * 2}px` }}
+                />
+            )}
+            {isValidColumn(selectedTile.columnIndex - 2) && (
+                <SwitchArrows
+                    {...commonProps}
+                    onClick={switchPlacesWithPiece(ISpecialActions.earth(["west", "west"]))}
+                    style={{ left: `-${squareDimension * 2}px` }}
+                />
+            )}
+            {isValidIndex(selectedTile.rowIndex - 1, selectedTile.columnIndex + 1) && (
+                <SwitchArrows
+                    {...commonProps}
+                    onClick={switchPlacesWithPiece(ISpecialActions.earth(["north", "east"]))}
+                    style={{ top: `-${squareDimension}px`, left: `${squareDimension}px` }}
+                />
+            )}
+            {isValidIndex(selectedTile.rowIndex + 1, selectedTile.columnIndex + 1) && (
+                <SwitchArrows
+                    {...commonProps}
+                    onClick={switchPlacesWithPiece(ISpecialActions.earth(["south", "east"]))}
+                    style={{ top: `${squareDimension}px`, left: `${squareDimension}px` }}
+                />
+            )}
+            {isValidIndex(selectedTile.rowIndex + 1, selectedTile.columnIndex - 1) && (
+                <SwitchArrows
+                    {...commonProps}
+                    onClick={switchPlacesWithPiece(ISpecialActions.earth(["south", "west"]))}
+                    style={{ top: `${squareDimension}px`, left: `-${squareDimension}px` }}
+                />
+            )}
+            {isValidIndex(selectedTile.rowIndex - 1, selectedTile.columnIndex - 1) && (
+                <SwitchArrows
+                    {...commonProps}
+                    onClick={switchPlacesWithPiece(ISpecialActions.earth(["north", "west"]))}
+                    style={{ top: `-${squareDimension}px`, left: `-${squareDimension}px` }}
+                />
+            )}
+        </div>
+    );
+}
+
 function UnconnectedAddNewStagedAction(props: IProps) {
     const { gameBoard, player, removeSelectedTile, selectedTile } = props;
     if (gameBoard === undefined || player === undefined || selectedTile === undefined || player.teamKey === undefined) {
@@ -278,6 +394,25 @@ function UnconnectedAddNewStagedAction(props: IProps) {
         removeSelectedTile();
     };
 
+    const switchPlacesWithPiece = (directions: [IDirection, IDirection] | [IDirection]) => () => {
+        const id = selectedTile.gameTile.occupiedBy[0]?.id;
+        if (id === undefined) {
+            return;
+        }
+
+        sendServerMessage().addStagedAction(
+            IGameAction.switchPlacesWithPiece({
+                gamePieceId: id,
+                start: {
+                    row: selectedTile.rowIndex,
+                    column: selectedTile.columnIndex,
+                },
+                directions,
+            }),
+        );
+        removeSelectedTile();
+    };
+
     const { top, squareDimension, left } = getTopAndLeft(gameBoard.metadata.board, selectedTile);
     const canMove = selectedTile.gameTile.occupiedBy.length > 0;
 
@@ -297,6 +432,15 @@ function UnconnectedAddNewStagedAction(props: IProps) {
                     gameSize={gameBoard.metadata.board}
                     selectedTile={selectedTile}
                     specialMoveTile={specialMoveTile}
+                    squareDimension={squareDimension}
+                    teamKey={player.teamKey}
+                />
+            )}
+            {canMove && (
+                <MaybeSwitchPlacesWithPieceOptions
+                    gameSize={gameBoard.metadata.board}
+                    selectedTile={selectedTile}
+                    switchPlacesWithPiece={switchPlacesWithPiece}
                     squareDimension={squareDimension}
                     teamKey={player.teamKey}
                 />

@@ -89,9 +89,14 @@ export function Spawn(props: IProps) {
 }
 
 export function Arrow(
-    props: IProps & { className: string; direction: IDirection | IWaterDirections; style: React.CSSProperties },
+    props: IProps & {
+        className: string;
+        direction: IDirection | IWaterDirections;
+        isSpecial?: boolean;
+        style: React.CSSProperties;
+    },
 ) {
-    const { className, direction, onClick, squareDimension, size, style, team } = props;
+    const { className, direction, isSpecial, onClick, squareDimension, size, style, team } = props;
     const transform = () => {
         switch (direction) {
             case "north":
@@ -118,14 +123,38 @@ export function Arrow(
             {renderInsideSVG(
                 <g
                     className={classNames({
-                        [styles.northLine]: team === "north",
-                        [styles.southLine]: team === "south",
+                        [styles.northLine]: team === "north" && !isSpecial,
+                        [styles.northSpecial]: team === "north" && isSpecial,
+                        [styles.southLine]: team === "south" && !isSpecial,
+                        [styles.southSpecial]: team === "south" && isSpecial,
                     })}
                     style={{ transform: transform(), transformOrigin: "center" }}
                 >
                     <line x1="15" y1="50" x2="85" y2="50" strokeWidth={8} strokeLinecap="round" />
                     <line x1="60" y1="25" x2="85" y2="50" strokeWidth={8} strokeLinecap="round" />
                     <line x1="60" y1="75" x2="85" y2="50" strokeWidth={8} strokeLinecap="round" />
+                </g>,
+                { onClick, squareDimension, size },
+            )}
+        </div>
+    );
+}
+
+export function SwitchArrows(props: IProps & { className: string; style: React.CSSProperties }) {
+    const { className, onClick, squareDimension, size, style, team } = props;
+    return (
+        <div className={className} style={style}>
+            {renderInsideSVG(
+                <g
+                    className={classNames({
+                        [styles.northSpecial]: team === "north",
+                        [styles.southSpecial]: team === "south",
+                    })}
+                    xmlns="http://www.w3.org/2000/svg"
+                    transform="translate(0,75) scale(0.1,-0.1)"
+                >
+                    <path d="M88 702 c-27 -21 -48 -45 -48 -55 0 -20 -7 -20 315 4 136 11 178 21 141 35 -16 6 -144 2 -316 -11 l-75 -6 28 29 c52 55 24 57 -45 4z" />
+                    <path d="M305 619 c-185 -12 -266 -22 -263 -34 4 -12 161 -13 298 -2 l95 8 -28 -29 c-28 -29 -34 -42 -18 -42 20 0 111 76 111 93 0 19 9 19 -195 6z" />
                 </g>,
                 { onClick, squareDimension, size },
             )}

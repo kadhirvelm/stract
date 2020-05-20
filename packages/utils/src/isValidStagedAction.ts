@@ -8,6 +8,7 @@ import {
     IGameActionSpecialMovePiece,
     IGamePieceId,
     IGamePiece,
+    IGameActionSwitchPlacesWithPiece,
 } from "@stract/api";
 import { adjustColumnAndRowByDirection, adjustColumnAndRowByMultipleDirections } from "./adjustColumnAndRowByDirection";
 import { getTeamKeyFromRid } from "./getTeamKeyFromRid";
@@ -20,6 +21,7 @@ function doExistingStagedActionsAffectTheSamePiece(existingStagedActions: IGameA
             movePiece: mp => mp.movePiece.gamePieceId === gamePieceId,
             spawnPiece: () => false,
             specialMovePiece: sp => sp.specialMove.gamePieceId === gamePieceId,
+            switchPlacesWithPiece: sw => sw.switchPlaces.gamePieceId === gamePieceId,
             unknown: () => false,
         }),
     );
@@ -74,7 +76,7 @@ function isValidSpawnAction(
     if (spawnAction.spawnPiece.row !== expectedRowIndex) {
         return {
             isValid: false,
-            message: `Your team (${team}) can only spawn in row ${expectedRowIndex}, but your spawn happened in row ${spawnAction.spawnPiece.row}. This is invalid, please try again.`,
+            message: `Your team (${team}) can only spawn in row ${expectedRowIndex}, but your spawn happened in row ${spawnAction.spawnPiece.row}. Please try again in row ${spawnAction.spawnPiece.row}.`,
         };
     }
 
@@ -84,7 +86,20 @@ function isValidSpawnAction(
     if (availablePiecesOfType === undefined || availablePiecesOfType.total === 0) {
         return {
             isValid: false,
-            message: `Your team does not have any more piece of type ${spawnAction.spawnPiece.pieceType} left. Try spawning a different piece.`,
+            message: `Your team does not have any more ${spawnAction.spawnPiece.pieceType} pieces left. Try a different one?`,
+        };
+    }
+
+    const doesAnExistingStagedActionAffectThePiece = gameBoard.stagedActions[team].some(
+        a =>
+            IGameAction.isSpawnPiece(a) &&
+            a.spawnPiece.column === spawnAction.spawnPiece.column &&
+            a.spawnPiece.row === spawnAction.spawnPiece.row,
+    );
+    if (doesAnExistingStagedActionAffectThePiece) {
+        return {
+            isValid: false,
+            message: `Unfortunately another action is already spawing to ${spawnAction.spawnPiece.column}. Try a different location?`,
         };
     }
 
@@ -94,7 +109,7 @@ function isValidSpawnAction(
     if (availablePiecesOfType.total - otherStagedActionsSpawningSamePiece.length <= 0) {
         return {
             isValid: false,
-            message: `Your teammate is also spawning a ${spawnAction.spawnPiece.pieceType}, which causes your team to run out. Try spawning a different piece.`,
+            message: `Another action is also spawning a ${spawnAction.spawnPiece.pieceType}, which causes your team to run out. Try a different piece?`,
         };
     }
 
@@ -107,11 +122,11 @@ function isValidSpecialMoveAction(
     team: keyof IAllTeams<any>,
     teamRid: ITeamRid,
 ): IInvalidStagedAction {
-    const doExistingStagedActionsSpecialMoveTheSamePiece = doExistingStagedActionsAffectTheSamePiece(
+    const doesAnExistingStagedActionAffectThePiece = doExistingStagedActionsAffectTheSamePiece(
         gameBoard.stagedActions[team],
         specialMoveAction.specialMove.gamePieceId,
     );
-    if (doExistingStagedActionsSpecialMoveTheSamePiece) {
+    if (doesAnExistingStagedActionAffectThePiece) {
         return {
             isValid: false,
             message: "Unfortunately a teammate is already moving the same piece. Try adding a different action.",
@@ -166,6 +181,57 @@ function isValidSpecialMoveAction(
     return checkIsIndexInBounds(column, row, gameBoard.metadata.board);
 }
 
+function isValidSwitchPlacesWithPieceAction(
+    gameBoard: IStractGameV1,
+    switchPlacesWithPieceAction: IGameActionSwitchPlacesWithPiece,
+    team: keyof IAllTeams<any>,
+    teamRid: ITeamRid,
+) {
+    const doesAnExistingStagedActionAffectThePiece = doExistingStagedActionsAffectTheSamePiece(
+        gameBoard.stagedActions[team],
+        switchPlacesWithPieceAction.switchPlaces.gamePieceId,
+    );
+    if (doesAnExistingStagedActionAffectThePiece) {
+        return {
+            isValid: false,
+            message: "Unfortunately a teammate is already moving the same piece. Try adding a different action.",
+        };
+    }
+
+    const { directions } = switchPlacesWithPieceAction.switchPlaces;
+    if (
+        (directions.includes("north") && directions.includes("south")) ||
+        (directions.includes("east") && directions.includes("west"))
+    ) {
+        return {
+            isValid: false,
+            message: `This is an invalid switch action, it cannot contain opposite directions: ${directions}`,
+        };
+    }
+
+    const gamePiece = getPieceOwnedByTeam(
+        gameBoard.board,
+        switchPlacesWithPieceAction.switchPlaces.start.row,
+        switchPlacesWithPieceAction.switchPlaces.start.column,
+        switchPlacesWithPieceAction.switchPlaces.gamePieceId,
+        teamRid,
+    );
+    if (gamePiece === undefined) {
+        return {
+            isValid: false,
+            message: "Your team does not own a piece in that location. Try a different location?",
+        };
+    }
+
+    const targetPosition = adjustColumnAndRowByMultipleDirections(
+        switchPlacesWithPieceAction.switchPlaces.start.column,
+        switchPlacesWithPieceAction.switchPlaces.start.row,
+        switchPlacesWithPieceAction.switchPlaces.directions,
+    );
+
+    return checkIsIndexInBounds(targetPosition.column, targetPosition.row, gameBoard.metadata.board);
+}
+
 export interface IInvalidStagedAction {
     message?: string;
     isValid: boolean;
@@ -182,6 +248,7 @@ export function isValidStagedAction(
         movePiece: mp => isValidMoveAction(gameBoard, mp, team, teamRid),
         spawnPiece: sp => isValidSpawnAction(gameBoard, sp, team),
         specialMovePiece: sm => isValidSpecialMoveAction(gameBoard, sm, team, teamRid),
+        switchPlacesWithPiece: sw => isValidSwitchPlacesWithPieceAction(gameBoard, sw, team, teamRid),
         unknown: () => ({ isValid: false, message: `Unexpected action type: ${newStagedAction.type}` }),
     });
 }
