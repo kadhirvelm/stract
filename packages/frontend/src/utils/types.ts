@@ -26,3 +26,5 @@ export interface ISelectedTile {
     gameTile: IGameTile;
     rowIndex: number;
 }
+
+export type IWaterDirections = "north west" | "north east" | "south east" | "south west";

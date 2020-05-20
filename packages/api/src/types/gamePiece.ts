@@ -71,20 +71,13 @@ export namespace IGamePiece {
 }
 
 export namespace ISpecialActions {
-    export const fire = <T extends IDirection>(
-        directions: [T, T],
-        specialMovePiece: Omit<ISpecialMovePiece, "directions">,
-    ): IGameActionSpecialMovePiece => {
-        return IGameAction.specialMove({ ...specialMovePiece, directions });
+    export const fire = <T extends IDirection>(directions: [T, T]) => {
+        return directions;
     };
 
     export const water = <T = Pick<IDirection, "north" & "south">, S = Pick<IDirection, "east" & "west">>(
         directions: [T, S],
-        specialMovePiece: Omit<ISpecialMovePiece, "directions">,
     ) => {
-        return IGameAction.specialMove({
-            ...specialMovePiece,
-            directions: (directions as unknown) as [IDirection, IDirection],
-        });
+        return directions;
     };
 }

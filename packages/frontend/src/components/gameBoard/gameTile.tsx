@@ -43,7 +43,7 @@ function MaybeRenderOccupiedBy(props: { dimension: number; occupiedBy: IGamePiec
 export class UnconnectedGameTile extends React.Component<IProps> {
     // We need to check for deep referential equality before re-rendering, this should be a cheap action since these pieces are small
     public shouldComponentUpdate(nextProps: IProps) {
-        const keysToCompare: Array<keyof IProps> = ["canAddAnyStagedAction", "gameTile"];
+        const keysToCompare: Array<keyof IProps> = ["canAddAnyStagedAction", "gameTile", "rowIndex", "columnIndex"];
         return !isEqual(pick(nextProps, keysToCompare), pick(this.props, keysToCompare));
     }
 

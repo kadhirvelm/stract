@@ -2,6 +2,7 @@ import { IAllTeams, IDirection } from "@stract/api";
 import classNames from "classnames";
 import * as React from "react";
 import styles from "./pieceSvg.module.scss";
+import { IWaterDirections } from "../../utils";
 
 type IPieceSize = "board" | "sidebar";
 
@@ -87,16 +88,26 @@ export function Spawn(props: IProps) {
     );
 }
 
-export function Arrow(props: IProps & { className: string; direction: IDirection; style: React.CSSProperties }) {
+export function Arrow(
+    props: IProps & { className: string; direction: IDirection | IWaterDirections; style: React.CSSProperties },
+) {
     const { className, direction, onClick, squareDimension, size, style, team } = props;
     const transform = () => {
         switch (direction) {
             case "north":
-                return "rotate(-90deg) translate(-100px, 0)";
+                return "rotate(-90deg)";
             case "south":
-                return "rotate(90deg) translate(0, -100px)";
+                return "rotate(90deg)";
             case "west":
-                return "rotate(180deg) translate(-100px, -100px)";
+                return "rotate(180deg)";
+            case "north west":
+                return "rotate(-135deg)";
+            case "north east":
+                return "rotate(-45deg)";
+            case "south east":
+                return "rotate(45deg)";
+            case "south west":
+                return "rotate(135deg)";
             default:
                 return "";
         }
@@ -110,7 +121,7 @@ export function Arrow(props: IProps & { className: string; direction: IDirection
                         [styles.northLine]: team === "north",
                         [styles.southLine]: team === "south",
                     })}
-                    style={{ transform: transform() }}
+                    style={{ transform: transform(), transformOrigin: "center" }}
                 >
                     <line x1="15" y1="50" x2="85" y2="50" strokeWidth={8} strokeLinecap="round" />
                     <line x1="60" y1="25" x2="85" y2="50" strokeWidth={8} strokeLinecap="round" />

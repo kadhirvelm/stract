@@ -36,17 +36,21 @@ function getPieceOwnedByTeam(
 
 function movePieceToNewLocation(
     board: IGameTile[][],
-    startRow: number,
-    startColumn: number,
-    newRow: number,
-    newColumn: number,
+    start: {
+        row: number;
+        column: number;
+    },
+    end: {
+        row: number;
+        column: number;
+    },
     gamePiece: IGamePiece,
 ) {
-    board[startRow][startColumn].occupiedBy = board[startRow][startColumn].occupiedBy.filter(
+    board[start.row][start.column].occupiedBy = board[start.row][start.column].occupiedBy.filter(
         p => p.id !== gamePiece.id,
     );
 
-    board[newRow][newColumn].occupiedBy = board[newRow][newColumn].occupiedBy.concat(gamePiece);
+    board[end.row][end.column].occupiedBy = board[end.row][end.column].occupiedBy.concat(gamePiece);
 }
 
 function executeMovePiece(currentGameState: IStractGameV1, movePieceAction: IGameActionMovePiece, team: ITeamRid) {
@@ -66,7 +70,7 @@ function executeMovePiece(currentGameState: IStractGameV1, movePieceAction: IGam
         return;
     }
 
-    movePieceToNewLocation(currentGameState.board, startRow, startColumn, column, row, gamePiece);
+    movePieceToNewLocation(currentGameState.board, { row: startRow, column: startColumn }, { row, column }, gamePiece);
 }
 
 function executeSpawnPiece(
@@ -113,7 +117,7 @@ function executeSpecialMovePiece(
         return;
     }
 
-    movePieceToNewLocation(currentGameState.board, startRow, startColumn, column, row, gamePiece);
+    movePieceToNewLocation(currentGameState.board, { row: startRow, column: startColumn }, { row, column }, gamePiece);
 }
 
 export function executeStagedActions(currentGameState: IStractGameV1) {
