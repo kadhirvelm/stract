@@ -137,6 +137,22 @@ function UnconnectedStagedAction(props: IProps) {
                 }
             />
         ),
+        switchPlacesWithPiece: switchPlacesWithPiece => (
+            <Action
+                action={switchPlacesWithPiece}
+                addedByPlayer={switchPlacesWithPiece.addedByPlayer}
+                currentPlayer={player}
+                gameBoard={gameBoard}
+                otherPlayerInfo={<div>A special move was made a player</div>}
+                samePlayerInfo={
+                    <div>
+                        Earth piece at {switchPlacesWithPiece.switchPlaces.start.row},{" "}
+                        {switchPlacesWithPiece.switchPlaces.start.column} is targeting a switch with the tile{" "}
+                        {switchPlacesWithPiece.switchPlaces.directions} away.
+                    </div>
+                }
+            />
+        ),
         unknown: () => <div>Unknown action</div>,
     });
 }

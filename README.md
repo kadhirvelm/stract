@@ -25,15 +25,16 @@ During a turn, all team members can take one of two actions:
 
 Pieces come in three forms: water, fire, or earth.
 
-All pieces can move freely in any of the 4 cardinal directions. In addition each piece has a special move:
+All pieces can move freely in any of the 4 basic cardinal directions. In addition each piece has a special move:
 1. Waters can move 1 tile diagonally
-2. Fires can move up to 2 tiles in any cardinal direction
-2. Earths can switch places with any piece (including an opponent's) on an adjacent tile
+2. Fires can move up to 2 tiles in any basic cardinal direction
+2. Earths can designate a tile up to 2 tiles away. If after the movement phase there's at least one piece in the designated tile, the earth piece will switch its place with the all the pieces on the designated tile.
 
-Action resolution happens in the following order: first all spawns and all movement, then all earth switching, then piece destruction, which leads to a few nuances:
+Action resolution happens in the following order: first all spawns, then all movement, then all earth switching, then piece destruction, then piece scoring. This leads to a few nuances:
 1. Fires can jump over other pieces
-2. Earth switching can miss because it targets a tile, not a piece. If it misses, the earth will do nothing
-3. If a earth attempts to switch with a tile that has more than one piece, it will switch places will all of them. Piece destruction will happen after the switch
+2. Earth switching can miss because it targets the tile, not the piece. If it misses, the earth piece will do nothing
+3. Earth pieces will only take themselves during a switch
+4. Any conflicts between earth pieces is resolved via a first-come-first-serve basis
 
 If two pieces occupy the same tile, the following happens:
 1. Water destroy Fire

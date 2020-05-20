@@ -133,6 +133,28 @@ export function Arrow(
     );
 }
 
+export function SwitchArrows(props: IProps & { className: string; style: React.CSSProperties }) {
+    const { className, onClick, squareDimension, size, style, team } = props;
+    return (
+        <div className={className} style={style}>
+            {renderInsideSVG(
+                <g
+                    className={classNames({
+                        [styles.northSpawn]: team === "north",
+                        [styles.southSpawn]: team === "south",
+                    })}
+                    xmlns="http://www.w3.org/2000/svg"
+                    transform="translate(0,75) scale(0.1,-0.1)"
+                >
+                    <path d="M88 702 c-27 -21 -48 -45 -48 -55 0 -20 -7 -20 315 4 136 11 178 21 141 35 -16 6 -144 2 -316 -11 l-75 -6 28 29 c52 55 24 57 -45 4z" />
+                    <path d="M305 619 c-185 -12 -266 -22 -263 -34 4 -12 161 -13 298 -2 l95 8 -28 -29 c-28 -29 -34 -42 -18 -42 20 0 111 76 111 93 0 19 9 19 -195 6z" />
+                </g>,
+                { onClick, squareDimension, size },
+            )}
+        </div>
+    );
+}
+
 export function HiddenPiece(props: IProps) {
     const { onClick, squareDimension, size } = props;
 

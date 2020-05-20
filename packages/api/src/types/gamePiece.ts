@@ -75,6 +75,21 @@ export namespace ISpecialActions {
         return [direction, direction];
     };
 
+    export const earth = (directions: IDirection[]): [IDirection] | [IDirection, IDirection] => {
+        if (directions.length === 0 || directions.length > 2) {
+            throw new Error(`Invalid earth movement, you need at least 1 and at most 2: ${directions}`);
+        }
+
+        if (
+            (directions.includes("west") && directions.includes("east")) ||
+            (directions.includes("north") && directions.includes("south"))
+        ) {
+            throw new Error(`Earth cannot include opposite directions: ${directions}`);
+        }
+
+        return directions as [IDirection] | [IDirection, IDirection];
+    };
+
     export const water = (topOrBottom: "north" | "south", leftOrRight: "east" | "west"): [IDirection, IDirection] => {
         return [topOrBottom, leftOrRight];
     };

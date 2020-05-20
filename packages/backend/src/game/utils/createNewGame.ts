@@ -13,8 +13,8 @@ import { v4 } from "uuid";
 
 const BOARD_SIZE: IBoardMetadata = {
     size: {
-        columns: 6,
-        rows: 6,
+        columns: 7,
+        rows: 8,
     },
 };
 
