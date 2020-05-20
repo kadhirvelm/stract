@@ -36,7 +36,15 @@ function Action(props: {
             return "Move";
         }
 
-        return "Spawn";
+        if (type === "spawn-piece") {
+            return "Spawn";
+        }
+
+        if (type === "special-move-piece") {
+            return "Special Move";
+        }
+
+        return "";
     };
 
     const playerName = gameBoard.teams[currentPlayer.teamKey].players.find(p => p.id === addedByPlayer);
@@ -85,7 +93,7 @@ function UnconnectedStagedAction(props: IProps) {
                 addedByPlayer={move.addedByPlayer}
                 currentPlayer={player}
                 gameBoard={gameBoard}
-                otherPlayerInfo={<div>Some random move was made</div>}
+                otherPlayerInfo={<div>A move was made by a teammate.</div>}
                 samePlayerInfo={
                     <div>
                         Piece at ({move.movePiece.startRow + 1}, {move.movePiece.startColumn + 1}){" "}
@@ -110,6 +118,21 @@ function UnconnectedStagedAction(props: IProps) {
                     <div>
                         Create a {spawn.spawnPiece.pieceType} at {spawn.spawnPiece.row + 1},{" "}
                         {spawn.spawnPiece.column + 1}
+                    </div>
+                }
+            />
+        ),
+        specialMovePiece: specialMove => (
+            <Action
+                action={specialMove}
+                addedByPlayer={specialMove.addedByPlayer}
+                currentPlayer={player}
+                gameBoard={gameBoard}
+                otherPlayerInfo={<div>A special move was made a player</div>}
+                samePlayerInfo={
+                    <div>
+                        Piece at ({specialMove.specialMove.startRow + 1}, {specialMove.specialMove.startColumn + 1}){" "}
+                        {specialMove.specialMove.directions.join(", ")}{" "}
                     </div>
                 }
             />

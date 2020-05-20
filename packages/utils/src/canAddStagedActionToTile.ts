@@ -14,7 +14,12 @@ function canMoveTile(
 ) {
     const doAnyExistingStagedActionsMoveTheSamePiece = playerTeamStagedActions.find(a => {
         return (
-            IGameAction.isMovePiece(a) && a.movePiece.startRow === rowIndex && a.movePiece.startColumn === columnIndex
+            (IGameAction.isMovePiece(a) &&
+                a.movePiece.startRow === rowIndex &&
+                a.movePiece.startColumn === columnIndex) ||
+            (IGameAction.isSpecialMovePiece(a) &&
+                a.specialMove.startRow === rowIndex &&
+                a.specialMove.startColumn === columnIndex)
         );
     });
 

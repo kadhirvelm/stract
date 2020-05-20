@@ -1,5 +1,6 @@
 import { v4 } from "uuid";
-import { IGamePieceId, ITeamRid, gamePieceId } from "./idTypes";
+import { IDirection } from "./general";
+import { gamePieceId, IGamePieceId, ITeamRid } from "./idTypes";
 
 export type IGamePieceType = "fire" | "water" | "earth";
 
@@ -66,5 +67,15 @@ export namespace IGamePiece {
         }
 
         return callbacks.unknown(gamePiece);
+    };
+}
+
+export namespace ISpecialActions {
+    export const fire = (direction: IDirection): [IDirection, IDirection] => {
+        return [direction, direction];
+    };
+
+    export const water = (topOrBottom: "north" | "south", leftOrRight: "east" | "west"): [IDirection, IDirection] => {
+        return [topOrBottom, leftOrRight];
     };
 }
