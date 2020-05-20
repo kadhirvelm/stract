@@ -1,6 +1,7 @@
 import { v4 } from "uuid";
 import { IDirection } from "./general";
 import { gameActionId, IGameActionId, IGamePieceId, IPlayerIdentifier } from "./idTypes";
+import { IGamePieceType } from "./gamePiece";
 
 export type IGameActionType = "move-piece" | "spawn-piece" | "special-move-piece";
 
