@@ -34,9 +34,9 @@ function MaybeRenderOccupiedBy(props: { dimension: number; occupiedBy: IOccupied
 
     return IOccupiedBy.visit<React.ReactElement | null>(occupiedBy, {
         alive: alivePiece => <Piece piece={alivePiece.piece} squareDimension={dimension} />,
-        dead: deadPiece => (
+        destroyed: destroyed => (
             <>
-                <Piece className={styles.destroyedPiece} piece={deadPiece.piece} squareDimension={dimension} />
+                <Piece className={styles.destroyedPiece} piece={destroyed.piece} squareDimension={dimension} />
                 <Cross className={styles.destroyedPiece} squareDimension={dimension} />
             </>
         ),
@@ -169,7 +169,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                     <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={occupiedByAlive} />
                 </BasicTile>
             ),
-            dead: occupiedByDead => (
+            destroyed: occupiedByDead => (
                 <BasicTile
                     {...commonProps}
                     keyString={getGameTileKey(occupiedByDead, rowIndex, columnIndex)}

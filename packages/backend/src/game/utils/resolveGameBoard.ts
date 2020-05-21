@@ -1,27 +1,27 @@
 /* eslint-disable no-param-reassign */
-import { IStractGameV1, IGamePiece, IGameTile, IOccupiedBy, IOccupiedByAlive, IOccupiedByDead } from "@stract/api";
+import { IStractGameV1, IGamePiece, IGameTile, IOccupiedBy, IOccupiedByAlive, IOccupiedByDestroyed } from "@stract/api";
 import { getTeamKeyFromRid } from "@stract/utils";
 import { POINT_VALUES } from "./pointValues";
 
 function getWinningPiece(
     occupiedByOne: IOccupiedByAlive,
     occupiedByTwo: IOccupiedByAlive,
-): { occupiedBy: IOccupiedBy[]; losingPieces: IOccupiedByDead[] } {
+): { occupiedBy: IOccupiedBy[]; losingPieces: IOccupiedByDestroyed[] } {
     const pieceOne = occupiedByOne.piece;
     const pieceTwo = occupiedByTwo.piece;
 
     const pieceOneWinningScenario = {
         occupiedBy: [
             IOccupiedBy.alive({ piece: { ...pieceOne, isHidden: false } }),
-            IOccupiedBy.dead({ piece: pieceTwo }),
+            IOccupiedBy.destroyed({ piece: pieceTwo }),
         ],
-        losingPieces: [IOccupiedBy.dead({ piece: pieceTwo })],
+        losingPieces: [IOccupiedBy.destroyed({ piece: pieceTwo })],
     };
 
     if (pieceOne.type === pieceTwo.type) {
         return {
             occupiedBy: [],
-            losingPieces: [IOccupiedBy.dead({ piece: pieceOne }), IOccupiedBy.dead({ piece: pieceTwo })],
+            losingPieces: [IOccupiedBy.destroyed({ piece: pieceOne }), IOccupiedBy.destroyed({ piece: pieceTwo })],
         };
     }
 
@@ -40,16 +40,16 @@ function getWinningPiece(
     return getWinningPiece(occupiedByTwo, occupiedByOne);
 }
 
-function removePiecesFromAvailablePool(losingPieces: IOccupiedByDead[], currentGameState: IStractGameV1) {
-    losingPieces.forEach(deadPiece => {
-        const teamKey = getTeamKeyFromRid(deadPiece.piece.ownedByTeam, currentGameState.teams);
+function removePiecesFromAvailablePool(losingPieces: IOccupiedByDestroyed[], currentGameState: IStractGameV1) {
+    losingPieces.forEach(destroyedPiece => {
+        const teamKey = getTeamKeyFromRid(destroyedPiece.piece.ownedByTeam, currentGameState.teams);
 
         const otherTeamKey = teamKey === "north" ? "south" : "north";
         currentGameState.teams[otherTeamKey].score += POINT_VALUES.destroyingPiece;
 
         currentGameState.teams[teamKey].piecePool.total = currentGameState.teams[teamKey].piecePool.total.map(
             totalPoolPiece => {
-                if (totalPoolPiece.type === deadPiece.piece.type) {
+                if (totalPoolPiece.type === destroyedPiece.piece.type) {
                     totalPoolPiece.total -= 1;
                 }
 
@@ -92,8 +92,8 @@ export function resolveGameBoard(currentGameState: IStractGameV1) {
             }
 
             if (tile.occupiedBy.length > 2) {
-                tile.occupiedBy = tile.occupiedBy.map(ob => IOccupiedBy.dead({ piece: ob.piece }));
-                removePiecesFromAvailablePool(tile.occupiedBy as IOccupiedByDead[], currentGameState);
+                tile.occupiedBy = tile.occupiedBy.map(ob => IOccupiedBy.destroyed({ piece: ob.piece }));
+                removePiecesFromAvailablePool(tile.occupiedBy as IOccupiedByDestroyed[], currentGameState);
                 return;
             }
 

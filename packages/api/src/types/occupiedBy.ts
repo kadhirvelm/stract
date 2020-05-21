@@ -1,6 +1,6 @@
 import { IGamePiece } from "./gamePiece";
 
-export type IOccupiedByType = "alive" | "dead" | "scored";
+export type IOccupiedByType = "alive" | "destroyed" | "scored";
 
 export interface IGeneralOccupiedBy {
     piece: IGamePiece;
@@ -11,19 +11,19 @@ export interface IOccupiedByAlive extends IGeneralOccupiedBy {
     type: "alive";
 }
 
-export interface IOccupiedByDead extends IGeneralOccupiedBy {
-    type: "dead";
+export interface IOccupiedByDestroyed extends IGeneralOccupiedBy {
+    type: "destroyed";
 }
 
 export interface IOccupiedByScored extends IGeneralOccupiedBy {
     type: "scored";
 }
 
-export type IOccupiedBy = IOccupiedByAlive | IOccupiedByDead | IOccupiedByScored;
+export type IOccupiedBy = IOccupiedByAlive | IOccupiedByDestroyed | IOccupiedByScored;
 
 interface IOccupiedByVisitor<Output> {
     alive: (occupiedBy: IOccupiedByAlive) => Output;
-    dead: (occupiedBy: IOccupiedByDead) => Output;
+    destroyed: (occupiedBy: IOccupiedByDestroyed) => Output;
     scored: (occupiedBy: IOccupiedByScored) => Output;
     undefined: () => Output;
     unknown: (occupiedBy: IOccupiedBy) => Output;
@@ -34,10 +34,10 @@ export namespace IOccupiedBy {
         ...occupiedBy,
         type: "alive",
     });
-    export const dead = (occupiedBy: Omit<IGeneralOccupiedBy, "type">): IOccupiedByDead => ({
+    export const destroyed = (occupiedBy: Omit<IGeneralOccupiedBy, "type">): IOccupiedByDestroyed => ({
         ...occupiedBy,
         piece: { ...occupiedBy.piece, isHidden: false },
-        type: "dead",
+        type: "destroyed",
     });
     export const scored = (occupiedBy: Omit<IGeneralOccupiedBy, "type">): IOccupiedByScored => ({
         ...occupiedBy,
@@ -45,7 +45,8 @@ export namespace IOccupiedBy {
     });
 
     export const isAlive = (occupiedBy: IOccupiedBy): occupiedBy is IOccupiedByAlive => occupiedBy.type === "alive";
-    export const isDead = (occupiedBy: IOccupiedBy): occupiedBy is IOccupiedByDead => occupiedBy.type === "dead";
+    export const isDead = (occupiedBy: IOccupiedBy): occupiedBy is IOccupiedByDestroyed =>
+        occupiedBy.type === "destroyed";
     export const isScored = (occupiedBy: IOccupiedBy): occupiedBy is IOccupiedByScored => occupiedBy.type === "scored";
 
     export const visit = <T = any>(occupiedBy: IOccupiedBy | undefined, callbacks: IOccupiedByVisitor<T>) => {
@@ -58,7 +59,7 @@ export namespace IOccupiedBy {
         }
 
         if (isDead(occupiedBy)) {
-            return callbacks.dead(occupiedBy);
+            return callbacks.destroyed(occupiedBy);
         }
 
         if (isScored(occupiedBy)) {
