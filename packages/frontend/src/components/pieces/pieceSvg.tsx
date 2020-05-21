@@ -162,12 +162,54 @@ export function SwitchArrows(props: IProps & { className: string; style: React.C
     );
 }
 
-export function HiddenPiece(props: IProps) {
-    const { onClick, squareDimension, size } = props;
+export function HiddenPiece(props: IProps & { className?: string }) {
+    const { className, onClick, squareDimension, size } = props;
 
-    return renderInsideSVG(<rect className={styles.hidden} width={100} height={100} />, {
-        onClick,
-        squareDimension,
-        size,
-    });
+    return (
+        <div className={className}>
+            {renderInsideSVG(<rect className={styles.hidden} width={100} height={100} />, {
+                onClick,
+                squareDimension,
+                size,
+            })}
+        </div>
+    );
+}
+
+export function Star(props: Pick<IProps, "squareDimension"> & { className: string }) {
+    const { className, squareDimension } = props;
+
+    return (
+        <div className={className}>
+            {renderInsideSVG(
+                <g
+                    className={styles.star}
+                    xmlns="http://www.w3.org/2000/svg"
+                    transform="translate(3,75) scale(0.1,-0.1)"
+                >
+                    <path d="M738 723 c-3 -4 -11 -28 -18 -53 -20 -67 -24 -70 -102 -70 -55 0 -70 -3 -75 -17 -6 -16 6 -29 77 -84 l33 -25 -16 -49 c-20 -56 -22 -91 -6 -101 6 -3 34 10 63 30 29 20 58 36 65 36 7 0 33 -16 58 -35 52 -40 56 -41 77 -20 13 14 13 21 -5 72 -10 31 -19 61 -19 67 0 6 23 26 50 45 38 26 50 40 48 55 -3 18 -12 22 -73 26 l-70 5 -21 60 c-16 44 -27 61 -42 63 -11 2 -22 0 -24 -5z" />
+                </g>,
+                { squareDimension, size: "board" },
+            )}
+        </div>
+    );
+}
+
+export function Cross(props: Pick<IProps, "squareDimension"> & { className: string }) {
+    const { className, squareDimension } = props;
+
+    return (
+        <div className={className}>
+            {renderInsideSVG(
+                <g
+                    className={styles.cross}
+                    xmlns="http://www.w3.org/2000/svg"
+                    transform="translate(0,75) scale(0.1,-0.1)"
+                >
+                    <path d="M16 713 c-5 -12 15 -39 74 -98 44 -44 80 -85 80 -90 0 -5 -37 -47 -82 -92 -70 -70 -80 -84 -68 -97 7 -9 17 -16 24 -16 6 0 48 37 93 82 l82 82 80 -83 c53 -55 86 -82 98 -79 39 7 25 39 -55 121 l-80 82 79 83 c80 82 94 113 56 120 -12 3 -46 -24 -100 -78 l-81 -81 -81 81 c-81 80 -107 94 -119 63z" />
+                </g>,
+                { squareDimension, size: "board" },
+            )}
+        </div>
+    );
 }
