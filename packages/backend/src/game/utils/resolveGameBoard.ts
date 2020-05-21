@@ -20,7 +20,7 @@ function getWinningPiece(
 
     if (pieceOne.type === pieceTwo.type) {
         return {
-            occupiedBy: [],
+            occupiedBy: [IOccupiedBy.destroyed({ piece: pieceOne }), IOccupiedBy.destroyed({ piece: pieceTwo })],
             losingPieces: [IOccupiedBy.destroyed({ piece: pieceOne }), IOccupiedBy.destroyed({ piece: pieceTwo })],
         };
     }

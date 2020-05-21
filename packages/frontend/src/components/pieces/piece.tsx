@@ -13,6 +13,7 @@ interface IOwnProps {
     className?: string;
     piece: IGamePiece;
     squareDimension: number;
+    style?: React.CSSProperties;
 }
 
 interface IStateProps {
@@ -23,7 +24,7 @@ interface IStateProps {
 type IProps = IOwnProps & IStateProps;
 
 function UnconnectedPiece(props: IProps) {
-    const { className, piece, squareDimension, player, teamRidToTeamKey } = props;
+    const { className, piece, squareDimension, style, player, teamRidToTeamKey } = props;
 
     const team = teamRidToTeamKey[piece.ownedByTeam];
 
@@ -48,7 +49,7 @@ function UnconnectedPiece(props: IProps) {
     };
 
     return (
-        <div className={classNames(styles.pieceContainer, className)}>
+        <div className={classNames(styles.pieceContainer, className)} style={style}>
             {IGamePiece.visit(piece, {
                 fire: () => <Fire team={team} squareDimension={squareDimension} size="board" />,
                 earth: () => <Earth team={team} squareDimension={squareDimension} size="board" />,
