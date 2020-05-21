@@ -1,17 +1,17 @@
 import { Spinner } from "@blueprintjs/core";
-import { IStractGameV1, IGameTile } from "@stract/api";
+import { IStractGameV1 } from "@stract/api";
 import { canAddAnyStagedActionToTile } from "@stract/utils";
 import * as React from "react";
 import { connect } from "react-redux";
+import { flattenBoard } from "../../selectors/flattenBoard";
 import { IStoreState } from "../../store";
-import { getDimensions, IPlayerWithTeamKey } from "../../utils";
+import { getDimensions, IFlattenedBoard, IPlayerWithTeamKey, getGameTileKey } from "../../utils";
 import styles from "./gameBoard.module.scss";
 import { GameTile } from "./gameTile";
-import { flattenBoard } from "../../selectors/flattenBoard";
 
 interface IStoreProps {
     gameBoard?: IStractGameV1;
-    flattenedBoard: Array<{ tile: IGameTile; columnIndex: number; rowIndex: number }>;
+    flattenedBoard: IFlattenedBoard[];
     player?: IPlayerWithTeamKey;
 }
 
@@ -44,7 +44,7 @@ class UnconnectedGameBoard extends React.PureComponent<IProps> {
                         left: additionalGameBoardHorizontalPadding,
                     }}
                 >
-                    {flattenedBoard.map(({ tile, columnIndex, rowIndex }) => (
+                    {flattenedBoard.map(({ occupiedBy, columnIndex, rowIndex }) => (
                         <GameTile
                             totalBoardRows={metadata.board.size.rows}
                             dimension={squareDimension}
@@ -54,8 +54,8 @@ class UnconnectedGameBoard extends React.PureComponent<IProps> {
                                 rowIndex,
                                 columnIndex,
                             )}
-                            key={tile.occupiedBy[0]?.id ?? `${rowIndex}-${columnIndex}`}
-                            gameTile={tile}
+                            key={getGameTileKey(occupiedBy, columnIndex, rowIndex)}
+                            occupiedBy={occupiedBy}
                             rowIndex={rowIndex}
                             columnIndex={columnIndex}
                         />

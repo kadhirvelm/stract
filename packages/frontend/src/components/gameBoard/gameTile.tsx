@@ -1,24 +1,22 @@
-import { IAllTeams, IGamePiece, IGameTile } from "@stract/api";
+import { IAllTeams, IOccupiedBy, IOccupiedByAlive } from "@stract/api";
 import { ICanAddStagedActionToTile } from "@stract/utils";
 import classNames from "classnames";
-import { isEqual, pick } from "lodash-es";
+import { isEqual, pick, noop } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { IStoreState } from "../../store";
-import { ChangeSelectedTile } from "../../store/interface/interfaceActions";
-import { ISelectedTile } from "../../utils";
-import { Piece } from "../pieces";
-import { Spawn } from "../pieces/pieceSvg";
+import { ChangeSelectedTile, IStoreState } from "../../store";
+import { getGameTileKey, ISelectedTile } from "../../utils";
+import { Piece, Spawn, Star, Cross } from "../pieces";
 import styles from "./gameTile.module.scss";
 
 interface IOwnProps {
-    totalBoardRows: number;
     canAddAnyStagedAction: ICanAddStagedActionToTile;
-    dimension: number;
-    gameTile: IGameTile;
-    rowIndex: number;
     columnIndex: number;
+    dimension: number;
+    occupiedBy: IOccupiedBy | undefined;
+    rowIndex: number;
+    totalBoardRows: number;
 }
 
 interface IStateProps {
@@ -26,24 +24,93 @@ interface IStateProps {
 }
 
 interface IDispatchProps {
-    changeSelectedTile: (selectedTile: ISelectedTile) => void;
+    changeSelectedTile: (selectedTile: ISelectedTile | undefined) => void;
 }
 
 type IProps = IOwnProps & IStateProps & IDispatchProps;
 
-function MaybeRenderOccupiedBy(props: { dimension: number; occupiedBy: IGamePiece[] | undefined }) {
-    const { dimension, occupiedBy } = props;
-    if (occupiedBy === undefined || occupiedBy.length === 0) {
-        return null;
-    }
+function MaybeRenderOccupiedBy(props: { className?: string; dimension: number; occupiedBy: IOccupiedBy }) {
+    const { className, dimension, occupiedBy } = props;
 
-    return <Piece piece={occupiedBy[0]} squareDimension={dimension} />;
+    return IOccupiedBy.visit<React.ReactElement | null>(occupiedBy, {
+        alive: alivePiece => <Piece className={className} piece={alivePiece.piece} squareDimension={dimension} />,
+        destroyed: destroyed => (
+            <>
+                <Piece className={styles.destroyedPiece} piece={destroyed.piece} squareDimension={dimension} />
+                <Cross className={styles.destroyedPiece} squareDimension={dimension} />
+            </>
+        ),
+        scored: scoredPiece => (
+            <>
+                <Piece className={styles.scoredPiece} piece={scoredPiece.piece} squareDimension={dimension} />
+                <Star className={styles.scoredPiece} squareDimension={dimension} />
+            </>
+        ),
+        undefined: () => null,
+        unknown: () => null,
+    });
 }
+
+const BasicTile: React.FunctionComponent<{
+    canAddAnyStagedAction: ICanAddStagedActionToTile;
+    columnIndex: number;
+    dimension: number;
+    keyString: string;
+    onClick: () => void;
+    rowIndex: number;
+    selectedTile: ISelectedTile | undefined;
+    shouldRenderBackground?: boolean;
+    teamOwner: keyof IAllTeams<any>;
+}> = props => {
+    const {
+        canAddAnyStagedAction,
+        children,
+        columnIndex,
+        dimension,
+        keyString,
+        onClick,
+        rowIndex,
+        selectedTile,
+        shouldRenderBackground,
+        teamOwner,
+    } = props;
+
+    return (
+        <div
+            className={classNames(
+                styles.freeTile,
+                shouldRenderBackground && {
+                    [styles.northTile]: teamOwner === "north",
+                    [styles.southTile]: teamOwner === "south",
+                    [styles.canSelectTile]: canAddAnyStagedAction.isValid && selectedTile === undefined,
+                    [styles.isSelectedTile]:
+                        selectedTile?.rowIndex === rowIndex && selectedTile?.columnIndex === columnIndex,
+                },
+            )}
+            key={keyString}
+            onClick={onClick}
+            style={{
+                height: dimension,
+                width: dimension,
+                top: rowIndex * dimension,
+                left: columnIndex * dimension,
+            }}
+        >
+            {children}
+        </div>
+    );
+};
 
 export class UnconnectedGameTile extends React.Component<IProps> {
     // We need to check for deep referential equality before re-rendering, this should be a cheap action since these pieces are small
     public shouldComponentUpdate(nextProps: IProps) {
-        const keysToCompare: Array<keyof IProps> = ["canAddAnyStagedAction", "gameTile", "rowIndex", "columnIndex"];
+        const keysToCompare: Array<keyof IProps> = [
+            "canAddAnyStagedAction",
+            "occupiedBy",
+            "selectedTile",
+            "rowIndex",
+            "columnIndex",
+        ];
         return !isEqual(pick(nextProps, keysToCompare), pick(this.props, keysToCompare));
     }
 
@@ -54,54 +121,88 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             changeSelectedTile,
             columnIndex,
             dimension,
-            gameTile,
+            occupiedBy,
             rowIndex,
             selectedTile,
         } = this.props;
 
-        const maybeSelectTile = () => {
-            if (!canAddAnyStagedAction.isValid) {
-                return;
-            }
+        const isSelectedTile = selectedTile?.columnIndex === columnIndex && selectedTile.rowIndex === rowIndex;
 
-            changeSelectedTile({
-                canSpawn: canAddAnyStagedAction.canSpawn,
-                columnIndex,
-                dimension,
-                gameTile,
-                rowIndex,
-            });
+        const maybeSelectTile = (occupiedByAlive: IOccupiedByAlive | undefined) => () => {
+            if (selectedTile !== undefined && (!canAddAnyStagedAction.isValid || isSelectedTile)) {
+                changeSelectedTile(undefined);
+            } else if (canAddAnyStagedAction.isValid) {
+                changeSelectedTile({
+                    canSpawn: canAddAnyStagedAction.canSpawn,
+                    columnIndex,
+                    dimension,
+                    occupiedByAlive,
+                    rowIndex,
+                });
+            }
         };
 
         const teamOwner: keyof IAllTeams<any> = rowIndex < totalBoardRows / 2 ? "north" : "south";
 
-        return IGameTile.visit(gameTile, {
-            free: tile => {
-                return (
-                    <div
-                        className={classNames(styles.freeTile, {
-                            [styles.northTile]: teamOwner === "north",
-                            [styles.southTile]: teamOwner === "south",
-                            [styles.canSelectTile]: canAddAnyStagedAction.isValid && selectedTile === undefined,
-                            [styles.isSelectedTile]:
-                                selectedTile?.rowIndex === rowIndex && selectedTile?.columnIndex === columnIndex,
+        const commonProps = {
+            canAddAnyStagedAction,
+            dimension,
+            columnIndex,
+            rowIndex,
+            selectedTile,
+            shouldRenderBackground: true,
+            teamOwner,
+        };
+
+        return IOccupiedBy.visit<React.ReactElement | null>(occupiedBy, {
+            alive: occupiedByAlive => (
+                <BasicTile
+                    {...commonProps}
+                    keyString={getGameTileKey(occupiedByAlive, rowIndex, columnIndex)}
+                    onClick={maybeSelectTile(occupiedByAlive)}
+                >
+                    <MaybeRenderOccupiedBy
+                        className={classNames({
+                            [styles.spawnOverAliveTile]: canAddAnyStagedAction.canSpawn && isSelectedTile,
                         })}
-                        key={tile.occupiedBy[0]?.id ?? `${rowIndex}-${columnIndex}`}
-                        onClick={maybeSelectTile}
-                        style={{
-                            height: dimension,
-                            width: dimension,
-                            top: rowIndex * dimension,
-                            left: columnIndex * dimension,
-                        }}
-                    >
-                        {canAddAnyStagedAction.canSpawn && (
-                            <Spawn squareDimension={dimension} size="board" team={teamOwner} />
-                        )}
-                        <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={tile.occupiedBy} />
-                    </div>
-                );
-            },
+                        dimension={dimension}
+                        occupiedBy={occupiedByAlive}
+                    />
+                </BasicTile>
+            ),
+            destroyed: occupiedByDestroyed => (
+                <BasicTile
+                    {...commonProps}
+                    keyString={getGameTileKey(occupiedByDestroyed, rowIndex, columnIndex)}
+                    onClick={noop}
+                    shouldRenderBackground={false}
+                >
+                    <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={occupiedByDestroyed} />
+                </BasicTile>
+            ),
+            scored: occupiedByScored => (
+                <BasicTile
+                    {...commonProps}
+                    keyString={getGameTileKey(occupiedByScored, rowIndex, columnIndex)}
+                    onClick={maybeSelectTile(undefined)}
+                >
+                    {canAddAnyStagedAction.canSpawn && !isSelectedTile && (
+                        <Spawn squareDimension={dimension} size="board" team={teamOwner} />
+                    )}
+                    <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={occupiedByScored} />
+                </BasicTile>
+            ),
+            undefined: () => (
+                <BasicTile
+                    {...commonProps}
+                    keyString={getGameTileKey(undefined, rowIndex, columnIndex)}
+                    onClick={maybeSelectTile(undefined)}
+                >
+                    {canAddAnyStagedAction.canSpawn && !isSelectedTile && (
+                        <Spawn squareDimension={dimension} size="board" team={teamOwner} />
+                    )}
+                </BasicTile>
+            ),
             unknown: () => null,
         });
     }

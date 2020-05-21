@@ -4,7 +4,7 @@ import * as React from "react";
 import styles from "./pieceSvg.module.scss";
 import { IWaterDirections } from "../../utils";
 
-type IPieceSize = "board" | "sidebar";
+type IPieceSize = "board" | "spawn" | "sidebar";
 
 export interface IPieceSVGProps {
     squareDimension?: number;
@@ -15,12 +15,24 @@ export interface IPieceSVGProps {
 
 type IProps = IPieceSVGProps;
 
+function getDimensionFromSize(size: IPieceSize) {
+    if (size === "board") {
+        return 0.9;
+    }
+
+    if (size === "spawn") {
+        return 0.75;
+    }
+
+    return 0.35;
+}
+
 function renderInsideSVG(
     element: React.ReactElement,
     options: { onClick?: () => void; squareDimension: number | undefined; size: IPieceSize },
 ) {
     const { onClick, squareDimension, size } = options;
-    const dimension = size === "board" ? squareDimension ?? 100 : 25;
+    const dimension = getDimensionFromSize(size) * (squareDimension ?? 100);
 
     return (
         <svg height={dimension} width={dimension} onClick={onClick} viewBox="0 0 100 100">
@@ -38,7 +50,7 @@ export function Fire(props: IProps) {
             xmlns="http://www.w3.org/2000/svg"
             transform="translate(0,100) scale(0.1,-0.1)"
         >
-            <path d="M795 936 c-22 -7 -56 -21 -75 -31 -30 -16 -33 -16 -21 -2 12 15 11 17 -3 17 -25 0 -150 -124 -195 -194 -40 -62 -81 -154 -81 -186 0 -8 -5 -22 -10 -30 -20 -32 -133 129 -165 234 l-12 39 -20 -34 c-34 -54 -62 -150 -75 -253 -16 -126 -2 -213 49 -315 31 -62 46 -80 80 -99 109 -60 273 -79 382 -45 68 22 114 65 160 152 l34 65 0 140 c0 118 -4 158 -27 249 -33 139 -33 170 4 243 16 32 30 60 30 62 0 4 -14 1 -55 -12z m-53 -78 c-16 -16 -16 -59 1 -53 8 4 13 -6 14 -27 0 -18 10 -76 22 -128 30 -139 39 -329 17 -403 -18 -62 -68 -127 -118 -153 -29 -15 -29 -15 -18 7 15 28 16 155 1 192 -6 16 -11 45 -11 65 0 47 26 146 40 150 24 8 8 24 -17 17 -94 -23 -221 -131 -245 -207 l-11 -37 -43 41 c-38 36 -64 47 -56 24 2 -5 4 -39 6 -75 3 -71 32 -149 69 -189 l22 -24 -55 21 c-37 14 -70 38 -101 70 -42 44 -47 55 -52 112 -15 137 1 399 23 399 4 0 11 -16 14 -36 5 -23 12 -34 20 -31 8 3 22 -10 35 -33 28 -50 86 -100 115 -100 20 0 25 8 40 67 9 36 27 91 41 122 26 55 111 154 150 172 11 5 38 21 60 34 39 24 59 25 37 3z m-108 -393 c-18 -27 -17 -55 6 -213 11 -72 10 -89 -4 -125 -15 -39 -20 -43 -69 -55 -72 -17 -94 -15 -127 8 -31 22 -66 96 -76 161 -7 43 -6 43 12 27 10 -9 31 -20 47 -23 22 -6 26 -4 21 8 -14 39 71 151 160 211 48 32 51 32 30 1z" />
+            <path d="M603 940 c-133 -69 -234 -163 -257 -240 -9 -29 -16 -71 -16 -92 0 -46 -16 -49 -53 -10 -44 46 -58 93 -56 193 1 49 -2 93 -6 97 -12 12 -76 -69 -106 -133 -38 -83 -53 -213 -39 -348 18 -174 33 -214 117 -314 72 -85 97 -93 279 -93 146 0 158 1 205 25 148 75 232 224 209 366 -17 100 -23 124 -36 144 -22 35 -62 208 -67 292 -4 67 -2 86 14 112 10 17 23 31 29 31 5 0 10 5 10 10 0 6 -28 10 -64 10 -57 0 -75 -5 -163 -50z m-27 -491 c-14 -24 -17 -42 -12 -77 3 -25 10 -50 15 -56 15 -20 21 -80 11 -115 -13 -48 -51 -99 -80 -110 -100 -38 -157 -6 -176 97 -4 20 -9 41 -12 47 -18 30 22 130 61 154 16 11 18 8 15 -25 -2 -30 1 -38 20 -45 19 -7 24 -4 34 19 7 15 36 58 66 95 39 48 58 65 66 57 7 -7 5 -19 -8 -41z" />
         </g>,
         { onClick, squareDimension, size },
     );
@@ -53,7 +65,7 @@ export function Earth(props: IProps) {
             xmlns="http://www.w3.org/2000/svg"
             transform="translate(0,100) scale(0.1,-0.1)"
         >
-            <path d="M615 867 c-88 -33 -299 -129 -316 -144 -24 -20 -39 -90 -39 -176 l0 -74 -49 -23 c-27 -12 -53 -32 -59 -44 -15 -33 -32 -159 -32 -241 0 -73 -1 -75 -24 -75 -30 0 -44 -19 -25 -31 19 -12 858 -10 881 2 22 12 24 39 3 39 -13 0 -15 25 -15 163 -1 89 -5 195 -9 236 -8 66 -13 77 -47 112 -20 21 -49 41 -64 44 -22 5 -34 23 -73 105 -26 55 -47 104 -47 109 0 17 -36 17 -85 -2z m65 -38 c0 -22 54 -124 71 -134 17 -11 9 -25 -15 -25 -14 0 -27 -4 -30 -9 -7 -10 17 -21 46 -21 33 0 125 -67 142 -105 14 -28 16 -67 14 -235 l-3 -202 -46 -2 -47 -2 -7 81 c-10 120 -68 227 -129 240 -86 17 -114 14 -154 -13 -81 -55 -192 -172 -162 -172 6 0 10 -28 10 -70 l0 -70 -105 0 -105 0 0 33 c1 86 21 239 34 265 15 30 72 62 173 98 49 17 53 17 65 2 12 -16 40 -19 53 -6 3 3 -1 11 -10 18 -8 7 -15 19 -15 26 0 8 -6 14 -13 14 -12 0 -92 -26 -139 -45 -16 -6 -18 -1 -17 41 1 100 12 135 49 165 19 16 80 44 135 64 55 19 120 46 145 60 56 30 60 30 60 4z m32 -483 c31 -36 59 -116 68 -199 l6 -57 -195 0 -194 0 6 77 6 76 71 72 72 73 67 -6 c58 -4 69 -8 93 -36z" />
+            <path d="M248 994 c-4 -3 -2 -19 3 -36 7 -25 2 -42 -25 -97 -48 -94 -57 -136 -57 -261 0 -128 10 -166 59 -240 51 -76 111 -113 263 -161 162 -51 171 -58 177 -138 3 -41 9 -61 18 -61 20 0 25 32 15 104 -11 74 -9 83 58 263 41 112 47 166 26 239 -26 90 -58 137 -142 205 -95 76 -172 114 -264 129 -55 9 -73 17 -86 36 -15 23 -33 30 -45 18z m119 -170 c2 -44 43 -119 55 -102 4 7 8 28 8 46 0 17 5 32 11 32 8 0 10 -23 6 -77 -6 -74 -5 -81 27 -142 l33 -65 7 38 c4 21 5 50 2 64 -6 29 8 61 21 48 11 -10 7 -125 -5 -156 -7 -19 -3 -38 22 -90 17 -36 35 -71 40 -79 17 -27 30 22 34 132 3 73 8 107 16 104 19 -7 13 -189 -9 -236 -17 -40 -17 -41 4 -92 12 -28 20 -53 17 -56 -10 -10 -32 16 -51 57 -14 32 -23 40 -44 40 -34 0 -172 81 -201 117 -20 25 -20 28 -5 31 9 2 29 -7 43 -20 62 -55 172 -121 172 -103 0 3 -15 39 -34 79 -32 67 -39 75 -90 101 -59 30 -114 79 -98 89 5 3 33 -12 62 -34 30 -22 57 -40 61 -40 7 0 -20 64 -49 116 -6 12 -36 36 -67 53 -30 17 -55 36 -55 41 0 16 20 12 51 -11 25 -17 29 -18 29 -4 0 26 -39 93 -60 105 -11 6 -20 17 -20 26 0 11 4 12 19 5 15 -9 20 -7 24 11 8 30 21 15 24 -28z" />
         </g>,
         { onClick, squareDimension, size },
     );
@@ -67,8 +79,7 @@ export function Water(props: IProps) {
             xmlns="http://www.w3.org/2000/svg"
             transform="translate(0,100) scale(0.1,-0.1)"
         >
-            <path d="M395 957 c10 -50 -8 -101 -71 -207 -109 -183 -148 -295 -149 -425 0 -103 19 -157 76 -214 80 -80 233 -119 344 -86 72 21 141 90 193 194 32 65 37 84 36 140 -1 126 -43 217 -184 397 -152 196 -188 234 -221 234 -29 0 -30 -2 -24 -33z m180 -195 c140 -175 187 -257 205 -360 10 -61 9 -74 -8 -120 -46 -120 -117 -202 -194 -222 -54 -15 -158 -5 -218 21 -175 77 -202 281 -69 526 109 203 139 266 139 295 0 16 4 27 10 23 5 -3 66 -76 135 -163z" />
-            <path d="M720 346 c0 -40 -47 -122 -92 -160 -23 -20 -45 -36 -50 -36 -4 0 -8 -7 -8 -15 0 -19 13 -19 49 -1 85 44 179 236 115 236 -8 0 -14 -10 -14 -24z" />
+            <path d="M218 978 c-50 -11 -59 -23 -33 -42 26 -19 67 -144 55 -166 -5 -10 -10 -35 -10 -55 0 -20 -12 -87 -26 -148 -32 -139 -28 -212 17 -304 58 -121 168 -186 314 -186 89 -1 147 19 215 73 82 65 139 202 126 304 -18 141 -85 275 -191 382 -92 93 -139 119 -256 139 -94 17 -142 17 -211 3z m593 -424 c9 -11 14 -43 13 -93 0 -93 -19 -131 -110 -229 -82 -89 -142 -119 -184 -92 -12 8 4 29 86 108 98 93 133 141 139 186 14 116 19 136 30 136 7 0 19 -7 26 -16z" />
         </g>,
         { onClick, squareDimension, size },
     );
@@ -123,9 +134,9 @@ export function Arrow(
             {renderInsideSVG(
                 <g
                     className={classNames({
-                        [styles.northLine]: team === "north" && !isSpecial,
+                        [styles.northMove]: team === "north" && !isSpecial,
                         [styles.northSpecial]: team === "north" && isSpecial,
-                        [styles.southLine]: team === "south" && !isSpecial,
+                        [styles.southMove]: team === "south" && !isSpecial,
                         [styles.southSpecial]: team === "south" && isSpecial,
                     })}
                     style={{ transform: transform(), transformOrigin: "center" }}
@@ -140,11 +151,15 @@ export function Arrow(
     );
 }
 
-export function SwitchArrows(props: IProps & { className: string; style: React.CSSProperties }) {
-    const { className, onClick, squareDimension, size, style, team } = props;
+export function SwitchArrows(props: Omit<IProps, "size"> & { className: string; style: React.CSSProperties }) {
+    const { className, onClick, squareDimension, style, team } = props;
+    if (squareDimension === undefined) {
+        return null;
+    }
+
     return (
         <div className={className} style={style}>
-            {renderInsideSVG(
+            <svg height={squareDimension * 0.25} width={squareDimension * 0.45} style={style} onClick={onClick}>
                 <g
                     className={classNames({
                         [styles.northSpecial]: team === "north",
@@ -155,19 +170,63 @@ export function SwitchArrows(props: IProps & { className: string; style: React.C
                 >
                     <path d="M88 702 c-27 -21 -48 -45 -48 -55 0 -20 -7 -20 315 4 136 11 178 21 141 35 -16 6 -144 2 -316 -11 l-75 -6 28 29 c52 55 24 57 -45 4z" />
                     <path d="M305 619 c-185 -12 -266 -22 -263 -34 4 -12 161 -13 298 -2 l95 8 -28 -29 c-28 -29 -34 -42 -18 -42 20 0 111 76 111 93 0 19 9 19 -195 6z" />
-                </g>,
-                { onClick, squareDimension, size },
+                </g>
+            </svg>
+        </div>
+    );
+}
+
+export function HiddenPiece(props: IProps & { className?: string }) {
+    const { className, onClick, squareDimension, size } = props;
+
+    return (
+        <div className={classNames(className, styles.basic)}>
+            {renderInsideSVG(
+                <rect className={styles.hidden} width={90} height={90} style={{ transform: "translate(5px, 5px)" }} />,
+                {
+                    onClick,
+                    squareDimension,
+                    size,
+                },
             )}
         </div>
     );
 }
 
-export function HiddenPiece(props: IProps) {
-    const { onClick, squareDimension, size } = props;
+export function Star(props: Pick<IProps, "squareDimension"> & { className: string }) {
+    const { className, squareDimension } = props;
 
-    return renderInsideSVG(<rect className={styles.hidden} width={100} height={100} />, {
-        onClick,
-        squareDimension,
-        size,
-    });
+    return (
+        <div className={classNames(className, styles.basic)}>
+            {renderInsideSVG(
+                <g
+                    className={styles.star}
+                    xmlns="http://www.w3.org/2000/svg"
+                    transform="translate(3,75) scale(0.1,-0.1)"
+                >
+                    <path d="M738 723 c-3 -4 -11 -28 -18 -53 -20 -67 -24 -70 -102 -70 -55 0 -70 -3 -75 -17 -6 -16 6 -29 77 -84 l33 -25 -16 -49 c-20 -56 -22 -91 -6 -101 6 -3 34 10 63 30 29 20 58 36 65 36 7 0 33 -16 58 -35 52 -40 56 -41 77 -20 13 14 13 21 -5 72 -10 31 -19 61 -19 67 0 6 23 26 50 45 38 26 50 40 48 55 -3 18 -12 22 -73 26 l-70 5 -21 60 c-16 44 -27 61 -42 63 -11 2 -22 0 -24 -5z" />
+                </g>,
+                { squareDimension, size: "board" },
+            )}
+        </div>
+    );
+}
+
+export function Cross(props: Pick<IProps, "squareDimension"> & { className: string }) {
+    const { className, squareDimension } = props;
+
+    return (
+        <div className={classNames(className, styles.basic)}>
+            {renderInsideSVG(
+                <g
+                    className={styles.cross}
+                    xmlns="http://www.w3.org/2000/svg"
+                    transform="translate(0,75) scale(0.1,-0.1)"
+                >
+                    <path d="M16 713 c-5 -12 15 -39 74 -98 44 -44 80 -85 80 -90 0 -5 -37 -47 -82 -92 -70 -70 -80 -84 -68 -97 7 -9 17 -16 24 -16 6 0 48 37 93 82 l82 82 80 -83 c53 -55 86 -82 98 -79 39 7 25 39 -55 121 l-80 82 79 83 c80 82 94 113 56 120 -12 3 -46 -24 -100 -78 l-81 -81 -81 81 c-81 80 -107 94 -119 63z" />
+                </g>,
+                { squareDimension, size: "board" },
+            )}
+        </div>
+    );
 }

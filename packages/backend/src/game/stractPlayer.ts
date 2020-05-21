@@ -13,7 +13,7 @@ import {
 } from "@stract/api";
 import io from "socket.io";
 import { v4 } from "uuid";
-import { isValidStagedAction } from "@stract/utils";
+import { isValidStagedAction, getTeamKeyFromRid } from "@stract/utils";
 import { IStractGame, IStractPlayer } from "./types";
 
 export class StractPlayer implements IStractPlayer {
@@ -51,6 +51,16 @@ export class StractPlayer implements IStractPlayer {
         ) {
             this.toClient.onMessage({
                 message: "Unfortunately the game is playing right now. We can't accept your action.",
+                intent: "warning",
+            });
+            return;
+        }
+
+        const team = getTeamKeyFromRid(this.team, this.game.currentGameState.teams);
+        if (this.game.currentGameState.stagedActions[team].length >= this.game.maximumStagedActionsPerTurn) {
+            this.toClient.onMessage({
+                message:
+                    "Your team has reached it's maximum staged actions limit for this turn. Either wait, or delete an existing staged action.",
                 intent: "warning",
             });
             return;

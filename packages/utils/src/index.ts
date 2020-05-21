@@ -5,3 +5,4 @@ export * from "./getGamePieceFromType";
 export * from "./getGamePieceOwnedByTeam";
 export * from "./getTeamKeyFromRid";
 export * from "./isValidStagedAction";
+export * from "./occupiedTiles";

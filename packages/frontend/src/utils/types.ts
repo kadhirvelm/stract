@@ -1,4 +1,4 @@
-import { IPlayer, ITeamRid, IAllTeams, IGameTile } from "@stract/api";
+import { IPlayer, ITeamRid, IAllTeams, IGameTile, IOccupiedBy, IOccupiedByAlive } from "@stract/api";
 
 export interface IRegisterWithTeam {
     teamName: string;
@@ -23,8 +23,15 @@ export interface ISelectedTile {
     canSpawn?: boolean;
     columnIndex: number;
     dimension: number;
-    gameTile: IGameTile;
+    occupiedByAlive: IOccupiedByAlive | undefined;
     rowIndex: number;
 }
 
 export type IWaterDirections = "north west" | "north east" | "south east" | "south west";
+
+export interface IFlattenedBoard {
+    parentTile: IGameTile;
+    rowIndex: number;
+    columnIndex: number;
+    occupiedBy: IOccupiedBy | undefined;
+}

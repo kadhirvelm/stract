@@ -13,7 +13,7 @@ import {
 import { adjustColumnAndRowByDirection, adjustColumnAndRowByMultipleDirections } from "./adjustColumnAndRowByDirection";
 import { getTeamKeyFromRid } from "./getTeamKeyFromRid";
 import { checkIsIndexInBounds } from "./checkIsIndexInBounds";
-import { getPieceOwnedByTeam } from "./getGamePieceOwnedByTeam";
+import { getAlivePieceOwnedByTeam } from "./getGamePieceOwnedByTeam";
 
 function doExistingStagedActionsAffectTheSamePiece(existingStagedActions: IGameAction[], gamePieceId: IGamePieceId) {
     return existingStagedActions.some(action =>
@@ -44,7 +44,7 @@ function isValidMoveAction(
         };
     }
 
-    const gamePiece = getPieceOwnedByTeam(
+    const gamePiece = getAlivePieceOwnedByTeam(
         gameBoard.board,
         moveAction.movePiece.startRow,
         moveAction.movePiece.startColumn,
@@ -142,7 +142,7 @@ function isValidSpecialMoveAction(
     const columnDifference = Math.abs(specialMoveAction.specialMove.startColumn - column);
     const rowDifference = Math.abs(specialMoveAction.specialMove.startRow - row);
 
-    const gamePiece = getPieceOwnedByTeam(
+    const gamePiece = getAlivePieceOwnedByTeam(
         gameBoard.board,
         specialMoveAction.specialMove.startRow,
         specialMoveAction.specialMove.startColumn,
@@ -164,14 +164,14 @@ function isValidSpecialMoveAction(
         };
     }
 
-    if ((columnDifference === 2 || rowDifference === 2) && !IGamePiece.isFire(gamePiece)) {
+    if ((columnDifference === 2 || rowDifference === 2) && !IGamePiece.isFire(gamePiece.piece)) {
         return {
             isValid: false,
             message: "Only fire tiles are allowed to move 2 in one direction. This is an invalid action.",
         };
     }
 
-    if (columnDifference === 1 && rowDifference === 1 && !IGamePiece.isWater(gamePiece)) {
+    if (columnDifference === 1 && rowDifference === 1 && !IGamePiece.isWater(gamePiece.piece)) {
         return {
             isValid: false,
             message: "Only water tiles are allowed to move diagonally. This is an invalid action.",
@@ -209,7 +209,7 @@ function isValidSwitchPlacesWithPieceAction(
         };
     }
 
-    const gamePiece = getPieceOwnedByTeam(
+    const gamePiece = getAlivePieceOwnedByTeam(
         gameBoard.board,
         switchPlacesWithPieceAction.switchPlaces.start.row,
         switchPlacesWithPieceAction.switchPlaces.start.column,

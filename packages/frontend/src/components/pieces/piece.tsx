@@ -2,6 +2,7 @@ import { IGamePiece } from "@stract/api";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Icon } from "@blueprintjs/core";
+import classNames from "classnames";
 import { IStoreState } from "../../store";
 import { ITeamRidToTeamKey, IPlayerWithTeamKey } from "../../utils";
 import { Fire, Earth, Water, HiddenPiece } from "./pieceSvg";
@@ -9,6 +10,7 @@ import { getTeamRidToTeamKey } from "../../selectors";
 import styles from "./piece.module.scss";
 
 interface IOwnProps {
+    className?: string;
     piece: IGamePiece;
     squareDimension: number;
 }
@@ -21,7 +23,7 @@ interface IStateProps {
 type IProps = IOwnProps & IStateProps;
 
 function UnconnectedPiece(props: IProps) {
-    const { piece, squareDimension, player, teamRidToTeamKey } = props;
+    const { className, piece, squareDimension, player, teamRidToTeamKey } = props;
 
     const team = teamRidToTeamKey[piece.ownedByTeam];
 
@@ -30,7 +32,7 @@ function UnconnectedPiece(props: IProps) {
     }
 
     if (piece.ownedByTeam !== player.team && piece.isHidden) {
-        return <HiddenPiece team={team} squareDimension={squareDimension} size="board" />;
+        return <HiddenPiece className={className} team={team} squareDimension={squareDimension} size="board" />;
     }
 
     const maybeRenderHidden = () => {
@@ -46,7 +48,7 @@ function UnconnectedPiece(props: IProps) {
     };
 
     return (
-        <div className={styles.pieceContainer}>
+        <div className={classNames(styles.pieceContainer, className)}>
             {IGamePiece.visit(piece, {
                 fire: () => <Fire team={team} squareDimension={squareDimension} size="board" />,
                 earth: () => <Earth team={team} squareDimension={squareDimension} size="board" />,

@@ -24,17 +24,37 @@
     stroke: $south-active;
 }
 
+.north-move {
+    stroke: $north-move-normal;
+}
+
+.south-move {
+    stroke: $south-move-normal;
+}
+
 .north-special {
-    stroke: $north-title;
-    fill: $north-title;
+    stroke: $north-move-special;
+    fill: $north-move-special;
 }
 
 .south-special {
-    stroke: $south-title;
-    fill: $south-title;
+    stroke: $south-move-special;
+    fill: $south-move-special;
+}
+
+.basic {
+    display: flex;
 }
 
 .hidden {
     fill: $gray4;
     cursor: not-allowed;
+}
+
+.star {
+    fill: $gold4;
+}
+
+.cross {
+    fill: $red4;
 }

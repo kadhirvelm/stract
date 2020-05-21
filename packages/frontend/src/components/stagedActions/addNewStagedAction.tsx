@@ -52,18 +52,17 @@ const getTopAndLeft = (gameBoardMetadata: IBoardMetadata, selectedTile: ISelecte
 function SpawnOptions(props: {
     squareDimension: number;
     teamKey: keyof IAllTeams<any>;
-    rowIndex: number;
     spawnTile: (pieceType: IGamePieceType) => () => void;
 }) {
-    const { teamKey, rowIndex, squareDimension, spawnTile } = props;
+    const { teamKey, squareDimension, spawnTile } = props;
 
-    const topOffset = rowIndex < 5 ? squareDimension : -25;
+    const topOffset = squareDimension * 0.15;
 
     return (
         <div className={styles.spawnNewTilesContainer} style={{ width: squareDimension, top: `${topOffset}px` }}>
-            <Fire team={teamKey} size="sidebar" onClick={spawnTile("fire")} />
-            <Water team={teamKey} size="sidebar" onClick={spawnTile("water")} />
-            <Earth team={teamKey} size="sidebar" onClick={spawnTile("earth")} />
+            <Fire team={teamKey} size="spawn" onClick={spawnTile("fire")} />
+            <Water team={teamKey} size="spawn" onClick={spawnTile("water")} />
+            <Earth team={teamKey} size="spawn" onClick={spawnTile("earth")} />
         </div>
     );
 }
@@ -146,12 +145,12 @@ function MaybeSpecialMoveOptions(props: {
         squareDimension,
     };
 
-    const tile = selectedTile.gameTile.occupiedBy[0];
-    if (IGamePiece.isEarth(tile)) {
+    const piece = selectedTile.occupiedByAlive?.piece;
+    if (piece === undefined || IGamePiece.isEarth(piece)) {
         return null;
     }
 
-    if (IGamePiece.isFire(tile)) {
+    if (IGamePiece.isFire(piece)) {
         return (
             <div>
                 {isValidRow(selectedTile.rowIndex - 2) && (
@@ -190,7 +189,7 @@ function MaybeSpecialMoveOptions(props: {
         );
     }
 
-    if (IGamePiece.isWater(tile)) {
+    if (IGamePiece.isWater(piece)) {
         return (
             <div>
                 {isValidIndex(selectedTile.rowIndex - 1, selectedTile.columnIndex + 1) && (
@@ -245,15 +244,14 @@ function MaybeSwitchPlacesWithPieceOptions(props: {
     const isValidColumn = (columnIndex: number) => columnIndex >= 0 && columnIndex < gameSize.size.columns;
     const isValidIndex = (rowIndex: number, columnIndex: number) => isValidRow(rowIndex) && isValidColumn(columnIndex);
 
-    const commonProps: IPieceSVGProps & { className: string } = {
+    const commonProps: Omit<IPieceSVGProps, "size"> & { className: string } = {
         className: styles.direction,
         team: teamKey,
-        size: "board",
         squareDimension,
     };
 
-    const tile = selectedTile.gameTile.occupiedBy[0];
-    if (!IGamePiece.isEarth(tile)) {
+    const piece = selectedTile.occupiedByAlive?.piece;
+    if (piece === undefined || !IGamePiece.isEarth(piece)) {
         return null;
     }
 
@@ -361,7 +359,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
     };
 
     const moveTile = (direction: IDirection) => () => {
-        const id = selectedTile.gameTile.occupiedBy[0]?.id;
+        const id = selectedTile.occupiedByAlive?.piece.id;
         if (id === undefined) {
             return;
         }
@@ -378,7 +376,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
     };
 
     const specialMoveTile = (directions: [IDirection, IDirection]) => () => {
-        const id = selectedTile.gameTile.occupiedBy[0]?.id;
+        const id = selectedTile.occupiedByAlive?.piece.id;
         if (id === undefined) {
             return;
         }
@@ -395,7 +393,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
     };
 
     const switchPlacesWithPiece = (directions: [IDirection, IDirection] | [IDirection]) => () => {
-        const id = selectedTile.gameTile.occupiedBy[0]?.id;
+        const id = selectedTile.occupiedByAlive?.piece.id;
         if (id === undefined) {
             return;
         }
@@ -414,7 +412,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
     };
 
     const { top, squareDimension, left } = getTopAndLeft(gameBoard.metadata.board, selectedTile);
-    const canMove = selectedTile.gameTile.occupiedBy.length > 0;
+    const canMove = selectedTile.occupiedByAlive !== undefined;
 
     return (
         <div className={styles.addNewStagedAction} style={{ top, left }}>
@@ -446,12 +444,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
                 />
             )}
             {selectedTile.canSpawn && (
-                <SpawnOptions
-                    squareDimension={squareDimension}
-                    teamKey={player.teamKey}
-                    spawnTile={spawnTile}
-                    rowIndex={selectedTile.rowIndex}
-                />
+                <SpawnOptions squareDimension={squareDimension} teamKey={player.teamKey} spawnTile={spawnTile} />
             )}
         </div>
     );

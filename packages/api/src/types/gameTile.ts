@@ -1,10 +1,10 @@
-import { IGamePiece } from "./gamePiece";
+import { IOccupiedBy } from "./occupiedBy";
 
 export type IGameTileType = "free";
 
 export interface IGeneralGameTile {
     type: IGameTileType;
-    occupiedBy: IGamePiece[];
+    occupiedBy: IOccupiedBy[];
 }
 
 export interface IGameTileFree extends IGeneralGameTile {

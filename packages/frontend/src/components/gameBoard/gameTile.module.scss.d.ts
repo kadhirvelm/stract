@@ -2,6 +2,8 @@
 declare namespace GameTileModuleScssModule {
     export interface IGameTileModuleScss {
         canSelectTile: string;
+        destroy: string;
+        destroyedPiece: string;
         fadeIn: string;
         freeTile: string;
         isSelectedTile: string;
@@ -12,6 +14,8 @@ declare namespace GameTileModuleScssModule {
         northLine: string;
         northTile: string;
         northTitle: string;
+        score: string;
+        scoredPiece: string;
         southActive: string;
         southBackground: string;
         southColor: string;
@@ -19,6 +23,7 @@ declare namespace GameTileModuleScssModule {
         southLine: string;
         southTile: string;
         southTitle: string;
+        spawnOverAliveTile: string;
     }
 }
 
