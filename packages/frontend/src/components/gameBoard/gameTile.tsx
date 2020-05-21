@@ -34,12 +34,25 @@ function MaybeRenderOccupiedBy(props: { className?: string; dimension: number; o
 
     return IOccupiedBy.visit<React.ReactElement | null>(occupiedBy, {
         alive: alivePiece => <Piece className={className} piece={alivePiece.piece} squareDimension={dimension} />,
-        destroyed: destroyed => (
-            <>
-                <Piece className={styles.destroyedPiece} piece={destroyed.piece} squareDimension={dimension} />
-                <Cross className={styles.destroyedPiece} squareDimension={dimension} />
-            </>
-        ),
+        destroyed: destroyed => {
+            // This helps differentiate between multiple pieces being destroyed at the same time
+            const randomTime = `${Math.random() * 500}ms`;
+            return (
+                <>
+                    <Piece
+                        className={styles.destroyedPiece}
+                        piece={destroyed.piece}
+                        squareDimension={dimension}
+                        style={{ animationDelay: randomTime }}
+                    />
+                    <Cross
+                        className={styles.destroyedPiece}
+                        squareDimension={dimension}
+                        style={{ animationDelay: randomTime }}
+                    />
+                </>
+            );
+        },
         scored: scoredPiece => (
             <>
                 <Piece className={styles.scoredPiece} piece={scoredPiece.piece} squareDimension={dimension} />

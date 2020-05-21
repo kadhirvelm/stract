@@ -1,5 +1,5 @@
 import { createSelector } from "reselect";
-import { IGameTile } from "@stract/api";
+import { IGameTile, IOccupiedBy } from "@stract/api";
 import { flatten } from "lodash-es";
 import { IStoreState } from "../store";
 import { IFlattenedBoard } from "../utils";
@@ -23,7 +23,18 @@ export const flattenBoard = createSelector(
                         if (tile.occupiedBy.length === 0) {
                             return [{ occupiedBy: undefined, parentTile: tile, rowIndex, columnIndex }];
                         }
-                        return tile.occupiedBy.map(ob => ({ parentTile: tile, rowIndex, columnIndex, occupiedBy: ob }));
+
+                        const allOccupiedTiles: IFlattenedBoard[] = tile.occupiedBy.map(ob => ({
+                            parentTile: tile,
+                            rowIndex,
+                            columnIndex,
+                            occupiedBy: ob,
+                        }));
+                        if (tile.occupiedBy.filter(ob => !IOccupiedBy.isDestroyed(ob)).length === 0) {
+                            allOccupiedTiles.push({ parentTile: tile, rowIndex, columnIndex, occupiedBy: undefined });
+                        }
+
+                        return allOccupiedTiles;
                     }),
                 ),
             ),

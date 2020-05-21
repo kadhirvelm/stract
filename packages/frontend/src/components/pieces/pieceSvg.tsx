@@ -212,11 +212,11 @@ export function Star(props: Pick<IProps, "squareDimension"> & { className: strin
     );
 }
 
-export function Cross(props: Pick<IProps, "squareDimension"> & { className: string }) {
-    const { className, squareDimension } = props;
+export function Cross(props: Pick<IProps, "squareDimension"> & { className: string; style: React.CSSProperties }) {
+    const { className, squareDimension, style } = props;
 
     return (
-        <div className={classNames(className, styles.basic)}>
+        <div className={classNames(className, styles.basic)} style={style}>
             {renderInsideSVG(
                 <g
                     className={styles.cross}

@@ -47,7 +47,9 @@
     position: absolute;
     opacity: 0;
     z-index: -1;
-    animation: destroy 1000ms ease-out;
+    animation-name: destroy;
+    animation-duration: 1000ms;
+    animation-timing-function: ease-out;
 }
 
 @keyframes destroy {
