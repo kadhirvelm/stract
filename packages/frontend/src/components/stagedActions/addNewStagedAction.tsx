@@ -57,13 +57,13 @@ function SpawnOptions(props: {
 }) {
     const { teamKey, rowIndex, squareDimension, spawnTile } = props;
 
-    const topOffset = rowIndex < 5 ? squareDimension : -25;
+    const topOffset = rowIndex < 5 ? squareDimension * 0.9 : -squareDimension * 0.55;
 
     return (
         <div className={styles.spawnNewTilesContainer} style={{ width: squareDimension, top: `${topOffset}px` }}>
-            <Fire team={teamKey} size="sidebar" onClick={spawnTile("fire")} />
-            <Water team={teamKey} size="sidebar" onClick={spawnTile("water")} />
-            <Earth team={teamKey} size="sidebar" onClick={spawnTile("earth")} />
+            <Fire team={teamKey} size="spawn" onClick={spawnTile("fire")} />
+            <Water team={teamKey} size="spawn" onClick={spawnTile("water")} />
+            <Earth team={teamKey} size="spawn" onClick={spawnTile("earth")} />
         </div>
     );
 }

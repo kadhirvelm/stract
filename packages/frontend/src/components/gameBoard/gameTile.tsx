@@ -24,7 +24,7 @@ interface IStateProps {
 }
 
 interface IDispatchProps {
-    changeSelectedTile: (selectedTile: ISelectedTile) => void;
+    changeSelectedTile: (selectedTile: ISelectedTile | undefined) => void;
 }
 
 type IProps = IOwnProps & IStateProps & IDispatchProps;
@@ -104,7 +104,13 @@ const BasicTile: React.FunctionComponent<{
 export class UnconnectedGameTile extends React.Component<IProps> {
     // We need to check for deep referential equality before re-rendering, this should be a cheap action since these pieces are small
     public shouldComponentUpdate(nextProps: IProps) {
-        const keysToCompare: Array<keyof IProps> = ["canAddAnyStagedAction", "occupiedBy", "rowIndex", "columnIndex"];
+        const keysToCompare: Array<keyof IProps> = [
+            "canAddAnyStagedAction",
+            "occupiedBy",
+            "selectedTile",
+            "rowIndex",
+            "columnIndex",
+        ];
         return !isEqual(pick(nextProps, keysToCompare), pick(this.props, keysToCompare));
     }
 
@@ -121,17 +127,21 @@ export class UnconnectedGameTile extends React.Component<IProps> {
         } = this.props;
 
         const maybeSelectTile = (occupiedByAlive: IOccupiedByAlive | undefined) => () => {
-            if (!canAddAnyStagedAction.isValid) {
-                return;
+            if (
+                selectedTile !== undefined &&
+                (!canAddAnyStagedAction.isValid ||
+                    (selectedTile.columnIndex === columnIndex && selectedTile.rowIndex === rowIndex))
+            ) {
+                changeSelectedTile(undefined);
+            } else if (canAddAnyStagedAction.isValid) {
+                changeSelectedTile({
+                    canSpawn: canAddAnyStagedAction.canSpawn,
+                    columnIndex,
+                    dimension,
+                    occupiedByAlive,
+                    rowIndex,
+                });
             }
-
-            changeSelectedTile({
-                canSpawn: canAddAnyStagedAction.canSpawn,
-                columnIndex,
-                dimension,
-                occupiedByAlive,
-                rowIndex,
-            });
         };
 
         const teamOwner: keyof IAllTeams<any> = rowIndex < totalBoardRows / 2 ? "north" : "south";
@@ -173,8 +183,11 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                 <BasicTile
                     {...commonProps}
                     keyString={getGameTileKey(occupiedByScored, rowIndex, columnIndex)}
-                    onClick={noop}
+                    onClick={maybeSelectTile(undefined)}
                 >
+                    {canAddAnyStagedAction.canSpawn && (
+                        <Spawn squareDimension={dimension} size="board" team={teamOwner} />
+                    )}
                     <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={occupiedByScored} />
                 </BasicTile>
             ),

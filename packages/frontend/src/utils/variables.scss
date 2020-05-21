@@ -10,6 +10,8 @@ $north-color: rgba($cobalt4, 0.75);
 $north-hover: rgba($cobalt5, 0.75);
 $north-background: rgba($cobalt4, 0.15);
 $north-line: rgba($cobalt2, 0.15);
+$north-move-normal: $cobalt1;
+$north-move-special: $cobalt5;
 
 $south-title: $vermilion1;
 $south-active: $vermilion3;
@@ -17,6 +19,8 @@ $south-color: rgba($vermilion4, 0.75);
 $south-hover: rgba($vermilion5, 0.75);
 $south-background: rgba($vermilion4, 0.15);
 $south-line: rgba($vermilion2, 0.15);
+$south-move-normal: $vermilion1;
+$south-move-special: $vermilion5;
 
 :export {
     northTitle: $north-title;

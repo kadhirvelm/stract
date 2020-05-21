@@ -4,7 +4,7 @@ import * as React from "react";
 import styles from "./pieceSvg.module.scss";
 import { IWaterDirections } from "../../utils";
 
-type IPieceSize = "board" | "sidebar";
+type IPieceSize = "board" | "spawn" | "sidebar";
 
 export interface IPieceSVGProps {
     squareDimension?: number;
@@ -15,12 +15,24 @@ export interface IPieceSVGProps {
 
 type IProps = IPieceSVGProps;
 
+function getDimensionFromSize(size: IPieceSize) {
+    if (size === "board") {
+        return 1;
+    }
+
+    if (size === "spawn") {
+        return 0.75;
+    }
+
+    return 0.35;
+}
+
 function renderInsideSVG(
     element: React.ReactElement,
     options: { onClick?: () => void; squareDimension: number | undefined; size: IPieceSize },
 ) {
     const { onClick, squareDimension, size } = options;
-    const dimension = size === "board" ? squareDimension ?? 100 : 25;
+    const dimension = getDimensionFromSize(size) * (squareDimension ?? 100);
 
     return (
         <svg height={dimension} width={dimension} onClick={onClick} viewBox="0 0 100 100">
@@ -123,9 +135,9 @@ export function Arrow(
             {renderInsideSVG(
                 <g
                     className={classNames({
-                        [styles.northLine]: team === "north" && !isSpecial,
+                        [styles.northMove]: team === "north" && !isSpecial,
                         [styles.northSpecial]: team === "north" && isSpecial,
-                        [styles.southLine]: team === "south" && !isSpecial,
+                        [styles.southMove]: team === "south" && !isSpecial,
                         [styles.southSpecial]: team === "south" && isSpecial,
                     })}
                     style={{ transform: transform(), transformOrigin: "center" }}
