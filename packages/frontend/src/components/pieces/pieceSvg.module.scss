@@ -42,6 +42,10 @@
     fill: $south-move-special;
 }
 
+.basic {
+    display: flex;
+}
+
 .hidden {
     fill: $gray4;
     cursor: not-allowed;

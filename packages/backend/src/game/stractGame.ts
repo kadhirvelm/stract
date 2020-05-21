@@ -23,7 +23,7 @@ import {
 import { resolveGameBoard } from "./utils/resolveGameBoard";
 import { sanitizeExistingBoard } from "./utils/sanitizeExistingBoard";
 
-const TIME_PER_TURN = 10;
+const TIME_PER_TURN = 20;
 const TOTAL_TURNS = 50;
 
 export class StractGame implements IStractGame {

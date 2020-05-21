@@ -45,7 +45,7 @@ export namespace IOccupiedBy {
     });
 
     export const isAlive = (occupiedBy: IOccupiedBy): occupiedBy is IOccupiedByAlive => occupiedBy.type === "alive";
-    export const isDead = (occupiedBy: IOccupiedBy): occupiedBy is IOccupiedByDestroyed =>
+    export const isDestroyed = (occupiedBy: IOccupiedBy): occupiedBy is IOccupiedByDestroyed =>
         occupiedBy.type === "destroyed";
     export const isScored = (occupiedBy: IOccupiedBy): occupiedBy is IOccupiedByScored => occupiedBy.type === "scored";
 
@@ -58,7 +58,7 @@ export namespace IOccupiedBy {
             return callbacks.alive(occupiedBy);
         }
 
-        if (isDead(occupiedBy)) {
+        if (isDestroyed(occupiedBy)) {
             return callbacks.destroyed(occupiedBy);
         }
 

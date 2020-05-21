@@ -169,14 +169,14 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                     <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={occupiedByAlive} />
                 </BasicTile>
             ),
-            destroyed: occupiedByDead => (
+            destroyed: occupiedByDestroyed => (
                 <BasicTile
                     {...commonProps}
-                    keyString={getGameTileKey(occupiedByDead, rowIndex, columnIndex)}
+                    keyString={getGameTileKey(occupiedByDestroyed, rowIndex, columnIndex)}
                     onClick={noop}
                     shouldRenderBackground={false}
                 >
-                    <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={occupiedByDead} />
+                    <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={occupiedByDestroyed} />
                 </BasicTile>
             ),
             scored: occupiedByScored => (
