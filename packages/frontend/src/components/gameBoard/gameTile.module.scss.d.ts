@@ -23,6 +23,7 @@ declare namespace GameTileModuleScssModule {
         southLine: string;
         southTile: string;
         southTitle: string;
+        spawnOverAliveTile: string;
     }
 }
 

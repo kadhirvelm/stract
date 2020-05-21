@@ -73,7 +73,9 @@ function maybeScorePiece(currentGameState: IStractGameV1, gameTile: IGameTile, r
         return;
     }
 
-    gameTile.occupiedBy = [IOccupiedBy.scored({ piece: aliveOccupiedTiles[0].piece })];
+    gameTile.occupiedBy = gameTile.occupiedBy
+        .filter(ob => ob.piece.id !== aliveOccupiedTiles[0].piece.id)
+        .concat([IOccupiedBy.scored({ piece: aliveOccupiedTiles[0].piece })]);
     currentGameState.teams[teamKey].score += POINT_VALUES.scoringPiece;
 }
 

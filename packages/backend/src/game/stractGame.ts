@@ -23,11 +23,13 @@ import {
 import { resolveGameBoard } from "./utils/resolveGameBoard";
 import { sanitizeExistingBoard } from "./utils/sanitizeExistingBoard";
 
-const TIME_PER_TURN = 20;
-const TOTAL_TURNS = 50;
+const TIME_PER_TURN = 25;
+const TOTAL_TURNS = 30;
+const MAX_ACTIONS_PER_TEAM = 3;
 
 export class StractGame implements IStractGame {
     public currentGameState: IStractGameV1;
+    public maximumStagedActionsPerTurn = MAX_ACTIONS_PER_TEAM;
 
     private roomSocket: io.Namespace;
     private teamToPlayersMapping: ITeamToPlayersMapping;

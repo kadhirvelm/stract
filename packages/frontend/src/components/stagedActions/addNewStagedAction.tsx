@@ -52,12 +52,11 @@ const getTopAndLeft = (gameBoardMetadata: IBoardMetadata, selectedTile: ISelecte
 function SpawnOptions(props: {
     squareDimension: number;
     teamKey: keyof IAllTeams<any>;
-    rowIndex: number;
     spawnTile: (pieceType: IGamePieceType) => () => void;
 }) {
-    const { teamKey, rowIndex, squareDimension, spawnTile } = props;
+    const { teamKey, squareDimension, spawnTile } = props;
 
-    const topOffset = rowIndex < 5 ? squareDimension * 0.9 : -squareDimension * 0.55;
+    const topOffset = squareDimension * 0.15;
 
     return (
         <div className={styles.spawnNewTilesContainer} style={{ width: squareDimension, top: `${topOffset}px` }}>
@@ -245,10 +244,9 @@ function MaybeSwitchPlacesWithPieceOptions(props: {
     const isValidColumn = (columnIndex: number) => columnIndex >= 0 && columnIndex < gameSize.size.columns;
     const isValidIndex = (rowIndex: number, columnIndex: number) => isValidRow(rowIndex) && isValidColumn(columnIndex);
 
-    const commonProps: IPieceSVGProps & { className: string } = {
+    const commonProps: Omit<IPieceSVGProps, "size"> & { className: string } = {
         className: styles.direction,
         team: teamKey,
-        size: "board",
         squareDimension,
     };
 
@@ -446,12 +444,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
                 />
             )}
             {selectedTile.canSpawn && (
-                <SpawnOptions
-                    squareDimension={squareDimension}
-                    teamKey={player.teamKey}
-                    spawnTile={spawnTile}
-                    rowIndex={selectedTile.rowIndex}
-                />
+                <SpawnOptions squareDimension={squareDimension} teamKey={player.teamKey} spawnTile={spawnTile} />
             )}
         </div>
     );

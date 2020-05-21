@@ -29,11 +29,11 @@ interface IDispatchProps {
 
 type IProps = IOwnProps & IStateProps & IDispatchProps;
 
-function MaybeRenderOccupiedBy(props: { dimension: number; occupiedBy: IOccupiedBy }) {
-    const { dimension, occupiedBy } = props;
+function MaybeRenderOccupiedBy(props: { className?: string; dimension: number; occupiedBy: IOccupiedBy }) {
+    const { className, dimension, occupiedBy } = props;
 
     return IOccupiedBy.visit<React.ReactElement | null>(occupiedBy, {
-        alive: alivePiece => <Piece piece={alivePiece.piece} squareDimension={dimension} />,
+        alive: alivePiece => <Piece className={className} piece={alivePiece.piece} squareDimension={dimension} />,
         destroyed: destroyed => (
             <>
                 <Piece className={styles.destroyedPiece} piece={destroyed.piece} squareDimension={dimension} />
@@ -126,12 +126,10 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             selectedTile,
         } = this.props;
 
+        const isSelectedTile = selectedTile?.columnIndex === columnIndex && selectedTile.rowIndex === rowIndex;
+
         const maybeSelectTile = (occupiedByAlive: IOccupiedByAlive | undefined) => () => {
-            if (
-                selectedTile !== undefined &&
-                (!canAddAnyStagedAction.isValid ||
-                    (selectedTile.columnIndex === columnIndex && selectedTile.rowIndex === rowIndex))
-            ) {
+            if (selectedTile !== undefined && (!canAddAnyStagedAction.isValid || isSelectedTile)) {
                 changeSelectedTile(undefined);
             } else if (canAddAnyStagedAction.isValid) {
                 changeSelectedTile({
@@ -163,10 +161,13 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                     keyString={getGameTileKey(occupiedByAlive, rowIndex, columnIndex)}
                     onClick={maybeSelectTile(occupiedByAlive)}
                 >
-                    {canAddAnyStagedAction.canSpawn && (
-                        <Spawn squareDimension={dimension} size="board" team={teamOwner} />
-                    )}
-                    <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={occupiedByAlive} />
+                    <MaybeRenderOccupiedBy
+                        className={classNames({
+                            [styles.spawnOverAliveTile]: canAddAnyStagedAction.canSpawn && isSelectedTile,
+                        })}
+                        dimension={dimension}
+                        occupiedBy={occupiedByAlive}
+                    />
                 </BasicTile>
             ),
             destroyed: occupiedByDestroyed => (
@@ -185,7 +186,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                     keyString={getGameTileKey(occupiedByScored, rowIndex, columnIndex)}
                     onClick={maybeSelectTile(undefined)}
                 >
-                    {canAddAnyStagedAction.canSpawn && (
+                    {canAddAnyStagedAction.canSpawn && !isSelectedTile && (
                         <Spawn squareDimension={dimension} size="board" team={teamOwner} />
                     )}
                     <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={occupiedByScored} />
@@ -197,7 +198,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                     keyString={getGameTileKey(undefined, rowIndex, columnIndex)}
                     onClick={maybeSelectTile(undefined)}
                 >
-                    {canAddAnyStagedAction.canSpawn && (
+                    {canAddAnyStagedAction.canSpawn && !isSelectedTile && (
                         <Spawn squareDimension={dimension} size="board" team={teamOwner} />
                     )}
                 </BasicTile>

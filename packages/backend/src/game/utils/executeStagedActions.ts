@@ -169,7 +169,17 @@ export function executeStagedActions(currentGameState: IStractGameV1) {
     const allActions = currentGameState.stagedActions.north
         .map(action => appendId(action, "north"))
         .concat(currentGameState.stagedActions.south.map(action => appendId(action, "south")))
-        .sort((a, b) => (a.action.timestamp > b.action.timestamp ? 1 : -1));
+        .sort((a, b) => {
+            if (IGameAction.isSwitchPlacesWithPiece(a.action) && !IGameAction.isSwitchPlacesWithPiece(b.action)) {
+                return 1;
+            }
+
+            if (IGameAction.isSwitchPlacesWithPiece(b.action) && !IGameAction.isSwitchPlacesWithPiece(a.action)) {
+                return -1;
+            }
+
+            return a.action.timestamp > b.action.timestamp ? 1 : -1;
+        });
 
     allActions.forEach(actionWithTeam => {
         IGameAction.visit(actionWithTeam.action, {
