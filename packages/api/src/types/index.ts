@@ -4,6 +4,7 @@ export * from "./gameState";
 export * from "./gameTile";
 export * from "./general";
 export * from "./idTypes";
+export * from "./occupiedBy";
 export * from "./player";
 export * from "./stractGame";
 export * from "./team";

@@ -1,4 +1,4 @@
-import { IAllTeams, IGamePiece, IGameTile } from "@stract/api";
+import { IAllTeams, IOccupiedBy, IOccupiedByAlive } from "@stract/api";
 import { ICanAddStagedActionToTile } from "@stract/utils";
 import classNames from "classnames";
 import { isEqual, pick } from "lodash-es";
@@ -7,18 +7,18 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { IStoreState } from "../../store";
 import { ChangeSelectedTile } from "../../store/interface/interfaceActions";
-import { ISelectedTile } from "../../utils";
+import { getGameTileKey, ISelectedTile } from "../../utils";
 import { Piece } from "../pieces";
 import { Spawn } from "../pieces/pieceSvg";
 import styles from "./gameTile.module.scss";
 
 interface IOwnProps {
-    totalBoardRows: number;
     canAddAnyStagedAction: ICanAddStagedActionToTile;
-    dimension: number;
-    gameTile: IGameTile;
-    rowIndex: number;
     columnIndex: number;
+    dimension: number;
+    occupiedBy: IOccupiedBy | undefined;
+    rowIndex: number;
+    totalBoardRows: number;
 }
 
 interface IStateProps {
@@ -31,19 +31,19 @@ interface IDispatchProps {
 
 type IProps = IOwnProps & IStateProps & IDispatchProps;
 
-function MaybeRenderOccupiedBy(props: { dimension: number; occupiedBy: IGamePiece[] | undefined }) {
+function MaybeRenderOccupiedBy(props: { dimension: number; occupiedBy: IOccupiedBy }) {
     const { dimension, occupiedBy } = props;
-    if (occupiedBy === undefined || occupiedBy.length === 0) {
+    if (!IOccupiedBy.isAlive(occupiedBy)) {
         return null;
     }
 
-    return <Piece piece={occupiedBy[0]} squareDimension={dimension} />;
+    return <Piece piece={occupiedBy.piece} squareDimension={dimension} />;
 }
 
 export class UnconnectedGameTile extends React.Component<IProps> {
     // We need to check for deep referential equality before re-rendering, this should be a cheap action since these pieces are small
     public shouldComponentUpdate(nextProps: IProps) {
-        const keysToCompare: Array<keyof IProps> = ["canAddAnyStagedAction", "gameTile", "rowIndex", "columnIndex"];
+        const keysToCompare: Array<keyof IProps> = ["canAddAnyStagedAction", "occupiedBy", "rowIndex", "columnIndex"];
         return !isEqual(pick(nextProps, keysToCompare), pick(this.props, keysToCompare));
     }
 
@@ -54,12 +54,12 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             changeSelectedTile,
             columnIndex,
             dimension,
-            gameTile,
+            occupiedBy,
             rowIndex,
             selectedTile,
         } = this.props;
 
-        const maybeSelectTile = () => {
+        const maybeSelectTile = (occupiedByAlive: IOccupiedByAlive | undefined) => () => {
             if (!canAddAnyStagedAction.isValid) {
                 return;
             }
@@ -68,15 +68,15 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                 canSpawn: canAddAnyStagedAction.canSpawn,
                 columnIndex,
                 dimension,
-                gameTile,
+                occupiedByAlive,
                 rowIndex,
             });
         };
 
         const teamOwner: keyof IAllTeams<any> = rowIndex < totalBoardRows / 2 ? "north" : "south";
 
-        return IGameTile.visit(gameTile, {
-            free: tile => {
+        return IOccupiedBy.visit<React.ReactElement | null>(occupiedBy, {
+            alive: occupiedByAlive => {
                 return (
                     <div
                         className={classNames(styles.freeTile, {
@@ -86,8 +86,8 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                             [styles.isSelectedTile]:
                                 selectedTile?.rowIndex === rowIndex && selectedTile?.columnIndex === columnIndex,
                         })}
-                        key={tile.occupiedBy[0]?.id ?? `${rowIndex}-${columnIndex}`}
-                        onClick={maybeSelectTile}
+                        key={getGameTileKey(occupiedByAlive, rowIndex, columnIndex)}
+                        onClick={maybeSelectTile(occupiedByAlive)}
                         style={{
                             height: dimension,
                             width: dimension,
@@ -98,10 +98,35 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                         {canAddAnyStagedAction.canSpawn && (
                             <Spawn squareDimension={dimension} size="board" team={teamOwner} />
                         )}
-                        <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={tile.occupiedBy} />
+                        <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={occupiedByAlive} />
                     </div>
                 );
             },
+            dead: () => <div>Dead</div>,
+            scored: () => <div>Scored</div>,
+            undefined: () => (
+                <div
+                    className={classNames(styles.freeTile, {
+                        [styles.northTile]: teamOwner === "north",
+                        [styles.southTile]: teamOwner === "south",
+                        [styles.canSelectTile]: canAddAnyStagedAction.isValid && selectedTile === undefined,
+                        [styles.isSelectedTile]:
+                            selectedTile?.rowIndex === rowIndex && selectedTile?.columnIndex === columnIndex,
+                    })}
+                    key={getGameTileKey(undefined, rowIndex, columnIndex)}
+                    onClick={maybeSelectTile(undefined)}
+                    style={{
+                        height: dimension,
+                        width: dimension,
+                        top: rowIndex * dimension,
+                        left: columnIndex * dimension,
+                    }}
+                >
+                    {canAddAnyStagedAction.canSpawn && (
+                        <Spawn squareDimension={dimension} size="board" team={teamOwner} />
+                    )}
+                </div>
+            ),
             unknown: () => null,
         });
     }

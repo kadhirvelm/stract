@@ -146,12 +146,12 @@ function MaybeSpecialMoveOptions(props: {
         squareDimension,
     };
 
-    const tile = selectedTile.gameTile.occupiedBy[0];
-    if (IGamePiece.isEarth(tile)) {
+    const piece = selectedTile.occupiedByAlive?.piece;
+    if (piece === undefined || IGamePiece.isEarth(piece)) {
         return null;
     }
 
-    if (IGamePiece.isFire(tile)) {
+    if (IGamePiece.isFire(piece)) {
         return (
             <div>
                 {isValidRow(selectedTile.rowIndex - 2) && (
@@ -190,7 +190,7 @@ function MaybeSpecialMoveOptions(props: {
         );
     }
 
-    if (IGamePiece.isWater(tile)) {
+    if (IGamePiece.isWater(piece)) {
         return (
             <div>
                 {isValidIndex(selectedTile.rowIndex - 1, selectedTile.columnIndex + 1) && (
@@ -252,8 +252,8 @@ function MaybeSwitchPlacesWithPieceOptions(props: {
         squareDimension,
     };
 
-    const tile = selectedTile.gameTile.occupiedBy[0];
-    if (!IGamePiece.isEarth(tile)) {
+    const piece = selectedTile.occupiedByAlive?.piece;
+    if (piece === undefined || !IGamePiece.isEarth(piece)) {
         return null;
     }
 
@@ -361,7 +361,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
     };
 
     const moveTile = (direction: IDirection) => () => {
-        const id = selectedTile.gameTile.occupiedBy[0]?.id;
+        const id = selectedTile.occupiedByAlive?.piece.id;
         if (id === undefined) {
             return;
         }
@@ -378,7 +378,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
     };
 
     const specialMoveTile = (directions: [IDirection, IDirection]) => () => {
-        const id = selectedTile.gameTile.occupiedBy[0]?.id;
+        const id = selectedTile.occupiedByAlive?.piece.id;
         if (id === undefined) {
             return;
         }
@@ -395,7 +395,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
     };
 
     const switchPlacesWithPiece = (directions: [IDirection, IDirection] | [IDirection]) => () => {
-        const id = selectedTile.gameTile.occupiedBy[0]?.id;
+        const id = selectedTile.occupiedByAlive?.piece.id;
         if (id === undefined) {
             return;
         }
@@ -414,7 +414,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
     };
 
     const { top, squareDimension, left } = getTopAndLeft(gameBoard.metadata.board, selectedTile);
-    const canMove = selectedTile.gameTile.occupiedBy.length > 0;
+    const canMove = selectedTile.occupiedByAlive !== undefined;
 
     return (
         <div className={styles.addNewStagedAction} style={{ top, left }}>

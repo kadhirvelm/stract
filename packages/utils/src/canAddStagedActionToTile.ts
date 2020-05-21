@@ -1,4 +1,5 @@
 import { IAllTeams, IGameAction, IGameTile, IGameTileFree, IPlayer, IStractGameV1, ITeamRid } from "@stract/api";
+import { doesTileHaveOccupiedByAliveAndTeam } from "./occupiedTiles";
 
 export interface ICanAddStagedActionToTile {
     isValid: boolean;
@@ -33,7 +34,7 @@ function canExecuteActionFromTile(
         return { isValid: false };
     }
 
-    return { isValid: tile.occupiedBy[0]?.ownedByTeam === playerTeamRid };
+    return { isValid: doesTileHaveOccupiedByAliveAndTeam(tile.occupiedBy, playerTeamRid) };
 }
 
 function canSpawnTile(gameBoard: IStractGameV1, playerTeamKey: keyof IAllTeams<any>, rowIndex: number) {

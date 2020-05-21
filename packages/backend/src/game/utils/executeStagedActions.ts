@@ -1,39 +1,25 @@
 /* eslint-disable no-param-reassign */
 import {
+    IAllTeams,
     IGameAction,
     IGameActionMovePiece,
     IGameActionSpawnPiece,
+    IGameActionSpecialMovePiece,
+    IGameActionSwitchPlacesWithPiece,
+    IGameTile,
+    IOccupiedBy,
+    IOccupiedByAlive,
     IStractGameV1,
     ITeamRid,
-    IAllTeams,
-    IGameActionSpecialMovePiece,
-    IGameTile,
-    IGamePieceId,
-    IGamePiece,
-    IGameActionSwitchPlacesWithPiece,
 } from "@stract/api";
 import {
-    getGamePieceFromType,
-    checkIsIndexInBounds,
     adjustColumnAndRowByDirection,
     adjustColumnAndRowByMultipleDirections,
+    checkIsIndexInBounds,
+    getAlivePieceOwnedByTeam,
+    getGamePieceFromType,
 } from "@stract/utils";
 import _ from "lodash";
-
-function getPieceOwnedByTeam(
-    board: IGameTile[][],
-    row: number,
-    column: number,
-    gamePieceId: IGamePieceId,
-    ownedByTeam: ITeamRid,
-) {
-    const gamePiece = board[row][column].occupiedBy.find(p => p.id === gamePieceId);
-    if (gamePiece === undefined || gamePiece.ownedByTeam !== ownedByTeam) {
-        return undefined;
-    }
-
-    return gamePiece;
-}
 
 function movePieceToNewLocation(
     board: IGameTile[][],
@@ -45,10 +31,10 @@ function movePieceToNewLocation(
         row: number;
         column: number;
     },
-    gamePiece: IGamePiece,
+    gamePiece: IOccupiedByAlive,
 ) {
     board[start.row][start.column].occupiedBy = board[start.row][start.column].occupiedBy.filter(
-        p => p.id !== gamePiece.id,
+        p => p.piece.id !== gamePiece.piece.id,
     );
 
     board[end.row][end.column].occupiedBy = board[end.row][end.column].occupiedBy.concat(gamePiece);
@@ -56,7 +42,7 @@ function movePieceToNewLocation(
 
 function executeMovePiece(currentGameState: IStractGameV1, movePieceAction: IGameActionMovePiece, team: ITeamRid) {
     const { gamePieceId, startRow, startColumn, direction } = movePieceAction.movePiece;
-    const gamePiece = getPieceOwnedByTeam(currentGameState.board, startRow, startColumn, gamePieceId, team);
+    const gamePiece = getAlivePieceOwnedByTeam(currentGameState.board, startRow, startColumn, gamePieceId, team);
     if (gamePiece === undefined) {
         // eslint-disable-next-line no-console
         console.error("Attempted to move a piece not owned by a team.");
@@ -83,7 +69,7 @@ function executeSpawnPiece(
     const { column, row, pieceType } = spawnPieceAction.spawnPiece;
 
     currentGameState.board[row][column].occupiedBy = currentGameState.board[row][column].occupiedBy.concat(
-        getGamePieceFromType(pieceType, team),
+        IOccupiedBy.alive({ piece: getGamePieceFromType(pieceType, team) }),
     );
 
     currentGameState.teams[teamKey].piecePool.available = currentGameState.teams[teamKey].piecePool.available.map(
@@ -103,7 +89,7 @@ function executeSpecialMovePiece(
     team: ITeamRid,
 ) {
     const { gamePieceId, startRow, startColumn, directions } = specialMovePiece.specialMove;
-    const gamePiece = getPieceOwnedByTeam(currentGameState.board, startRow, startColumn, gamePieceId, team);
+    const gamePiece = getAlivePieceOwnedByTeam(currentGameState.board, startRow, startColumn, gamePieceId, team);
     if (gamePiece === undefined) {
         // eslint-disable-next-line no-console
         console.error("Attempted to move a piece not owned by a team.");
@@ -130,7 +116,7 @@ function executeSwitchPlacesWithPiece(
         gamePieceId,
         start: { row, column },
     } = switchPlacesWithPiece.switchPlaces;
-    const gamePiece = getPieceOwnedByTeam(currentGameState.board, row, column, gamePieceId, team);
+    const gamePiece = getAlivePieceOwnedByTeam(currentGameState.board, row, column, gamePieceId, team);
     if (gamePiece === undefined) {
         // eslint-disable-next-line no-console
         console.error("Attempted to target a switch place with a piece not owned by the team.");
@@ -154,15 +140,17 @@ function executeSwitchPlacesWithPiece(
         return;
     }
 
-    const targetTileHasPieces = currentGameState.board[targetPosition.row][targetPosition.column].occupiedBy;
-    if (targetTileHasPieces.length === 0) {
+    const targetTileHasAlivePieces = currentGameState.board[targetPosition.row][
+        targetPosition.column
+    ].occupiedBy.filter(IOccupiedBy.isAlive);
+    if (targetTileHasAlivePieces.length === 0) {
         return;
     }
 
     // Earths only move themselves and all target tiles, so we need to first filter it out of the original tile
     currentGameState.board[startingPosition.row][startingPosition.column].occupiedBy = currentGameState.board[
         startingPosition.row
-    ][startingPosition.column].occupiedBy.filter(piece => piece.id !== gamePieceId);
+    ][startingPosition.column].occupiedBy.filter(piece => piece.piece.id !== gamePieceId);
     // Then we need to get all the pieces in the target tile
     const targetTiles = currentGameState.board[targetPosition.row][targetPosition.column].occupiedBy;
     // Then we set the target tile to just be occupied by the single earth tile
