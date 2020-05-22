@@ -8,6 +8,7 @@ import { IStoreState } from "../../store";
 import { getDimensions, getGameTileKey, IFlattenedBoard, IPlayerWithTeamKey } from "../../utils";
 import styles from "./gameBoard.module.scss";
 import { GameTile } from "./gameTile";
+import { playSound } from "../../utils/playSound";
 
 interface IStoreProps {
     gameBoard?: IStractGameV1;
