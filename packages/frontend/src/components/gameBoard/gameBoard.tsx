@@ -5,7 +5,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { flattenBoard } from "../../selectors/flattenBoard";
 import { IStoreState } from "../../store";
-import { getDimensions, IFlattenedBoard, IPlayerWithTeamKey, getGameTileKey } from "../../utils";
+import { getDimensions, getGameTileKey, IFlattenedBoard, IPlayerWithTeamKey } from "../../utils";
 import styles from "./gameBoard.module.scss";
 import { GameTile } from "./gameTile";
 
@@ -44,7 +44,7 @@ class UnconnectedGameBoard extends React.PureComponent<IProps> {
                         left: additionalGameBoardHorizontalPadding,
                     }}
                 >
-                    {flattenedBoard.map(({ occupiedBy, columnIndex, rowIndex }) => (
+                    {flattenedBoard.map(({ occupiedBy, rowIndex, columnIndex }) => (
                         <GameTile
                             totalBoardRows={metadata.board.size.rows}
                             dimension={squareDimension}
@@ -54,7 +54,7 @@ class UnconnectedGameBoard extends React.PureComponent<IProps> {
                                 rowIndex,
                                 columnIndex,
                             )}
-                            key={getGameTileKey(occupiedBy, columnIndex, rowIndex)}
+                            key={getGameTileKey(occupiedBy, rowIndex, columnIndex)}
                             occupiedBy={occupiedBy}
                             rowIndex={rowIndex}
                             columnIndex={columnIndex}

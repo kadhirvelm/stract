@@ -14,7 +14,7 @@ import { Dispatch } from "redux";
 import { sendServerMessage } from "../../socket";
 import { ChangeSelectedTile, IStoreState } from "../../store";
 import { getDimensions, IPlayerWithTeamKey, ISelectedTile, MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../utils";
-import { Arrow, Earth, Fire, IPieceSVGProps, Water, SwitchArrows } from "../pieces/allTileSvgs";
+import { Arrow, Earth, Fire, IPieceSVGProps, SwitchArrows, Water } from "../pieces/allTileSvgs";
 import styles from "./addNewStagedAction.module.scss";
 
 interface IStateProps {
@@ -367,8 +367,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
         sendServerMessage().addStagedAction(
             IGameAction.movePiece({
                 gamePieceId: id,
-                startRow: selectedTile.rowIndex,
-                startColumn: selectedTile.columnIndex,
+                start: { row: selectedTile.rowIndex, column: selectedTile.columnIndex },
                 direction,
             }),
         );
@@ -384,8 +383,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
         sendServerMessage().addStagedAction(
             IGameAction.specialMove({
                 gamePieceId: id,
-                startRow: selectedTile.rowIndex,
-                startColumn: selectedTile.columnIndex,
+                start: { row: selectedTile.rowIndex, column: selectedTile.columnIndex },
                 directions,
             }),
         );

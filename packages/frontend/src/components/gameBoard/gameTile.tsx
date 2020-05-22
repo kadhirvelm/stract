@@ -1,4 +1,4 @@
-import { IAllTeams, IOccupiedBy, IOccupiedByAlive } from "@stract/api";
+import { IAllTeams, IOccupiedBy, IOccupiedByAlive, IColumnIndex, IRowIndex } from "@stract/api";
 import { ICanAddStagedActionToTile } from "@stract/utils";
 import classNames from "classnames";
 import { isEqual, pick, noop } from "lodash-es";
@@ -12,10 +12,10 @@ import styles from "./gameTile.module.scss";
 
 interface IOwnProps {
     canAddAnyStagedAction: ICanAddStagedActionToTile;
-    columnIndex: number;
+    columnIndex: IColumnIndex;
     dimension: number;
     occupiedBy: IOccupiedBy | undefined;
-    rowIndex: number;
+    rowIndex: IRowIndex;
     totalBoardRows: number;
 }
 
@@ -66,11 +66,11 @@ function MaybeRenderOccupiedBy(props: { className?: string; dimension: number; o
 
 const BasicTile: React.FunctionComponent<{
     canAddAnyStagedAction: ICanAddStagedActionToTile;
-    columnIndex: number;
+    columnIndex: IColumnIndex;
     dimension: number;
     keyString: string;
     onClick: () => void;
-    rowIndex: number;
+    rowIndex: IRowIndex;
     selectedTile: ISelectedTile | undefined;
     shouldRenderBackground?: boolean;
     teamOwner: keyof IAllTeams<any>;
@@ -163,7 +163,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             columnIndex,
             rowIndex,
             selectedTile,
-            shouldRenderBackground: true,
+            shouldRenderBackground: false,
             teamOwner,
         };
 
@@ -188,7 +188,6 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                     {...commonProps}
                     keyString={getGameTileKey(occupiedByDestroyed, rowIndex, columnIndex)}
                     onClick={noop}
-                    shouldRenderBackground={false}
                 >
                     <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={occupiedByDestroyed} />
                 </BasicTile>
@@ -199,9 +198,6 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                     keyString={getGameTileKey(occupiedByScored, rowIndex, columnIndex)}
                     onClick={maybeSelectTile(undefined)}
                 >
-                    {canAddAnyStagedAction.canSpawn && !isSelectedTile && (
-                        <Spawn squareDimension={dimension} size="board" team={teamOwner} />
-                    )}
                     <MaybeRenderOccupiedBy dimension={dimension} occupiedBy={occupiedByScored} />
                 </BasicTile>
             ),
@@ -210,6 +206,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                     {...commonProps}
                     keyString={getGameTileKey(undefined, rowIndex, columnIndex)}
                     onClick={maybeSelectTile(undefined)}
+                    shouldRenderBackground
                 >
                     {canAddAnyStagedAction.canSpawn && !isSelectedTile && (
                         <Spawn squareDimension={dimension} size="board" team={teamOwner} />
