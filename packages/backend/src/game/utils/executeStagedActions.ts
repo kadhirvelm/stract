@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import {
     IAllTeams,
+    IColumnIndex,
     IGameAction,
     IGameActionMovePiece,
     IGameActionSpawnPiece,
@@ -9,27 +10,28 @@ import {
     IGameTile,
     IOccupiedBy,
     IOccupiedByAlive,
+    IRowIndex,
     IStractGameV1,
     ITeamRid,
 } from "@stract/api";
 import {
-    adjustColumnAndRowByDirection,
-    adjustColumnAndRowByMultipleDirections,
     checkIsIndexInBounds,
     getAlivePieceOwnedByTeam,
     getGamePieceFromType,
+    adjustRowAndColumnByDirection,
+    adjustRowAndColumnByMultipleDirections,
 } from "@stract/utils";
 import _ from "lodash";
 
 function movePieceToNewLocation(
     board: IGameTile[][],
     start: {
-        row: number;
-        column: number;
+        row: IRowIndex;
+        column: IColumnIndex;
     },
     end: {
-        row: number;
-        column: number;
+        row: IRowIndex;
+        column: IColumnIndex;
     },
     gamePiece: IOccupiedByAlive,
 ) {
@@ -41,23 +43,23 @@ function movePieceToNewLocation(
 }
 
 function executeMovePiece(currentGameState: IStractGameV1, movePieceAction: IGameActionMovePiece, team: ITeamRid) {
-    const { gamePieceId, startRow, startColumn, direction } = movePieceAction.movePiece;
-    const gamePiece = getAlivePieceOwnedByTeam(currentGameState.board, startRow, startColumn, gamePieceId, team);
+    const { gamePieceId, start, direction } = movePieceAction.movePiece;
+    const gamePiece = getAlivePieceOwnedByTeam(currentGameState.board, start.row, start.column, gamePieceId, team);
     if (gamePiece === undefined) {
         // eslint-disable-next-line no-console
         console.error("Attempted to move a piece not owned by a team.");
         return;
     }
 
-    const { column, row } = adjustColumnAndRowByDirection(startColumn, startRow, direction);
-    const { isValid } = checkIsIndexInBounds(column, row, currentGameState.metadata.board);
+    const end = adjustRowAndColumnByDirection(start.row, start.column, direction);
+    const { isValid } = checkIsIndexInBounds(end.column, end.row, currentGameState.metadata.board);
     if (!isValid) {
         // eslint-disable-next-line no-console
         console.error("Attempted to move a piece to an invalid location.");
         return;
     }
 
-    movePieceToNewLocation(currentGameState.board, { row: startRow, column: startColumn }, { row, column }, gamePiece);
+    movePieceToNewLocation(currentGameState.board, start, { row: end.row, column: end.column }, gamePiece);
 }
 
 function executeSpawnPiece(
@@ -88,23 +90,23 @@ function executeSpecialMovePiece(
     specialMovePiece: IGameActionSpecialMovePiece,
     team: ITeamRid,
 ) {
-    const { gamePieceId, startRow, startColumn, directions } = specialMovePiece.specialMove;
-    const gamePiece = getAlivePieceOwnedByTeam(currentGameState.board, startRow, startColumn, gamePieceId, team);
+    const { gamePieceId, start, directions } = specialMovePiece.specialMove;
+    const gamePiece = getAlivePieceOwnedByTeam(currentGameState.board, start.row, start.column, gamePieceId, team);
     if (gamePiece === undefined) {
         // eslint-disable-next-line no-console
         console.error("Attempted to move a piece not owned by a team.");
         return;
     }
 
-    const { column, row } = adjustColumnAndRowByMultipleDirections(startColumn, startRow, directions);
-    const { isValid } = checkIsIndexInBounds(column, row, currentGameState.metadata.board);
+    const end = adjustRowAndColumnByMultipleDirections(start.row, start.column, directions);
+    const { isValid } = checkIsIndexInBounds(end.column, end.row, currentGameState.metadata.board);
     if (!isValid) {
         // eslint-disable-next-line no-console
         console.error("Attempted to move a piece to an invalid location.");
         return;
     }
 
-    movePieceToNewLocation(currentGameState.board, { row: startRow, column: startColumn }, { row, column }, gamePiece);
+    movePieceToNewLocation(currentGameState.board, start, { row: end.row, column: end.column }, gamePiece);
 }
 
 function executeSwitchPlacesWithPiece(
@@ -124,9 +126,9 @@ function executeSwitchPlacesWithPiece(
     }
 
     const startingPosition = switchPlacesWithPiece.switchPlaces.start;
-    const targetPosition = adjustColumnAndRowByMultipleDirections(
-        startingPosition.column,
+    const targetPosition = adjustRowAndColumnByMultipleDirections(
         startingPosition.row,
+        startingPosition.column,
         switchPlacesWithPiece.switchPlaces.directions,
     );
     const { isValid } = checkIsIndexInBounds(
@@ -169,6 +171,7 @@ export function executeStagedActions(currentGameState: IStractGameV1) {
     const allActions = currentGameState.stagedActions.north
         .map(action => appendId(action, "north"))
         .concat(currentGameState.stagedActions.south.map(action => appendId(action, "south")))
+        // We need to sort so all switch place actions happen last and then deconflict based on timestamp, the earlier you submit an action, the earlier it should act
         .sort((a, b) => {
             if (IGameAction.isSwitchPlacesWithPiece(a.action) && !IGameAction.isSwitchPlacesWithPiece(b.action)) {
                 return 1;

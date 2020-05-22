@@ -1,4 +1,14 @@
-import { IAllTeams, IGameAction, IGameTile, IGameTileFree, IPlayer, IStractGameV1, ITeamRid } from "@stract/api";
+import {
+    IAllTeams,
+    IGameAction,
+    IGameTile,
+    IGameTileFree,
+    IPlayer,
+    IStractGameV1,
+    ITeamRid,
+    IRowIndex,
+    IColumnIndex,
+} from "@stract/api";
 import { doesTileHaveOccupiedByAliveAndTeam } from "./occupiedTiles";
 
 export interface ICanAddStagedActionToTile {
@@ -11,19 +21,19 @@ export interface ICanAddStagedActionToTile {
  */
 function canExecuteActionFromTile(
     tile: IGameTileFree,
-    rowIndex: number,
-    columnIndex: number,
+    rowIndex: IRowIndex,
+    columnIndex: IColumnIndex,
     playerTeamRid: ITeamRid,
     playerTeamStagedActions: IGameAction[],
 ) {
     const doAnyExistingStagedActionsMoveTheSamePiece = playerTeamStagedActions.some(a => {
         return (
             (IGameAction.isMovePiece(a) &&
-                a.movePiece.startRow === rowIndex &&
-                a.movePiece.startColumn === columnIndex) ||
+                a.movePiece.start.row === rowIndex &&
+                a.movePiece.start.column === columnIndex) ||
             (IGameAction.isSpecialMovePiece(a) &&
-                a.specialMove.startRow === rowIndex &&
-                a.specialMove.startColumn === columnIndex) ||
+                a.specialMove.start.row === rowIndex &&
+                a.specialMove.start.column === columnIndex) ||
             (IGameAction.isSwitchPlacesWithPiece(a) &&
                 a.switchPlaces.start.row === rowIndex &&
                 a.switchPlaces.start.column === columnIndex)
@@ -47,8 +57,8 @@ function canSpawnTile(gameBoard: IStractGameV1, playerTeamKey: keyof IAllTeams<a
 export function canAddAnyStagedActionToTile(
     player: IPlayer,
     gameBoard: IStractGameV1,
-    rowIndex: number,
-    columnIndex: number,
+    rowIndex: IRowIndex,
+    columnIndex: IColumnIndex,
 ): ICanAddStagedActionToTile {
     const tile = gameBoard.board[rowIndex]?.[columnIndex];
     const playerTeamKey: keyof IAllTeams<any> = gameBoard.teams.north.id === player.team ? "north" : "south";

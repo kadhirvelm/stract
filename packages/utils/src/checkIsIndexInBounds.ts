@@ -1,6 +1,10 @@
-import { IBoardMetadata } from "@stract/api";
+import { IBoardMetadata, IColumnIndex, IRowIndex } from "@stract/api";
 
-export function checkIsIndexInBounds(columnIndex: number, rowIndex: number, gameBoardMetadata: IBoardMetadata) {
+export function checkIsIndexInBounds(
+    columnIndex: IColumnIndex,
+    rowIndex: IRowIndex,
+    gameBoardMetadata: IBoardMetadata,
+) {
     if (columnIndex < 0 || columnIndex > gameBoardMetadata.size.columns - 1) {
         return {
             isValid: false,

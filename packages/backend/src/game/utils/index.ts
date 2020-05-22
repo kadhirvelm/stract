@@ -3,5 +3,7 @@ export * from "./createNewGame";
 export * from "./createNewTeamToPlayerMapping";
 export * from "./executeStagedActions";
 export * from "./isTurnOver";
+export * from "./pointValues";
+export * from "./resolveGameBoard";
 export * from "./sanitizeExistingBoard";
 export * from "./utilTypes";

@@ -2,8 +2,7 @@ import { NonIdealState, Icon } from "@blueprintjs/core";
 import { IPlayer, ITeamRid } from "@stract/api";
 import classNames from "classnames";
 import * as React from "react";
-import { capitalizeFirst } from "../../utils";
-import { IRegisterWithTeam } from "../../utils/types";
+import { IRegisterWithTeam, capitalizeFirst } from "../../utils";
 import styles from "./teamSelection.module.scss";
 
 interface IOwnProps {

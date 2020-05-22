@@ -14,7 +14,7 @@ import { Dispatch } from "redux";
 import { sendServerMessage } from "../../socket";
 import { ChangeSelectedTile, IStoreState } from "../../store";
 import { getDimensions, IPlayerWithTeamKey, ISelectedTile, MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../utils";
-import { Arrow, Earth, Fire, IPieceSVGProps, Water, SwitchArrows } from "../pieces/pieceSvg";
+import { Arrow, Earth, Fire, IPieceSVGProps, Water, SwitchArrows } from "../pieces/allTileSvgs";
 import styles from "./addNewStagedAction.module.scss";
 
 interface IStateProps {

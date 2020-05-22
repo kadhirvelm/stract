@@ -1,9 +1,9 @@
-import { IGameTile, IGamePieceId, ITeamRid, IOccupiedBy } from "@stract/api";
+import { IGameTile, IGamePieceId, ITeamRid, IOccupiedBy, IRowIndex, IColumnIndex } from "@stract/api";
 
 export function getAlivePieceOwnedByTeam(
     board: IGameTile[][],
-    row: number,
-    column: number,
+    row: IRowIndex,
+    column: IColumnIndex,
     gamePieceId: IGamePieceId,
     ownedByTeam: ITeamRid,
 ) {

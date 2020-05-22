@@ -35,3 +35,5 @@ export interface IFlattenedBoard {
     columnIndex: number;
     occupiedBy: IOccupiedBy | undefined;
 }
+
+export type IPieceSize = "board" | "spawn" | "sidebar";

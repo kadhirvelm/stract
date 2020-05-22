@@ -1,10 +1,8 @@
 import { IAllTeams, IDirection } from "@stract/api";
 import classNames from "classnames";
 import * as React from "react";
-import styles from "./pieceSvg.module.scss";
-import { IWaterDirections } from "../../utils";
-
-type IPieceSize = "board" | "spawn" | "sidebar";
+import styles from "./allTileSvgs.module.scss";
+import { IWaterDirections, IPieceSize, renderInsideSVG } from "../../utils";
 
 export interface IPieceSVGProps {
     squareDimension?: number;
@@ -14,32 +12,6 @@ export interface IPieceSVGProps {
 }
 
 type IProps = IPieceSVGProps;
-
-function getDimensionFromSize(size: IPieceSize) {
-    if (size === "board") {
-        return 0.9;
-    }
-
-    if (size === "spawn") {
-        return 0.75;
-    }
-
-    return 0.35;
-}
-
-function renderInsideSVG(
-    element: React.ReactElement,
-    options: { onClick?: () => void; squareDimension: number | undefined; size: IPieceSize },
-) {
-    const { onClick, squareDimension, size } = options;
-    const dimension = getDimensionFromSize(size) * (squareDimension ?? 100);
-
-    return (
-        <svg height={dimension} width={dimension} onClick={onClick} viewBox="0 0 100 100">
-            {element}
-        </svg>
-    );
-}
 
 export function Fire(props: IProps) {
     const { onClick, squareDimension, size, team } = props;

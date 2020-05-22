@@ -5,7 +5,7 @@ import { Icon } from "@blueprintjs/core";
 import classNames from "classnames";
 import { IStoreState } from "../../store";
 import { ITeamRidToTeamKey, IPlayerWithTeamKey } from "../../utils";
-import { Fire, Earth, Water, HiddenPiece } from "./pieceSvg";
+import { Fire, Earth, Water, HiddenPiece } from "./allTileSvgs";
 import { getTeamRidToTeamKey } from "../../selectors";
 import styles from "./piece.module.scss";
 
