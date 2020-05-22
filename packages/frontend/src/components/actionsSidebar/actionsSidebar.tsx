@@ -10,7 +10,6 @@ import styles from "./actionsSidebar.module.scss";
 import { PiecePool } from "./piecePool";
 import { sendServerMessage } from "../../socket";
 import { SelfUpdatingTimer } from "../common";
-import { playSound } from "../../utils/playSound";
 
 interface IStoreProps {
     gameBoard?: IStractGameV1;
