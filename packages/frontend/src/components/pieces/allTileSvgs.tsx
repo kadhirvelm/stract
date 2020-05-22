@@ -149,12 +149,21 @@ export function SwitchArrows(props: Omit<IProps, "size"> & { className: string; 
 }
 
 export function HiddenPiece(props: IProps & { className?: string }) {
-    const { className, onClick, squareDimension, size } = props;
+    const { className, onClick, squareDimension, size, team } = props;
 
     return (
         <div className={classNames(className, styles.basic)}>
             {renderInsideSVG(
-                <rect className={styles.hidden} width={90} height={90} style={{ transform: "translate(5px, 5px)" }} />,
+                <g
+                    className={classNames({
+                        [styles.northSpawn]: team === "north",
+                        [styles.southSpawn]: team === "south",
+                    })}
+                    xmlns="http://www.w3.org/2000/svg"
+                    transform="translate(0,100) scale(0.1,-0.1)"
+                >
+                    <path d="M416 949 c-115 -27 -254 -147 -297 -256 -19 -49 -23 -77 -23 -178 -1 -116 0 -123 31 -186 41 -83 120 -159 210 -202 65 -30 74 -32 188 -32 109 0 125 2 177 27 58 27 133 89 170 140 29 42 57 123 68 202 20 136 -23 259 -124 360 -112 111 -260 158 -400 125z m244 -117 c56 -28 81 -75 78 -146 -4 -81 -28 -100 -139 -105 l-79 -3 0 -98 c0 -98 -9 -125 -33 -101 -17 17 -19 204 -3 226 9 13 32 18 91 22 103 5 115 12 115 68 0 63 -30 95 -100 106 -34 5 -69 5 -93 -2 -45 -12 -106 -71 -132 -128 -19 -42 -41 -53 -52 -25 -14 37 81 163 142 190 45 20 163 18 205 -4z m-126 -544 c8 -14 7 -21 -6 -34 -30 -30 -75 9 -48 42 16 18 39 15 54 -8z" />
+                </g>,
                 {
                     onClick,
                     squareDimension,

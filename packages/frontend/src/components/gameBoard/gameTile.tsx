@@ -66,6 +66,7 @@ function MaybeRenderOccupiedBy(props: { className?: string; dimension: number; o
 
 const BasicTile: React.FunctionComponent<{
     canAddAnyStagedAction: ICanAddStagedActionToTile;
+    className?: string;
     columnIndex: IColumnIndex;
     dimension: number;
     keyString: string;
@@ -77,6 +78,7 @@ const BasicTile: React.FunctionComponent<{
 }> = props => {
     const {
         canAddAnyStagedAction,
+        className,
         children,
         columnIndex,
         dimension,
@@ -92,6 +94,7 @@ const BasicTile: React.FunctionComponent<{
         <div
             className={classNames(
                 styles.freeTile,
+                className,
                 shouldRenderBackground && {
                     [styles.northTile]: teamOwner === "north",
                     [styles.southTile]: teamOwner === "south",
@@ -171,6 +174,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             alive: occupiedByAlive => (
                 <BasicTile
                     {...commonProps}
+                    className={styles.actionablePiece}
                     keyString={getGameTileKey(occupiedByAlive, rowIndex, columnIndex)}
                     onClick={maybeSelectTile(occupiedByAlive)}
                 >
@@ -204,6 +208,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             undefined: () => (
                 <BasicTile
                     {...commonProps}
+                    className={styles.actionablePiece}
                     keyString={getGameTileKey(undefined, rowIndex, columnIndex)}
                     onClick={maybeSelectTile(undefined)}
                     shouldRenderBackground
