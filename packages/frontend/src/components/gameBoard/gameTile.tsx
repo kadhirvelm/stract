@@ -1,13 +1,13 @@
-import { IAllTeams, IOccupiedBy, IOccupiedByAlive, IColumnIndex, IRowIndex } from "@stract/api";
+import { IAllTeams, IColumnIndex, IOccupiedBy, IOccupiedByAlive, IRowIndex } from "@stract/api";
 import { ICanAddStagedActionToTile } from "@stract/utils";
 import classNames from "classnames";
-import { isEqual, pick, noop } from "lodash-es";
+import { isEqual, noop, pick } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { ChangeSelectedTile, IStoreState } from "../../store";
 import { getGameTileKey, ISelectedTile } from "../../utils";
-import { Piece, Spawn, Star, Cross } from "../pieces";
+import { Cross, Piece, Spawn, Star } from "../pieces";
 import styles from "./gameTile.module.scss";
 
 interface IOwnProps {

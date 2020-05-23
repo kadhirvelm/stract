@@ -1,15 +1,17 @@
 import { columnIndex, IGameTile, rowIndex } from "@stract/api";
-import { flatten } from "lodash-es";
-import { createSelector } from "reselect";
+import { flatten, isEqual } from "lodash-es";
+import { createSelectorCreator, defaultMemoize } from "reselect";
 import { IStoreState } from "../store";
-import { IFlattenedBoard } from "../utils";
+import { IFlattenedBoard, maybePlaySoundsForTile } from "../utils";
+
+const createDeepSelectorCreator = createSelectorCreator(defaultMemoize, isEqual);
 
 /**
  * In order to get the CSS transitions to work reliably, we need to paint them at the same time, not row by row, and
  * we need to paint the tiles with tokens in the same order to ensure tokens moving south work. I'm not entirely certain why
  * the sort is what fixes that, but it does?
  */
-export const flattenBoard = createSelector(
+export const flattenBoard = createDeepSelectorCreator(
     (state: IStoreState) => state.game.gameBoard?.board,
     (board: IGameTile[][] | undefined): IFlattenedBoard[] => {
         if (board === undefined) {
@@ -30,12 +32,15 @@ export const flattenBoard = createSelector(
                         ];
 
                         allOccupiedTiles.push(
-                            ...tile.occupiedBy.map(ob => ({
-                                parentTile: tile,
-                                rowIndex: rowIndex(rowNumber),
-                                columnIndex: columnIndex(columnNumber),
-                                occupiedBy: ob,
-                            })),
+                            ...tile.occupiedBy.map(ob => {
+                                maybePlaySoundsForTile(ob);
+                                return {
+                                    parentTile: tile,
+                                    rowIndex: rowIndex(rowNumber),
+                                    columnIndex: columnIndex(columnNumber),
+                                    occupiedBy: ob,
+                                };
+                            }),
                         );
 
                         return allOccupiedTiles;

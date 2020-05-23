@@ -1,6 +1,7 @@
 import * as React from "react";
 import classNames from "classnames";
 import styles from "./selfUpdatingTimer.module.scss";
+import { playSound, SOUNDS } from "../../utils";
 
 interface IOwnProps {
     nextTurnTimestamp: number;
@@ -20,6 +21,15 @@ export function SelfUpdatingTimer(props: IProps) {
     }, [ticker]);
 
     const secondsLeft = Math.abs(Math.min(Math.round((new Date().valueOf() - nextTurnTimestamp) / 1000), 0));
+
+    if (secondsLeft === 10) {
+        playSound(SOUNDS.WARNING_BELL);
+    }
+
+    if (secondsLeft === 3) {
+        playSound(SOUNDS.BELL);
+    }
+
     return (
         <span
             className={classNames({

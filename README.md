@@ -51,4 +51,6 @@ There are three aspects that make Stract very exciting:
 2. The specific type of piece you spawn is hidden to your opponent until it occupies the same tile as an enemy piece. After this collision, it will no longer be hidden.
 3. Your team gets 10 of each type of piece at the start of the game. When a piece scores, it will be removed from the board and added back to your team's piece pool, but when a piece is destroyed, it does not get added back to your piece pool.
 
+## Attributions
 
+Sounds from ZapSplat.com and FreeSounds.org.
