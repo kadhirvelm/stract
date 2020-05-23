@@ -1,4 +1,5 @@
 import express from "express";
+import { join } from "path";
 
 export function setReactRoutes(app: express.Express) {
     if (process.env.NODE_ENV === "production") {
@@ -24,6 +25,7 @@ export function setReactRoutes(app: express.Express) {
         });
     }
 
-    app.use(express.static("../frontend/dist", { extensions: ["html"] }));
-    app.use(express.static("../frontend/public"));
+    app.use(express.static(join(process.cwd(), "../frontend/dist"), { extensions: ["html"] }));
+    app.use(express.static(join(process.cwd(), "../frontend/public")));
+    app.use(express.static(join(process.cwd(), "../frontend/static")));
 }

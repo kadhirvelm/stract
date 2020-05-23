@@ -96,7 +96,7 @@ function UnconnectedStagedAction(props: IProps) {
                 otherPlayerInfo={<div>A move was made by a teammate.</div>}
                 samePlayerInfo={
                     <div>
-                        Piece at ({move.movePiece.startRow + 1}, {move.movePiece.startColumn + 1}){" "}
+                        Piece at ({move.movePiece.start.row + 1}, {move.movePiece.start.column + 1}){" "}
                         {move.movePiece.direction}{" "}
                     </div>
                 }
@@ -131,7 +131,7 @@ function UnconnectedStagedAction(props: IProps) {
                 otherPlayerInfo={<div>A special move was made a player</div>}
                 samePlayerInfo={
                     <div>
-                        Piece at ({specialMove.specialMove.startRow + 1}, {specialMove.specialMove.startColumn + 1}){" "}
+                        Piece at ({specialMove.specialMove.start.row + 1}, {specialMove.specialMove.start.column + 1}){" "}
                         {specialMove.specialMove.directions.join(", ")}{" "}
                     </div>
                 }

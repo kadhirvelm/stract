@@ -19,13 +19,13 @@ import {
     executeStagedActions,
     isTurnOver,
     ITeamToPlayersMapping,
+    sanitizeExistingBoard,
+    resolveGameBoard,
 } from "./utils";
-import { resolveGameBoard } from "./utils/resolveGameBoard";
-import { sanitizeExistingBoard } from "./utils/sanitizeExistingBoard";
 
 const TIME_PER_TURN = 25;
 const TOTAL_TURNS = 30;
-const MAX_ACTIONS_PER_TEAM = 3;
+const MAX_ACTIONS_PER_TEAM = 2;
 
 export class StractGame implements IStractGame {
     public currentGameState: IStractGameV1;

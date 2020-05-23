@@ -5,7 +5,7 @@ import { Spinner, InputGroup, Button } from "@blueprintjs/core";
 import { PartialBy } from "@stract/api/dist/common/partialBy";
 import { IStoreState } from "../../store";
 import { getTeams } from "../../selectors";
-import { IRegisterWithTeam } from "../../utils/types";
+import { IRegisterWithTeam } from "../../utils";
 import { sendServerMessage } from "../../socket";
 import styles from "./registerPlayer.module.scss";
 import { TeamSelection } from "./teamSelection";

@@ -10,7 +10,7 @@ import {
     IGamePiece,
     IGameActionSwitchPlacesWithPiece,
 } from "@stract/api";
-import { adjustColumnAndRowByDirection, adjustColumnAndRowByMultipleDirections } from "./adjustColumnAndRowByDirection";
+import { adjustRowAndColumnByDirection, adjustRowAndColumnByMultipleDirections } from "./adjustColumnAndRowByDirection";
 import { getTeamKeyFromRid } from "./getTeamKeyFromRid";
 import { checkIsIndexInBounds } from "./checkIsIndexInBounds";
 import { getAlivePieceOwnedByTeam } from "./getGamePieceOwnedByTeam";
@@ -46,8 +46,8 @@ function isValidMoveAction(
 
     const gamePiece = getAlivePieceOwnedByTeam(
         gameBoard.board,
-        moveAction.movePiece.startRow,
-        moveAction.movePiece.startColumn,
+        moveAction.movePiece.start.row,
+        moveAction.movePiece.start.column,
         moveAction.movePiece.gamePieceId,
         teamRid,
     );
@@ -58,9 +58,9 @@ function isValidMoveAction(
         };
     }
 
-    const { column, row } = adjustColumnAndRowByDirection(
-        moveAction.movePiece.startColumn,
-        moveAction.movePiece.startRow,
+    const { column, row } = adjustRowAndColumnByDirection(
+        moveAction.movePiece.start.row,
+        moveAction.movePiece.start.column,
         moveAction.movePiece.direction,
     );
 
@@ -133,19 +133,19 @@ function isValidSpecialMoveAction(
         };
     }
 
-    const { column, row } = adjustColumnAndRowByMultipleDirections(
-        specialMoveAction.specialMove.startColumn,
-        specialMoveAction.specialMove.startRow,
+    const { column, row } = adjustRowAndColumnByMultipleDirections(
+        specialMoveAction.specialMove.start.row,
+        specialMoveAction.specialMove.start.column,
         specialMoveAction.specialMove.directions,
     );
 
-    const columnDifference = Math.abs(specialMoveAction.specialMove.startColumn - column);
-    const rowDifference = Math.abs(specialMoveAction.specialMove.startRow - row);
+    const columnDifference = Math.abs(specialMoveAction.specialMove.start.column - column);
+    const rowDifference = Math.abs(specialMoveAction.specialMove.start.row - row);
 
     const gamePiece = getAlivePieceOwnedByTeam(
         gameBoard.board,
-        specialMoveAction.specialMove.startRow,
-        specialMoveAction.specialMove.startColumn,
+        specialMoveAction.specialMove.start.row,
+        specialMoveAction.specialMove.start.column,
         specialMoveAction.specialMove.gamePieceId,
         teamRid,
     );
@@ -223,9 +223,9 @@ function isValidSwitchPlacesWithPieceAction(
         };
     }
 
-    const targetPosition = adjustColumnAndRowByMultipleDirections(
-        switchPlacesWithPieceAction.switchPlaces.start.column,
+    const targetPosition = adjustRowAndColumnByMultipleDirections(
         switchPlacesWithPieceAction.switchPlaces.start.row,
+        switchPlacesWithPieceAction.switchPlaces.start.column,
         switchPlacesWithPieceAction.switchPlaces.directions,
     );
 

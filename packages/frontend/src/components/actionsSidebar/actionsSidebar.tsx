@@ -1,15 +1,16 @@
-import { NonIdealState, Button } from "@blueprintjs/core";
+import { Button, NonIdealState } from "@blueprintjs/core";
 import { IAllTeams, IBoardTeamMetadata, IGameAction, IGameState, IStractGameV1, ITurnsMetadata } from "@stract/api";
 import classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
+import { isEqual } from "lodash-es";
+import { sendServerMessage } from "../../socket";
 import { IStoreState } from "../../store";
-import { getDimensions, IPlayerWithTeamKey } from "../../utils";
+import { getDimensions, IPlayerWithTeamKey, playSound, SOUNDS } from "../../utils";
+import { SelfUpdatingTimer } from "../common";
 import { StagedAction } from "../stagedActions";
 import styles from "./actionsSidebar.module.scss";
 import { PiecePool } from "./piecePool";
-import { sendServerMessage } from "../../socket";
-import { SelfUpdatingTimer } from "../common";
 
 interface IStoreProps {
     gameBoard?: IStractGameV1;
@@ -34,6 +35,28 @@ function TurnNumber(props: { turn: number; turnMetadata: ITurnsMetadata }) {
 
 function GameState(props: { gameState: IGameState; onChangeGameState: (newGameState: IGameState) => void }) {
     const { gameState, onChangeGameState } = props;
+    const previousState = React.useRef<IGameState>();
+
+    React.useEffect(() => {
+        if (previousState.current === undefined) {
+            previousState.current = gameState;
+            return;
+        }
+
+        if (isEqual(gameState, previousState)) {
+            return;
+        }
+
+        if (IGameState.isRequestPlay(previousState.current) && IGameState.isInPlay(gameState)) {
+            playSound(SOUNDS.UNPAUSE);
+        }
+
+        if (IGameState.isRequestPause(previousState.current) && IGameState.isPaused(gameState)) {
+            playSound(SOUNDS.PAUSE);
+        }
+
+        previousState.current = gameState;
+    }, [gameState]);
 
     const requestPause = () => {
         if (!IGameState.isInPlay(gameState)) {

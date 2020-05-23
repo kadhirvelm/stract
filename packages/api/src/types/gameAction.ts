@@ -1,6 +1,6 @@
 import { v4 } from "uuid";
 import { IDirection } from "./general";
-import { gameActionId, IGameActionId, IGamePieceId, IPlayerIdentifier } from "./idTypes";
+import { gameActionId, IGameActionId, IGamePieceId, IPlayerIdentifier, IRowIndex, IColumnIndex } from "./idTypes";
 import { IGamePieceType } from "./gamePiece";
 
 export type IGameActionType = "move-piece" | "spawn-piece" | "special-move-piece" | "switch-places";
@@ -17,8 +17,10 @@ interface IGenericGameAction {
 
 export interface IGenericMovePiece {
     gamePieceId: IGamePieceId;
-    startRow: number;
-    startColumn: number;
+    start: {
+        row: IRowIndex;
+        column: IColumnIndex;
+    };
 }
 
 /**
@@ -39,8 +41,8 @@ export interface IGameActionMovePiece extends IGenericGameAction {
  */
 
 export interface ISpawnPiece {
-    column: number;
-    row: number;
+    column: IColumnIndex;
+    row: IRowIndex;
     pieceType: IGamePieceType;
 }
 
@@ -69,8 +71,8 @@ export interface IGameActionSpecialMovePiece extends IGenericGameAction {
 export interface ISwitchPlacesWithPiece {
     gamePieceId: IGamePieceId;
     start: {
-        row: number;
-        column: number;
+        row: IRowIndex;
+        column: IColumnIndex;
     };
     directions: [IDirection, IDirection] | [IDirection];
 }

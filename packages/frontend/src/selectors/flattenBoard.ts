@@ -1,15 +1,17 @@
-import { createSelector } from "reselect";
-import { IGameTile, IOccupiedBy } from "@stract/api";
-import { flatten } from "lodash-es";
+import { columnIndex, IGameTile, rowIndex } from "@stract/api";
+import { flatten, isEqual } from "lodash-es";
+import { createSelectorCreator, defaultMemoize } from "reselect";
 import { IStoreState } from "../store";
-import { IFlattenedBoard } from "../utils";
+import { IFlattenedBoard, maybePlaySoundsForTile } from "../utils";
+
+const createDeepSelectorCreator = createSelectorCreator(defaultMemoize, isEqual);
 
 /**
  * In order to get the CSS transitions to work reliably, we need to paint them at the same time, not row by row, and
  * we need to paint the tiles with tokens in the same order to ensure tokens moving south work. I'm not entirely certain why
  * the sort is what fixes that, but it does?
  */
-export const flattenBoard = createSelector(
+export const flattenBoard = createDeepSelectorCreator(
     (state: IStoreState) => state.game.gameBoard?.board,
     (board: IGameTile[][] | undefined): IFlattenedBoard[] => {
         if (board === undefined) {
@@ -17,22 +19,29 @@ export const flattenBoard = createSelector(
         }
 
         const flattenedArray: IFlattenedBoard[] = flatten(
-            board.map((row, rowIndex) =>
+            board.map((row, rowNumber) =>
                 flatten(
-                    row.map((tile, columnIndex): IFlattenedBoard[] => {
-                        if (tile.occupiedBy.length === 0) {
-                            return [{ occupiedBy: undefined, parentTile: tile, rowIndex, columnIndex }];
-                        }
+                    row.map((tile, columnNumber): IFlattenedBoard[] => {
+                        const allOccupiedTiles: IFlattenedBoard[] = [
+                            {
+                                occupiedBy: undefined,
+                                parentTile: tile,
+                                rowIndex: rowIndex(rowNumber),
+                                columnIndex: columnIndex(columnNumber),
+                            },
+                        ];
 
-                        const allOccupiedTiles: IFlattenedBoard[] = tile.occupiedBy.map(ob => ({
-                            parentTile: tile,
-                            rowIndex,
-                            columnIndex,
-                            occupiedBy: ob,
-                        }));
-                        if (tile.occupiedBy.filter(ob => !IOccupiedBy.isDestroyed(ob)).length === 0) {
-                            allOccupiedTiles.push({ parentTile: tile, rowIndex, columnIndex, occupiedBy: undefined });
-                        }
+                        allOccupiedTiles.push(
+                            ...tile.occupiedBy.map(ob => {
+                                maybePlaySoundsForTile(ob);
+                                return {
+                                    parentTile: tile,
+                                    rowIndex: rowIndex(rowNumber),
+                                    columnIndex: columnIndex(columnNumber),
+                                    occupiedBy: ob,
+                                };
+                            }),
+                        );
 
                         return allOccupiedTiles;
                     }),
