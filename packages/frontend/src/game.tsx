@@ -10,7 +10,7 @@ import styles from "./game.module.scss";
 import { instantiateStractGameSocketListener } from "./socket";
 import { IStoreState } from "./store";
 import { SocketHealth } from "./components/socketHealth";
-import { IDevice, IDeviceType } from "./utils";
+import { IDevice, IDeviceType, SetupAudioPlayer } from "./utils";
 import { ActionsSidebar } from "./components/actionsSidebar";
 import { AddNewStagedAction } from "./components/stagedActions";
 
@@ -71,6 +71,7 @@ class UnconnectedGame extends React.PureComponent<IProps> {
                 <ActionsSidebar />
                 <GameBoard />
                 <AddNewStagedAction />
+                <SetupAudioPlayer />
             </div>
         );
     };

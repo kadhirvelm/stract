@@ -4,7 +4,7 @@ import classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 import { IStoreState } from "../../store";
-import { getDimensions, IPlayerWithTeamKey } from "../../utils";
+import { getDimensions, IPlayerWithTeamKey, playSound } from "../../utils";
 import { StagedAction } from "../stagedActions";
 import styles from "./actionsSidebar.module.scss";
 import { PiecePool } from "./piecePool";
@@ -147,6 +147,7 @@ export function UnconnectedActionsSidebar(props: IProps) {
                 </div>
             </div>
             <div className={classNames(styles.section, styles.stagedActionsContainer)}>
+                <Button onClick={() => playSound("bell.wav")} text="Click me!" />
                 <StagedActions player={player} stagedActions={gameBoard.stagedActions} />
             </div>
         </div>
