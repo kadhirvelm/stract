@@ -3,7 +3,7 @@
 .board-container {
     display: flex;
     flex: 1;
-    margin: 20px 60px;
+    margin: 40px 60px 20px;
 }
 
 .board {
@@ -11,4 +11,18 @@
     display: flex;
     flex: 1;
     flex-direction: column;
+}
+
+.row-label {
+    position: absolute;
+    left: -25px;
+    color: $gray4;
+    transform: translateY(-50%);
+}
+
+.column-label {
+    position: absolute;
+    top: -25px;
+    color: $gray4;
+    transform: translateX(-50%);
 }

@@ -26,6 +26,11 @@
     border: 1px solid $north-line;
 }
 
+.normal-tile {
+    background: $white;
+    border: 1px solid rgba($dark-gray2, 0.15);
+}
+
 .south-tile {
     background: $south-background;
     border: 1px solid $south-line;

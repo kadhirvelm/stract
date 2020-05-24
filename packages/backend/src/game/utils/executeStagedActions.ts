@@ -20,6 +20,7 @@ import {
     getGamePieceFromType,
     adjustRowAndColumnByDirection,
     adjustRowAndColumnByMultipleDirections,
+    sortStagedActions,
 } from "@stract/utils";
 import _ from "lodash";
 
@@ -172,17 +173,7 @@ export function executeStagedActions(currentGameState: IStractGameV1) {
         .map(action => appendId(action, "north"))
         .concat(currentGameState.stagedActions.south.map(action => appendId(action, "south")))
         // We need to sort so all switch place actions happen last and then deconflict based on timestamp, the earlier you submit an action, the earlier it should act
-        .sort((a, b) => {
-            if (IGameAction.isSwitchPlacesWithPiece(a.action) && !IGameAction.isSwitchPlacesWithPiece(b.action)) {
-                return 1;
-            }
-
-            if (IGameAction.isSwitchPlacesWithPiece(b.action) && !IGameAction.isSwitchPlacesWithPiece(a.action)) {
-                return -1;
-            }
-
-            return a.action.timestamp > b.action.timestamp ? 1 : -1;
-        });
+        .sort((a, b) => sortStagedActions(a.action, b.action));
 
     allActions.forEach(actionWithTeam => {
         IGameAction.visit(actionWithTeam.action, {

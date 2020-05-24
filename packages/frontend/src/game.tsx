@@ -9,10 +9,11 @@ import { RegisterPlayer } from "./components/player";
 import styles from "./game.module.scss";
 import { instantiateStractGameSocketListener } from "./socket";
 import { IStoreState } from "./store";
-import { SocketHealth } from "./components/socketHealth";
 import { IDevice, IDeviceType, SetupAudioPlayer } from "./utils";
 import { ActionsSidebar } from "./components/actionsSidebar";
 import { AddNewStagedAction } from "./components/stagedActions";
+import { SocketHealth } from "./components/common";
+import { AllPlayers } from "./components/common/allPlayers";
 
 interface IOwnProps {
     storeDispatch: Dispatch;
@@ -41,7 +42,10 @@ class UnconnectedGame extends React.PureComponent<IProps> {
     public render() {
         return (
             <>
-                <SocketHealth />
+                <div className={styles.metadataContainer}>
+                    <SocketHealth />
+                    <AllPlayers />
+                </div>
                 {this.renderGameElement()}
             </>
         );

@@ -1,6 +1,7 @@
 import { IBoardMetadata } from "@stract/api";
 
-export const MARGIN_VERTICAL = 20;
+export const MARGIN_VERTICAL_TOP = 40;
+export const MARGIN_VERTICAL_BOTTOM = 20;
 export const MARGIN_HORIZONTAL = 60;
 
 export const MINIMUM_SIDEBAR_WIDTH = 300;
@@ -9,7 +10,7 @@ export const MAXIMUM_WIDTH = 500;
 export function getDimensions(boardMetadata: IBoardMetadata) {
     const { columns, rows } = boardMetadata.size;
 
-    const boardHeight = window.innerHeight - MARGIN_VERTICAL * 2;
+    const boardHeight = window.innerHeight - (MARGIN_VERTICAL_TOP + MARGIN_VERTICAL_BOTTOM);
     const boardWidth = window.innerWidth - MARGIN_HORIZONTAL * 2;
 
     const squareDimension = Math.min(boardHeight / rows, (boardWidth - MINIMUM_SIDEBAR_WIDTH) / columns);

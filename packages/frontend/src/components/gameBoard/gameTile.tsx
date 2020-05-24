@@ -74,7 +74,7 @@ const BasicTile: React.FunctionComponent<{
     rowIndex: IRowIndex;
     selectedTile: ISelectedTile | undefined;
     shouldRenderBackground?: boolean;
-    teamOwner: keyof IAllTeams<any>;
+    teamOwner: keyof IAllTeams<any> | undefined;
 }> = props => {
     const {
         canAddAnyStagedAction,
@@ -97,6 +97,7 @@ const BasicTile: React.FunctionComponent<{
                 className,
                 shouldRenderBackground && {
                     [styles.northTile]: teamOwner === "north",
+                    [styles.normalTile]: teamOwner === undefined,
                     [styles.southTile]: teamOwner === "south",
                     [styles.canSelectTile]: canAddAnyStagedAction.isValid && selectedTile === undefined,
                     [styles.isSelectedTile]:
@@ -158,7 +159,17 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             }
         };
 
-        const teamOwner: keyof IAllTeams<any> = rowIndex < totalBoardRows / 2 ? "north" : "south";
+        const teamOwner = (): keyof IAllTeams<any> | undefined => {
+            if (rowIndex === 0) {
+                return "north";
+            }
+
+            if (rowIndex === totalBoardRows - 1) {
+                return "south";
+            }
+
+            return undefined;
+        };
 
         const commonProps = {
             canAddAnyStagedAction,
@@ -167,7 +178,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             rowIndex,
             selectedTile,
             shouldRenderBackground: false,
-            teamOwner,
+            teamOwner: teamOwner(),
         };
 
         return IOccupiedBy.visit<React.ReactElement | null>(occupiedBy, {
@@ -214,7 +225,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                     shouldRenderBackground
                 >
                     {canAddAnyStagedAction.canSpawn && !isSelectedTile && (
-                        <Spawn squareDimension={dimension} size="board" team={teamOwner} />
+                        <Spawn squareDimension={dimension} size="board" team={teamOwner()} />
                     )}
                 </BasicTile>
             ),

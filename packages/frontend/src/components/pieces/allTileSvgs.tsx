@@ -7,7 +7,7 @@ import { IWaterDirections, IPieceSize, renderInsideSVG } from "../../utils";
 export interface IPieceSVGProps {
     squareDimension?: number;
     onClick?: () => void;
-    team: keyof IAllTeams<any>;
+    team: keyof IAllTeams<any> | undefined;
     size: IPieceSize;
 }
 
@@ -73,10 +73,10 @@ export function Spawn(props: IProps) {
 
 export function Arrow(
     props: IProps & {
-        className: string;
+        className?: string;
         direction: IDirection | IWaterDirections;
         isSpecial?: boolean;
-        style: React.CSSProperties;
+        style?: React.CSSProperties;
     },
 ) {
     const { className, direction, isSpecial, onClick, squareDimension, size, style, team } = props;
@@ -123,7 +123,7 @@ export function Arrow(
     );
 }
 
-export function SwitchArrows(props: Omit<IProps, "size"> & { className: string; style: React.CSSProperties }) {
+export function SwitchArrows(props: Omit<IProps, "size"> & { className?: string; style?: React.CSSProperties }) {
     const { className, onClick, squareDimension, style, team } = props;
     if (squareDimension === undefined) {
         return null;

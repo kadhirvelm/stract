@@ -1,11 +1,17 @@
-import { IGameAction, IGameActionType, IPlayerIdentifier, IStractGameV1, IGameActionId } from "@stract/api";
+import { Button } from "@blueprintjs/core";
+import { IBoardTeamMetadata, IGameAction, IGameActionId, IPlayerIdentifier, IStractGameV1 } from "@stract/api";
 import * as React from "react";
 import { connect } from "react-redux";
-import { Button } from "@blueprintjs/core";
-import { IStoreState } from "../../store";
-import { IPlayerWithTeamKey } from "../../utils";
-import styles from "./stagedAction.module.scss";
 import { sendServerMessage } from "../../socket";
+import { IStoreState } from "../../store";
+import {
+    IPlayerWithTeamKey,
+    transformDirectionsIntoSingleDirection,
+    translateRowAndColumn,
+    translateColumn,
+} from "../../utils";
+import { Arrow, Spawn, SwitchArrows } from "../pieces";
+import styles from "./stagedAction.module.scss";
 
 interface IOwnProps {
     stagedAction: IGameAction;
@@ -20,42 +26,27 @@ type IProps = IOwnProps & IStateProps;
 
 function Action(props: {
     action: IGameAction;
+    actionDescription: React.ReactElement;
+    actionImage: React.ReactElement;
     addedByPlayer: IPlayerIdentifier | undefined;
     currentPlayer: IPlayerWithTeamKey;
-    gameBoard: IStractGameV1;
-    otherPlayerInfo: React.ReactElement;
-    samePlayerInfo: React.ReactElement;
+    teamMetadata: IBoardTeamMetadata;
 }) {
-    const { addedByPlayer, currentPlayer, gameBoard, action, samePlayerInfo, otherPlayerInfo } = props;
+    const { actionDescription, actionImage, addedByPlayer, currentPlayer, teamMetadata, action } = props;
     if (currentPlayer === undefined || currentPlayer.teamKey === undefined || addedByPlayer === undefined) {
         return null;
     }
 
-    const humanReadableType = (type: IGameActionType) => {
-        if (type === "move-piece") {
-            return "Move";
-        }
-
-        if (type === "spawn-piece") {
-            return "Spawn";
-        }
-
-        if (type === "special-move-piece") {
-            return "Special Move";
-        }
-
-        return "";
-    };
-
-    const playerName = gameBoard.teams[currentPlayer.teamKey].players.find(p => p.id === addedByPlayer);
-
-    const removeAction = (actionId: IGameActionId) => () =>
-        sendServerMessage().removeStagedAction({ id: actionId, player: currentPlayer.id });
+    const playerName =
+        addedByPlayer === currentPlayer.id ? "You" : teamMetadata.players.find(p => p.id === addedByPlayer);
 
     const maybeRenderDeleteButton = () => {
         if (action.addedByPlayer !== currentPlayer.id) {
             return null;
         }
+
+        const removeAction = (actionId: IGameActionId) => () =>
+            sendServerMessage().removeStagedAction({ id: actionId, player: currentPlayer.id });
 
         return (
             <div className={styles.buttonContainer}>
@@ -66,14 +57,10 @@ function Action(props: {
 
     return (
         <div className={styles.stagedContainer}>
+            {actionImage}
             <div className={styles.stagedContainerInfo}>
-                <div className={styles.typeAndName}>
-                    <span>{humanReadableType(action.type)}</span>
-                    <span>{playerName?.name}</span>
-                </div>
-                <div className={styles.playerInfo}>
-                    {currentPlayer.id === addedByPlayer ? samePlayerInfo : otherPlayerInfo}
-                </div>
+                {actionDescription}
+                <span>{playerName}</span>
             </div>
             {maybeRenderDeleteButton()}
         </div>
@@ -82,75 +69,81 @@ function Action(props: {
 
 function UnconnectedStagedAction(props: IProps) {
     const { gameBoard, player, stagedAction } = props;
-    if (gameBoard === undefined || player === undefined || player.teamKey === undefined) {
+    if (gameBoard === undefined || player === undefined || player.teamKey == null) {
         return null;
     }
+
+    const commonProps = {
+        currentPlayer: player,
+        teamMetadata: gameBoard.teams[player.teamKey],
+    };
 
     return IGameAction.visit(stagedAction, {
         movePiece: move => (
             <Action
                 action={move}
-                addedByPlayer={move.addedByPlayer}
-                currentPlayer={player}
-                gameBoard={gameBoard}
-                otherPlayerInfo={<div>A move was made by a teammate.</div>}
-                samePlayerInfo={
+                actionDescription={
                     <div>
-                        Piece at ({move.movePiece.start.row + 1}, {move.movePiece.start.column + 1}){" "}
-                        {move.movePiece.direction}{" "}
+                        {translateRowAndColumn(move.movePiece.start.row, move.movePiece.start.column)}{" "}
+                        {move.movePiece.direction}
                     </div>
                 }
+                actionImage={<Arrow team={player.teamKey} direction={move.movePiece.direction} size="board" />}
+                addedByPlayer={move.addedByPlayer}
+                {...commonProps}
             />
         ),
         spawnPiece: spawn => (
             <Action
                 action={spawn}
+                actionDescription={
+                    <div>
+                        {" "}
+                        {spawn.spawnPiece.pieceType} at {translateColumn(spawn.spawnPiece.column)}
+                    </div>
+                }
+                actionImage={<Spawn team={player.teamKey} size="board" />}
                 addedByPlayer={spawn.addedByPlayer}
-                currentPlayer={player}
-                gameBoard={gameBoard}
-                otherPlayerInfo={
-                    <div>
-                        Create a {spawn.spawnPiece.pieceType} at {spawn.spawnPiece.row + 1},{" "}
-                        {spawn.spawnPiece.column + 1}
-                    </div>
-                }
-                samePlayerInfo={
-                    <div>
-                        Create a {spawn.spawnPiece.pieceType} at {spawn.spawnPiece.row + 1},{" "}
-                        {spawn.spawnPiece.column + 1}
-                    </div>
-                }
+                {...commonProps}
             />
         ),
         specialMovePiece: specialMove => (
             <Action
                 action={specialMove}
-                addedByPlayer={specialMove.addedByPlayer}
-                currentPlayer={player}
-                gameBoard={gameBoard}
-                otherPlayerInfo={<div>A special move was made a player</div>}
-                samePlayerInfo={
+                actionDescription={
                     <div>
-                        Piece at ({specialMove.specialMove.start.row + 1}, {specialMove.specialMove.start.column + 1}){" "}
-                        {specialMove.specialMove.directions.join(", ")}{" "}
+                        {translateRowAndColumn(specialMove.specialMove.start.row, specialMove.specialMove.start.column)}
+                        {transformDirectionsIntoSingleDirection(specialMove.specialMove.directions)}
                     </div>
                 }
+                actionImage={
+                    <Arrow
+                        team={player.teamKey}
+                        direction={transformDirectionsIntoSingleDirection(specialMove.specialMove.directions)}
+                        size="board"
+                    />
+                }
+                addedByPlayer={specialMove.addedByPlayer}
+                {...commonProps}
             />
         ),
         switchPlacesWithPiece: switchPlacesWithPiece => (
             <Action
                 action={switchPlacesWithPiece}
-                addedByPlayer={switchPlacesWithPiece.addedByPlayer}
-                currentPlayer={player}
-                gameBoard={gameBoard}
-                otherPlayerInfo={<div>A special move was made a player</div>}
-                samePlayerInfo={
+                actionDescription={
                     <div>
-                        Earth piece at {switchPlacesWithPiece.switchPlaces.start.row},{" "}
-                        {switchPlacesWithPiece.switchPlaces.start.column} is targeting a switch with the tile{" "}
-                        {switchPlacesWithPiece.switchPlaces.directions} away.
+                        Earth at
+                        {translateRowAndColumn(
+                            switchPlacesWithPiece.switchPlaces.start.row,
+                            switchPlacesWithPiece.switchPlaces.start.column,
+                        )}
+                        attempting to switch with{" "}
+                        {transformDirectionsIntoSingleDirection(switchPlacesWithPiece.switchPlaces.directions)}
                     </div>
                 }
+                actionImage={<SwitchArrows team={player.teamKey} />}
+                addedByPlayer={switchPlacesWithPiece.addedByPlayer}
+                {...commonProps}
             />
         ),
         unknown: () => <div>Unknown action</div>,

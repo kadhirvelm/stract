@@ -8,6 +8,7 @@ declare namespace GameTileModuleScssModule {
         fadeIn: string;
         freeTile: string;
         isSelectedTile: string;
+        normalTile: string;
         northActive: string;
         northBackground: string;
         northColor: string;

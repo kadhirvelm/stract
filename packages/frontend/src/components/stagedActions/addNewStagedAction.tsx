@@ -13,7 +13,7 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { sendServerMessage } from "../../socket";
 import { ChangeSelectedTile, IStoreState } from "../../store";
-import { getDimensions, IPlayerWithTeamKey, ISelectedTile, MARGIN_HORIZONTAL, MARGIN_VERTICAL } from "../../utils";
+import { getDimensions, IPlayerWithTeamKey, ISelectedTile, MARGIN_HORIZONTAL, MARGIN_VERTICAL_TOP } from "../../utils";
 import { Arrow, Earth, Fire, IPieceSVGProps, SwitchArrows, Water } from "../pieces/allTileSvgs";
 import styles from "./addNewStagedAction.module.scss";
 
@@ -33,7 +33,7 @@ const getTopAndLeft = (gameBoardMetadata: IBoardMetadata, selectedTile: ISelecte
     const dimensions = getDimensions(gameBoardMetadata);
 
     const top =
-        MARGIN_VERTICAL +
+        MARGIN_VERTICAL_TOP +
         dimensions.additionalGameBoardVerticalPadding +
         dimensions.squareDimension * selectedTile.rowIndex;
     const left =

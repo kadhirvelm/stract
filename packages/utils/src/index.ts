@@ -6,3 +6,4 @@ export * from "./getGamePieceOwnedByTeam";
 export * from "./getTeamKeyFromRid";
 export * from "./isValidStagedAction";
 export * from "./occupiedTiles";
+export * from "./sortStagedActions";

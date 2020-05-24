@@ -2,6 +2,7 @@
 
 .staged-container {
     display: flex;
+    cursor: pointer;
 }
 
 .staged-container-info {
@@ -9,15 +10,6 @@
     flex: 1;
     flex-direction: column;
     padding: 10px;
-}
-
-.type-and-name {
-    display: flex;
-    justify-content: space-between;
-}
-
-.player-info {
-    padding-top: 5px;
 }
 
 .button-container {
