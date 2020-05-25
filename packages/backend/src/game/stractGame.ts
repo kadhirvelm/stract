@@ -29,7 +29,6 @@ const MAX_ACTIONS_PER_TEAM = 2;
 
 export class StractGame implements IStractGame {
     public currentGameState: IStractGameV1;
-    public maximumStagedActionsPerTurn = MAX_ACTIONS_PER_TEAM;
 
     private roomSocket: io.Namespace;
     private teamToPlayersMapping: ITeamToPlayersMapping;
@@ -45,7 +44,12 @@ export class StractGame implements IStractGame {
         this.toAllClients = StractGameSocketService.backend.toClient(this.roomSocket);
         this.currentGameState =
             sanitizeExistingBoard(existingBoard) ??
-            createNewGame({ roomName, timePerTurnInSeconds: TIME_PER_TURN, totalTurns: TOTAL_TURNS });
+            createNewGame({
+                roomName,
+                timePerTurnInSeconds: TIME_PER_TURN,
+                totalTurns: TOTAL_TURNS,
+                maxActionsPerTurn: MAX_ACTIONS_PER_TEAM,
+            });
         this.teamToPlayersMapping = createNewTeamToPlayerMapping(this.currentGameState, this.roomSocket);
 
         this.setupGameListeners();

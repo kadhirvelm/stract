@@ -9,7 +9,7 @@ import { ChangeSelectedTile, IStoreState } from "../../store";
 import { getGameTileKey, ISelectedTile, ITilesInStagedActions, getRowColumnKey } from "../../utils";
 import { Cross, Piece, Spawn, Star } from "../pieces";
 import styles from "./gameTile.module.scss";
-import { getTilesUsedInStagedActions, hasPlayerTeamReachedMaxStagedActions } from "../../selectors";
+import { getTilesUsedInStagedActions, canPlayerAddMoreActions } from "../../selectors";
 
 interface IOwnProps {
     canAddAnyStagedAction: ICanAddStagedActionToTile;
@@ -21,7 +21,7 @@ interface IOwnProps {
 }
 
 interface IStateProps {
-    hasPlayerTeamReachedMaxStagedActionsBoolean: boolean;
+    canPlayerAddMoreActionsBoolean: boolean;
     selectedTile: ISelectedTile | undefined;
     tilesUsedInStagedActions: ITilesInStagedActions;
 }
@@ -72,7 +72,7 @@ const BasicTile: React.FunctionComponent<{
     className?: string;
     columnIndex: IColumnIndex;
     dimension: number;
-    hasPlayerTeamReachedMaxStagedActionsBoolean: boolean;
+    canPlayerAddMoreActionsBoolean: boolean;
     keyString: string;
     onClick: () => void;
     rowIndex: IRowIndex;
@@ -87,7 +87,7 @@ const BasicTile: React.FunctionComponent<{
         children,
         columnIndex,
         dimension,
-        hasPlayerTeamReachedMaxStagedActionsBoolean,
+        canPlayerAddMoreActionsBoolean,
         keyString,
         onClick,
         rowIndex,
@@ -113,15 +113,15 @@ const BasicTile: React.FunctionComponent<{
                     [styles.isPartOfSpecialAction]:
                         isUsedInStagedAction === "special-move-piece" || isUsedInStagedAction === "switch-places",
                     [styles.canSelectTile]:
-                        !hasPlayerTeamReachedMaxStagedActionsBoolean &&
-                        canAddAnyStagedAction.isValid &&
-                        selectedTile === undefined,
+                        canPlayerAddMoreActionsBoolean && canAddAnyStagedAction.isValid && selectedTile === undefined,
                     [styles.isSelectedTile]:
-                        selectedTile?.rowIndex === rowIndex && selectedTile?.columnIndex === columnIndex,
+                        canPlayerAddMoreActionsBoolean &&
+                        selectedTile?.rowIndex === rowIndex &&
+                        selectedTile?.columnIndex === columnIndex,
                 },
             )}
             key={keyString}
-            onClick={onClick}
+            onClick={canPlayerAddMoreActionsBoolean ? onClick : noop}
             style={{
                 height: dimension,
                 width: dimension,
@@ -154,7 +154,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             changeSelectedTile,
             columnIndex,
             dimension,
-            hasPlayerTeamReachedMaxStagedActionsBoolean,
+            canPlayerAddMoreActionsBoolean,
             occupiedBy,
             rowIndex,
             selectedTile,
@@ -193,7 +193,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             canAddAnyStagedAction,
             dimension,
             columnIndex,
-            hasPlayerTeamReachedMaxStagedActionsBoolean,
+            canPlayerAddMoreActionsBoolean,
             rowIndex,
             selectedTile,
             shouldRenderBackground: false,
@@ -256,7 +256,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
 
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
-        hasPlayerTeamReachedMaxStagedActionsBoolean: hasPlayerTeamReachedMaxStagedActions(state),
+        canPlayerAddMoreActionsBoolean: canPlayerAddMoreActions(state),
         selectedTile: state.interface.selectedTile,
         tilesUsedInStagedActions: getTilesUsedInStagedActions(state),
     };

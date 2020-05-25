@@ -4,6 +4,7 @@ export * from "./checkIsIndexInBounds";
 export * from "./getGamePieceFromType";
 export * from "./getGamePieceOwnedByTeam";
 export * from "./getTeamKeyFromRid";
+export * from "./hasTeamReachedMaxActionsPerTurn";
 export * from "./isValidStagedAction";
 export * from "./occupiedTiles";
 export * from "./sortStagedActions";

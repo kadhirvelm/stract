@@ -14,12 +14,14 @@ import { ActionsSidebar } from "./components/actionsSidebar";
 import { AddNewStagedAction } from "./components/stagedActions";
 import { SocketHealth } from "./components/common";
 import { AllPlayers } from "./components/common/allPlayers";
+import { canPlayerAddMoreActions } from "./selectors";
 
 interface IOwnProps {
     storeDispatch: Dispatch;
 }
 
 interface IStoreProps {
+    canPlayerAddMoreActionsBoolean: boolean;
     gameBoard?: IStractGameV1;
     player?: IPlayer;
 }
@@ -65,7 +67,7 @@ class UnconnectedGame extends React.PureComponent<IProps> {
     }
 
     private renderGame = () => {
-        const { player } = this.props;
+        const { canPlayerAddMoreActionsBoolean, player } = this.props;
         if (player == null) {
             return <RegisterPlayer />;
         }
@@ -73,7 +75,7 @@ class UnconnectedGame extends React.PureComponent<IProps> {
         return (
             <div className={styles.gameContainer}>
                 <ActionsSidebar />
-                <GameBoard />
+                <GameBoard key={canPlayerAddMoreActionsBoolean ? "can-add-actions" : "cannot-add-actions"} />
                 <AddNewStagedAction />
                 <SetupAudioPlayer />
             </div>
@@ -89,6 +91,7 @@ class UnconnectedGame extends React.PureComponent<IProps> {
 
 function mapStateToProps(state: IStoreState): IStoreProps {
     return {
+        canPlayerAddMoreActionsBoolean: canPlayerAddMoreActions(state),
         gameBoard: state.game.gameBoard,
         player: state.game.player,
     };

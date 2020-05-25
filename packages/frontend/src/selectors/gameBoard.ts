@@ -1,4 +1,5 @@
-import { IAllTeams, IBoardTeamMetadata, IGameAction } from "@stract/api";
+import { IAllTeams, IBoardTeamMetadata, IGameAction, IGameState } from "@stract/api";
+import { hasTeamReachedMaxActionsPerTurn } from "@stract/utils";
 import { IStoreState } from "../store";
 import { IRegisterWithTeam } from "../utils";
 import { createDeepSelectorCreator } from "./selectorUtils";
@@ -18,15 +19,29 @@ export const getTeams = createDeepSelectorCreator(
     },
 );
 
-export const hasPlayerTeamReachedMaxStagedActions = createDeepSelectorCreator(
+export const canPlayerAddMoreActions = createDeepSelectorCreator(
+    (state: IStoreState) => state.game.gameBoard?.state,
     (state: IStoreState) => state.game.gameBoard?.stagedActions,
-    (state: IStoreState) => state.game.gameBoard?.metadata.turns.totalTurns,
+    (state: IStoreState) => state.game.gameBoard?.metadata.turns.maxActionsPerTurn,
     (state: IStoreState) => state.game.player?.teamKey,
-    (stagedActions?: IAllTeams<IGameAction[]>, totalTurns?: number, teamKey?: keyof IAllTeams<any>): boolean => {
-        if (stagedActions === undefined || totalTurns === undefined || teamKey === undefined) {
-            return true;
+    (
+        gameState?: IGameState,
+        stagedActions?: IAllTeams<IGameAction[]>,
+        maxActionsPerTurn?: number,
+        teamKey?: keyof IAllTeams<any>,
+    ): boolean => {
+        if (
+            gameState === undefined ||
+            stagedActions === undefined ||
+            maxActionsPerTurn === undefined ||
+            teamKey === undefined
+        ) {
+            return false;
         }
 
-        return stagedActions[teamKey].length < totalTurns;
+        return (
+            !hasTeamReachedMaxActionsPerTurn(stagedActions[teamKey], maxActionsPerTurn) &&
+            (IGameState.isInPlay(gameState) || IGameState.isRequestPause(gameState))
+        );
     },
 );

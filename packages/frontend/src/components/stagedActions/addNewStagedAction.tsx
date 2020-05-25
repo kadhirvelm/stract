@@ -16,8 +16,10 @@ import { ChangeSelectedTile, IStoreState } from "../../store";
 import { getDimensions, IPlayerWithTeamKey, ISelectedTile, MARGIN_HORIZONTAL, MARGIN_VERTICAL_TOP } from "../../utils";
 import { Arrow, Earth, Fire, IPieceSVGProps, SwitchArrows, Water } from "../pieces/allTileSvgs";
 import styles from "./addNewStagedAction.module.scss";
+import { canPlayerAddMoreActions } from "../../selectors";
 
 interface IStateProps {
+    canPlayerAddMoreActionsBoolean: boolean;
     gameBoard: IStractGameV1 | undefined;
     player: IPlayerWithTeamKey | undefined;
     selectedTile: ISelectedTile | undefined;
@@ -346,8 +348,14 @@ function MaybeSwitchPlacesWithPieceOptions(props: {
 }
 
 function UnconnectedAddNewStagedAction(props: IProps) {
-    const { gameBoard, player, removeSelectedTile, selectedTile } = props;
-    if (gameBoard === undefined || player === undefined || selectedTile === undefined || player.teamKey === undefined) {
+    const { canPlayerAddMoreActionsBoolean, gameBoard, player, removeSelectedTile, selectedTile } = props;
+    if (
+        !canPlayerAddMoreActionsBoolean ||
+        gameBoard === undefined ||
+        player === undefined ||
+        selectedTile === undefined ||
+        player.teamKey === undefined
+    ) {
         return <div className={styles.addNewStagedAction} />;
     }
 
@@ -450,6 +458,7 @@ function UnconnectedAddNewStagedAction(props: IProps) {
 
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
+        canPlayerAddMoreActionsBoolean: canPlayerAddMoreActions(state),
         gameBoard: state.game.gameBoard,
         player: state.game.player,
         selectedTile: state.interface.selectedTile,

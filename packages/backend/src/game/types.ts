@@ -45,10 +45,6 @@ export interface IStractGame {
      */
     changeGameState: (newGameState: IGameState) => void;
     /**
-     * The maximum staged actions a team is allowed to take per turn.
-     */
-    maximumStagedActionsPerTurn: number;
-    /**
      * When a player disconnect, this removes them from the currentGameState.
      */
     removePlayerFromTeam: (stractPlayer: IStractPlayer) => void;
