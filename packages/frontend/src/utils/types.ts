@@ -48,4 +48,4 @@ export interface IFlattenedBoard {
 
 export type IPieceSize = "board" | "spawn" | "sidebar";
 
-export type ITilesInStagedActions = Map<string, IGameActionType>;
+export type ITilesInStagedActions = Map<string, IGameActionType[]>;

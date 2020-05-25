@@ -1,4 +1,4 @@
-import { IAllTeams, IGameAction } from "@stract/api";
+import { IAllTeams, IGameAction, IGameActionType } from "@stract/api";
 import { noop } from "lodash-es";
 import { IStoreState } from "../store";
 import { createDeepSelectorCreator } from "./selectorUtils";
@@ -13,25 +13,25 @@ export const getTilesUsedInStagedActions = createDeepSelectorCreator(
         }
 
         const finalTilesUsedInStagedActions = new Map();
+
+        const updateKeyWithNewType = (key: string, newType: IGameActionType) => {
+            const currentValue = finalTilesUsedInStagedActions.get(key) ?? [];
+            finalTilesUsedInStagedActions.set(key, currentValue.concat(newType));
+        };
+
         stagedActions[playerTeamKey].forEach(action => {
             IGameAction.visit(action, {
                 movePiece: mp =>
-                    finalTilesUsedInStagedActions.set(
-                        getRowColumnKey(mp.movePiece.start.row, mp.movePiece.start.column),
-                        mp.type,
-                    ),
+                    updateKeyWithNewType(getRowColumnKey(mp.movePiece.start.row, mp.movePiece.start.column), mp.type),
                 spawnPiece: sp =>
-                    finalTilesUsedInStagedActions.set(
-                        getRowColumnKey(sp.spawnPiece.row, sp.spawnPiece.column),
-                        sp.type,
-                    ),
+                    updateKeyWithNewType(getRowColumnKey(sp.spawnPiece.row, sp.spawnPiece.column), sp.type),
                 specialMovePiece: spm =>
-                    finalTilesUsedInStagedActions.set(
+                    updateKeyWithNewType(
                         getRowColumnKey(spm.specialMove.start.row, spm.specialMove.start.column),
                         spm.type,
                     ),
                 switchPlacesWithPiece: sw =>
-                    finalTilesUsedInStagedActions.set(
+                    updateKeyWithNewType(
                         getRowColumnKey(sw.switchPlaces.start.row, sw.switchPlaces.start.column),
                         sw.type,
                     ),

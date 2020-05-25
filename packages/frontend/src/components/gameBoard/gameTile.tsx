@@ -1,15 +1,15 @@
 import { IAllTeams, IColumnIndex, IOccupiedBy, IOccupiedByAlive, IRowIndex } from "@stract/api";
 import { ICanAddStagedActionToTile } from "@stract/utils";
 import classNames from "classnames";
-import { isEqual, noop, pick } from "lodash-es";
+import { noop } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
+import { canPlayerAddMoreActions, getTilesUsedInStagedActions } from "../../selectors";
 import { ChangeSelectedTile, IStoreState } from "../../store";
-import { getGameTileKey, ISelectedTile, ITilesInStagedActions, getRowColumnKey } from "../../utils";
+import { getGameTileKey, getRowColumnKey, ISelectedTile, ITilesInStagedActions } from "../../utils";
 import { Cross, Piece, Spawn, Star } from "../pieces";
 import styles from "./gameTile.module.scss";
-import { getTilesUsedInStagedActions, canPlayerAddMoreActions } from "../../selectors";
 
 interface IOwnProps {
     canAddAnyStagedAction: ICanAddStagedActionToTile;
@@ -108,10 +108,11 @@ const BasicTile: React.FunctionComponent<{
                     [styles.northTile]: teamOwner === "north",
                     [styles.normalTile]: teamOwner === undefined,
                     [styles.southTile]: teamOwner === "south",
-                    [styles.isPartOfSpawnAction]: isUsedInStagedAction === "spawn-piece",
-                    [styles.isPartOfMoveAction]: isUsedInStagedAction === "move-piece",
+                    [styles.isPartOfSpawnAction]: isUsedInStagedAction?.includes("spawn-piece"),
+                    [styles.isPartOfMoveAction]: isUsedInStagedAction?.includes("move-piece"),
                     [styles.isPartOfSpecialAction]:
-                        isUsedInStagedAction === "special-move-piece" || isUsedInStagedAction === "switch-places",
+                        isUsedInStagedAction?.includes("special-move-piece") ||
+                        isUsedInStagedAction?.includes("switch-places"),
                     [styles.canSelectTile]:
                         canPlayerAddMoreActionsBoolean && canAddAnyStagedAction.isValid && selectedTile === undefined,
                     [styles.isSelectedTile]:
@@ -121,7 +122,7 @@ const BasicTile: React.FunctionComponent<{
                 },
             )}
             key={keyString}
-            onClick={onClick}
+            onClick={canPlayerAddMoreActionsBoolean ? onClick : noop}
             style={{
                 height: dimension,
                 width: dimension,
@@ -134,19 +135,7 @@ const BasicTile: React.FunctionComponent<{
     );
 };
 
-export class UnconnectedGameTile extends React.Component<IProps> {
-    // We need to check for deep referential equality before re-rendering, this should be a cheap action since these pieces are small
-    public shouldComponentUpdate(nextProps: IProps) {
-        const keysToCompare: Array<keyof IProps> = [
-            "canAddAnyStagedAction",
-            "occupiedBy",
-            "selectedTile",
-            "rowIndex",
-            "columnIndex",
-        ];
-        return !isEqual(pick(nextProps, keysToCompare), pick(this.props, keysToCompare));
-    }
-
+export class UnconnectedGameTile extends React.PureComponent<IProps> {
     public render() {
         const {
             totalBoardRows,
