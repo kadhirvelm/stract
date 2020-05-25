@@ -23,7 +23,7 @@ import {
     resolveGameBoard,
 } from "./utils";
 
-const TIME_PER_TURN = 25;
+const TIME_PER_TURN = 30;
 const TOTAL_TURNS = 30;
 const MAX_ACTIONS_PER_TEAM = 2;
 

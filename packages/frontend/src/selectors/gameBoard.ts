@@ -39,7 +39,9 @@ export const canPlayerAddMoreActions = createDeepSelectorCreator(
             return false;
         }
 
-        return !hasTeamReachedMaxActionsPerTurn(stagedActions[teamKey], maxActionsPerTurn); // &&
-        // (IGameState.isInPlay(gameState) || IGameState.isRequestPause(gameState))
+        return (
+            !hasTeamReachedMaxActionsPerTurn(stagedActions[teamKey], maxActionsPerTurn) &&
+            (IGameState.isInPlay(gameState) || IGameState.isRequestPause(gameState))
+        );
     },
 );

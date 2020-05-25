@@ -1,7 +1,7 @@
 import { IAllTeams, IColumnIndex, IOccupiedBy, IOccupiedByAlive, IRowIndex } from "@stract/api";
 import { ICanAddStagedActionToTile } from "@stract/utils";
 import classNames from "classnames";
-import { noop } from "lodash-es";
+import { isEqual, noop, pick } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -135,7 +135,21 @@ const BasicTile: React.FunctionComponent<{
     );
 };
 
-export class UnconnectedGameTile extends React.PureComponent<IProps> {
+export class UnconnectedGameTile extends React.Component<IProps> {
+    // We need to check for deep referential equality before re-rendering, this should be a cheap action since these pieces are small
+    public shouldComponentUpdate(nextProps: IProps) {
+        const keysToCompare: Array<keyof IProps> = [
+            "canPlayerAddMoreActionsBoolean",
+            "canAddAnyStagedAction",
+            "occupiedBy",
+            "selectedTile",
+            "rowIndex",
+            "columnIndex",
+            "tilesUsedInStagedActions",
+        ];
+        return !isEqual(pick(nextProps, keysToCompare), pick(this.props, keysToCompare));
+    }
+
     public render() {
         const {
             totalBoardRows,

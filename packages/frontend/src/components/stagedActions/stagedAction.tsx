@@ -11,7 +11,7 @@ import {
     translateRowAndColumn,
     translateColumn,
 } from "../../utils";
-import { Arrow, Spawn, SwitchArrows } from "../pieces";
+import { Arrow, Spawn, SwitchArrows, BoardPiece } from "../pieces";
 import styles from "./stagedAction.module.scss";
 
 interface IOwnProps {
@@ -108,7 +108,7 @@ function UnconnectedStagedAction(props: IProps) {
                 action={spawn}
                 actionDescription={
                     <div>
-                        Spawn {spawn.spawnPiece.pieceType} at{" "}
+                        Spawn <BoardPiece piece={spawn.spawnPiece.pieceType} team={player.teamKey} /> at{" "}
                         {translateRowAndColumn(spawn.spawnPiece.row, spawn.spawnPiece.column)}
                     </div>
                 }
