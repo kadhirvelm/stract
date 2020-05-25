@@ -2,6 +2,7 @@
 declare namespace StagedActionModuleScssModule {
     export interface IStagedActionModuleScss {
         buttonContainer: string;
+        playerName: string;
         stagedContainer: string;
         stagedContainerInfo: string;
     }

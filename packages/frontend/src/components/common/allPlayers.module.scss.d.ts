@@ -2,6 +2,10 @@
 declare namespace AllPlayersModuleScssModule {
     export interface IAllPlayersModuleScss {
         mainContainer: string;
+        noTeamMembers: string;
+        teamContainer: string;
+        teamMember: string;
+        teamTitle: string;
     }
 }
 

@@ -1,5 +1,28 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
 .main-container {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     padding: 10px;
+}
+
+.team-title {
+    font-size: 12px;
+    padding-bottom: 5px;
+}
+
+.team-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.team-member {
+    font-size: 14px;
+}
+
+.no-team-members {
+    font-size: 14px;
+    color: $pt-text-color-muted;
 }

@@ -11,5 +11,5 @@ export function translateColumn(columnIndex: IColumnIndex) {
 }
 
 export function translateRowAndColumn(rowIndex: IRowIndex, columnIndex: IColumnIndex) {
-    return `${translateRow(rowIndex)}, ${translateColumn(columnIndex)}`;
+    return `${translateRow(rowIndex)}${translateColumn(columnIndex)}`;
 }
