@@ -1,18 +1,19 @@
+import { NonIdealState } from "@blueprintjs/core";
 import { IPlayer, IStractGameV1 } from "@stract/api";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { UAParser } from "ua-parser-js";
-import { NonIdealState } from "@blueprintjs/core";
+import { ActionsSidebar } from "./components/actionsSidebar";
+import { SocketHealth } from "./components/common";
+import { AllPlayers } from "./components/common/allPlayers";
 import { GameBoard } from "./components/gameBoard";
 import { RegisterPlayer } from "./components/player";
+import { AddNewStagedAction } from "./components/stagedActions";
 import styles from "./game.module.scss";
 import { instantiateStractGameSocketListener } from "./socket";
 import { IStoreState } from "./store";
-import { SocketHealth } from "./components/socketHealth";
 import { IDevice, IDeviceType, SetupAudioPlayer } from "./utils";
-import { ActionsSidebar } from "./components/actionsSidebar";
-import { AddNewStagedAction } from "./components/stagedActions";
 
 interface IOwnProps {
     storeDispatch: Dispatch;
@@ -41,7 +42,10 @@ class UnconnectedGame extends React.PureComponent<IProps> {
     public render() {
         return (
             <>
-                <SocketHealth />
+                <div className={styles.metadataContainer}>
+                    <SocketHealth />
+                    <AllPlayers />
+                </div>
                 {this.renderGameElement()}
             </>
         );

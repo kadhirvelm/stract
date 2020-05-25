@@ -4,7 +4,7 @@ import { Fire, Earth, Water } from "./allTileSvgs";
 
 interface IOwnProps {
     piece: IGamePieceType;
-    team: keyof IAllTeams<any>;
+    team?: keyof IAllTeams<any>;
 }
 
 type IProps = IOwnProps;

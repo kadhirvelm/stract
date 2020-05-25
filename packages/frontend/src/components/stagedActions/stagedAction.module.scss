@@ -2,22 +2,15 @@
 
 .staged-container {
     display: flex;
+    cursor: pointer;
 }
 
 .staged-container-info {
     display: flex;
     flex: 1;
     flex-direction: column;
+    justify-content: center;
     padding: 10px;
-}
-
-.type-and-name {
-    display: flex;
-    justify-content: space-between;
-}
-
-.player-info {
-    padding-top: 5px;
 }
 
 .button-container {
@@ -30,4 +23,10 @@
         padding: 0 20px;
         border-radius: 0;
     }
+}
+
+.player-name {
+    color: $pt-text-color-muted;
+    margin-top: 10px;
+    font-size: 16px;
 }

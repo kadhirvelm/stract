@@ -2,6 +2,7 @@
 declare namespace GameModuleScssModule {
     export interface IGameModuleScss {
         gameContainer: string;
+        metadataContainer: string;
     }
 }
 

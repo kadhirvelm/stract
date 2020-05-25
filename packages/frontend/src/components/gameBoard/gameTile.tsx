@@ -5,8 +5,9 @@ import { isEqual, noop, pick } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
+import { canPlayerAddMoreActions, getTilesUsedInStagedActions } from "../../selectors";
 import { ChangeSelectedTile, IStoreState } from "../../store";
-import { getGameTileKey, ISelectedTile } from "../../utils";
+import { getGameTileKey, getRowColumnKey, ISelectedTile, ITilesInStagedActions } from "../../utils";
 import { Cross, Piece, Spawn, Star } from "../pieces";
 import styles from "./gameTile.module.scss";
 
@@ -20,7 +21,9 @@ interface IOwnProps {
 }
 
 interface IStateProps {
+    canPlayerAddMoreActionsBoolean: boolean;
     selectedTile: ISelectedTile | undefined;
+    tilesUsedInStagedActions: ITilesInStagedActions;
 }
 
 interface IDispatchProps {
@@ -69,12 +72,14 @@ const BasicTile: React.FunctionComponent<{
     className?: string;
     columnIndex: IColumnIndex;
     dimension: number;
+    canPlayerAddMoreActionsBoolean: boolean;
     keyString: string;
     onClick: () => void;
     rowIndex: IRowIndex;
     selectedTile: ISelectedTile | undefined;
     shouldRenderBackground?: boolean;
-    teamOwner: keyof IAllTeams<any>;
+    teamOwner: keyof IAllTeams<any> | undefined;
+    tilesUsedInStagedActions: ITilesInStagedActions;
 }> = props => {
     const {
         canAddAnyStagedAction,
@@ -82,13 +87,17 @@ const BasicTile: React.FunctionComponent<{
         children,
         columnIndex,
         dimension,
+        canPlayerAddMoreActionsBoolean,
         keyString,
         onClick,
         rowIndex,
         selectedTile,
         shouldRenderBackground,
         teamOwner,
+        tilesUsedInStagedActions,
     } = props;
+
+    const isUsedInStagedAction = tilesUsedInStagedActions.get(getRowColumnKey(rowIndex, columnIndex));
 
     return (
         <div
@@ -97,14 +106,23 @@ const BasicTile: React.FunctionComponent<{
                 className,
                 shouldRenderBackground && {
                     [styles.northTile]: teamOwner === "north",
+                    [styles.normalTile]: teamOwner === undefined,
                     [styles.southTile]: teamOwner === "south",
-                    [styles.canSelectTile]: canAddAnyStagedAction.isValid && selectedTile === undefined,
+                    [styles.isPartOfSpawnAction]: isUsedInStagedAction?.includes("spawn-piece"),
+                    [styles.isPartOfMoveAction]: isUsedInStagedAction?.includes("move-piece"),
+                    [styles.isPartOfSpecialAction]:
+                        isUsedInStagedAction?.includes("special-move-piece") ||
+                        isUsedInStagedAction?.includes("switch-places"),
+                    [styles.canSelectTile]:
+                        canPlayerAddMoreActionsBoolean && canAddAnyStagedAction.isValid && selectedTile === undefined,
                     [styles.isSelectedTile]:
-                        selectedTile?.rowIndex === rowIndex && selectedTile?.columnIndex === columnIndex,
+                        canPlayerAddMoreActionsBoolean &&
+                        selectedTile?.rowIndex === rowIndex &&
+                        selectedTile?.columnIndex === columnIndex,
                 },
             )}
             key={keyString}
-            onClick={onClick}
+            onClick={canPlayerAddMoreActionsBoolean ? onClick : noop}
             style={{
                 height: dimension,
                 width: dimension,
@@ -121,11 +139,13 @@ export class UnconnectedGameTile extends React.Component<IProps> {
     // We need to check for deep referential equality before re-rendering, this should be a cheap action since these pieces are small
     public shouldComponentUpdate(nextProps: IProps) {
         const keysToCompare: Array<keyof IProps> = [
+            "canPlayerAddMoreActionsBoolean",
             "canAddAnyStagedAction",
             "occupiedBy",
             "selectedTile",
             "rowIndex",
             "columnIndex",
+            "tilesUsedInStagedActions",
         ];
         return !isEqual(pick(nextProps, keysToCompare), pick(this.props, keysToCompare));
     }
@@ -137,9 +157,11 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             changeSelectedTile,
             columnIndex,
             dimension,
+            canPlayerAddMoreActionsBoolean,
             occupiedBy,
             rowIndex,
             selectedTile,
+            tilesUsedInStagedActions,
         } = this.props;
 
         const isSelectedTile = selectedTile?.columnIndex === columnIndex && selectedTile.rowIndex === rowIndex;
@@ -158,16 +180,28 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             }
         };
 
-        const teamOwner: keyof IAllTeams<any> = rowIndex < totalBoardRows / 2 ? "north" : "south";
+        const teamOwner = (): keyof IAllTeams<any> | undefined => {
+            if (rowIndex === 0) {
+                return "north";
+            }
+
+            if (rowIndex === totalBoardRows - 1) {
+                return "south";
+            }
+
+            return undefined;
+        };
 
         const commonProps = {
             canAddAnyStagedAction,
             dimension,
             columnIndex,
+            canPlayerAddMoreActionsBoolean,
             rowIndex,
             selectedTile,
             shouldRenderBackground: false,
-            teamOwner,
+            teamOwner: teamOwner(),
+            tilesUsedInStagedActions,
         };
 
         return IOccupiedBy.visit<React.ReactElement | null>(occupiedBy, {
@@ -214,7 +248,7 @@ export class UnconnectedGameTile extends React.Component<IProps> {
                     shouldRenderBackground
                 >
                     {canAddAnyStagedAction.canSpawn && !isSelectedTile && (
-                        <Spawn squareDimension={dimension} size="board" team={teamOwner} />
+                        <Spawn squareDimension={dimension} size="board" team={teamOwner()} />
                     )}
                 </BasicTile>
             ),
@@ -225,7 +259,9 @@ export class UnconnectedGameTile extends React.Component<IProps> {
 
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
+        canPlayerAddMoreActionsBoolean: canPlayerAddMoreActions(state),
         selectedTile: state.interface.selectedTile,
+        tilesUsedInStagedActions: getTilesUsedInStagedActions(state),
     };
 }
 

@@ -23,9 +23,9 @@ export function createBoard(x: number, y: number): IGameTile[][] {
 }
 
 const startingPiecePool: IBoardTeamPiecePool[] = [
-    { total: 10, type: "water" },
-    { total: 10, type: "fire" },
-    { total: 10, type: "earth" },
+    { total: 5, type: "water" },
+    { total: 5, type: "fire" },
+    { total: 5, type: "earth" },
 ];
 
 function startingTeam(teamName: string) {
@@ -42,11 +42,12 @@ function startingTeam(teamName: string) {
 }
 
 export function createNewGame(options: {
+    maxActionsPerTurn: number;
     roomName: string;
     timePerTurnInSeconds: number;
     totalTurns: number;
 }): IStractGameV1 {
-    const { roomName, timePerTurnInSeconds, totalTurns } = options;
+    const { maxActionsPerTurn, roomName, timePerTurnInSeconds, totalTurns } = options;
 
     return {
         metadata: {
@@ -56,6 +57,7 @@ export function createNewGame(options: {
             turns: {
                 timePerTurnInSeconds,
                 totalTurns,
+                maxActionsPerTurn,
             },
         },
         board: createBoard(BOARD_SIZE.size.rows, BOARD_SIZE.size.columns),

@@ -2,10 +2,9 @@
 
 .socket-container {
     display: flex;
+    justify-content: flex-end;
     align-items: center;
-    position: fixed;
-    top: 5px;
-    right: 5px;
+    margin: 5px;
 }
 
 .generic-indicator {

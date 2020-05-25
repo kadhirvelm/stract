@@ -4,7 +4,7 @@
 .actions-sidebar {
     display: flex;
     flex-direction: column;
-    background: $light-gray4;
+    background: $white;
     box-shadow: 1px 0 $pt-divider-black;
 }
 
@@ -57,7 +57,6 @@
 .both-team-information {
     display: flex;
     flex-direction: column;
-    background-image: linear-gradient(to right, $north-background, $south-background);
     margin: 1px 0;
 }
 
@@ -95,6 +94,10 @@
 
     > :nth-child(even) {
         background: $light-gray3;
+    }
+
+    > :not(:first-child) {
+        box-shadow: 0 1px $pt-divider-black;
     }
 }
 

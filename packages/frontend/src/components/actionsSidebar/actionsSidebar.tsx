@@ -4,6 +4,7 @@ import classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 import { isEqual } from "lodash-es";
+import { sortStagedActions } from "@stract/utils";
 import { sendServerMessage } from "../../socket";
 import { IStoreState } from "../../store";
 import { getDimensions, IPlayerWithTeamKey, playSound, SOUNDS } from "../../utils";
@@ -107,7 +108,7 @@ function StagedActions(props: { player: IPlayerWithTeamKey; stagedActions: IAllT
     return (
         <div className={styles.stagedActionsList}>
             <div className={styles.stagedActionsTitle}>Your team will:</div>
-            {teamActions.map(stagedAction => (
+            {teamActions.sort(sortStagedActions).map(stagedAction => (
                 <StagedAction key={stagedAction.id} stagedAction={stagedAction} />
             ))}
         </div>
