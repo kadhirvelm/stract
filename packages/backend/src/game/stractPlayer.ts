@@ -45,26 +45,26 @@ export class StractPlayer implements IStractPlayer {
             return;
         }
 
-        // if (
-        //     !IGameState.isInPlay(this.game.currentGameState.state) &&
-        //     !IGameState.isRequestPause(this.game.currentGameState.state)
-        // ) {
-        //     this.toClient.onMessage({
-        //         message: "Unfortunately the game is playing right now. We can't accept your action.",
-        //         intent: "warning",
-        //     });
-        //     return;
-        // }
+        if (
+            !IGameState.isInPlay(this.game.currentGameState.state) &&
+            !IGameState.isRequestPause(this.game.currentGameState.state)
+        ) {
+            this.toClient.onMessage({
+                message: "Unfortunately the game is playing right now. We can't accept your action.",
+                intent: "warning",
+            });
+            return;
+        }
 
-        // const team = getTeamKeyFromRid(this.team, this.game.currentGameState.teams);
-        // if (this.game.currentGameState.stagedActions[team].length >= this.game.maximumStagedActionsPerTurn) {
-        //     this.toClient.onMessage({
-        //         message:
-        //             "Your team has reached it's maximum staged actions limit for this turn. Either wait, or delete an existing staged action.",
-        //         intent: "warning",
-        //     });
-        //     return;
-        // }
+        const team = getTeamKeyFromRid(this.team, this.game.currentGameState.teams);
+        if (this.game.currentGameState.stagedActions[team].length >= this.game.maximumStagedActionsPerTurn) {
+            this.toClient.onMessage({
+                message:
+                    "Your team has reached it's maximum staged actions limit for this turn. Either wait, or delete an existing staged action.",
+                intent: "warning",
+            });
+            return;
+        }
 
         const isValidAction = isValidStagedAction(this.game.currentGameState, gameAction, this.team);
         if (!isValidAction.isValid) {

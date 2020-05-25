@@ -1,12 +1,13 @@
 import {
-    IPlayer,
-    ITeamRid,
     IAllTeams,
+    IColumnIndex,
+    IGameActionType,
     IGameTile,
     IOccupiedBy,
     IOccupiedByAlive,
+    IPlayer,
     IRowIndex,
-    IColumnIndex,
+    ITeamRid,
 } from "@stract/api";
 
 export interface IRegisterWithTeam {
@@ -46,3 +47,5 @@ export interface IFlattenedBoard {
 }
 
 export type IPieceSize = "board" | "spawn" | "sidebar";
+
+export type ITilesInStagedActions = Map<string, IGameActionType>;

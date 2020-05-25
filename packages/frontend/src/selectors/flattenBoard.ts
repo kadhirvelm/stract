@@ -1,10 +1,8 @@
 import { columnIndex, IGameTile, rowIndex } from "@stract/api";
-import { flatten, isEqual } from "lodash-es";
-import { createSelectorCreator, defaultMemoize } from "reselect";
+import { flatten } from "lodash-es";
 import { IStoreState } from "../store";
 import { IFlattenedBoard, maybePlaySoundsForTile } from "../utils";
-
-const createDeepSelectorCreator = createSelectorCreator(defaultMemoize, isEqual);
+import { createDeepSelectorCreator } from "./selectorUtils";
 
 /**
  * In order to get the CSS transitions to work reliably, we need to paint them at the same time, not row by row, and

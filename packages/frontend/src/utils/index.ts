@@ -3,6 +3,7 @@ export * from "./device";
 export * from "./getDimensions";
 export * from "./getGameTileKey";
 export * from "./getOtherTeam";
+export * from "./getRowColumnKey";
 export * from "./maybeAddTeamKeyToPlayer";
 export * from "./maybePlaySoundsForTile";
 export * from "./playSound";

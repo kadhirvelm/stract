@@ -48,6 +48,18 @@
     box-shadow: 0 0 7px 3px $gold2 inset;
 }
 
+.is-part-of-spawn-action {
+    border: 2px solid $green5;
+}
+
+.is-part-of-move-action {
+    box-shadow: 0 0 7px 2px $green4 inset;
+}
+
+.is-part-of-special-action {
+    box-shadow: 0 0 7px 2px $indigo4 inset;
+}
+
 .destroyed-piece {
     position: absolute;
     opacity: 0;

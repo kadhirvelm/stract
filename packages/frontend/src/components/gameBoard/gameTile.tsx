@@ -6,9 +6,10 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { ChangeSelectedTile, IStoreState } from "../../store";
-import { getGameTileKey, ISelectedTile } from "../../utils";
+import { getGameTileKey, ISelectedTile, ITilesInStagedActions, getRowColumnKey } from "../../utils";
 import { Cross, Piece, Spawn, Star } from "../pieces";
 import styles from "./gameTile.module.scss";
+import { getTilesUsedInStagedActions, hasPlayerTeamReachedMaxStagedActions } from "../../selectors";
 
 interface IOwnProps {
     canAddAnyStagedAction: ICanAddStagedActionToTile;
@@ -20,7 +21,9 @@ interface IOwnProps {
 }
 
 interface IStateProps {
+    hasPlayerTeamReachedMaxStagedActionsBoolean: boolean;
     selectedTile: ISelectedTile | undefined;
+    tilesUsedInStagedActions: ITilesInStagedActions;
 }
 
 interface IDispatchProps {
@@ -69,12 +72,14 @@ const BasicTile: React.FunctionComponent<{
     className?: string;
     columnIndex: IColumnIndex;
     dimension: number;
+    hasPlayerTeamReachedMaxStagedActionsBoolean: boolean;
     keyString: string;
     onClick: () => void;
     rowIndex: IRowIndex;
     selectedTile: ISelectedTile | undefined;
     shouldRenderBackground?: boolean;
     teamOwner: keyof IAllTeams<any> | undefined;
+    tilesUsedInStagedActions: ITilesInStagedActions;
 }> = props => {
     const {
         canAddAnyStagedAction,
@@ -82,13 +87,17 @@ const BasicTile: React.FunctionComponent<{
         children,
         columnIndex,
         dimension,
+        hasPlayerTeamReachedMaxStagedActionsBoolean,
         keyString,
         onClick,
         rowIndex,
         selectedTile,
         shouldRenderBackground,
         teamOwner,
+        tilesUsedInStagedActions,
     } = props;
+
+    const isUsedInStagedAction = tilesUsedInStagedActions.get(getRowColumnKey(rowIndex, columnIndex));
 
     return (
         <div
@@ -99,7 +108,14 @@ const BasicTile: React.FunctionComponent<{
                     [styles.northTile]: teamOwner === "north",
                     [styles.normalTile]: teamOwner === undefined,
                     [styles.southTile]: teamOwner === "south",
-                    [styles.canSelectTile]: canAddAnyStagedAction.isValid && selectedTile === undefined,
+                    [styles.isPartOfSpawnAction]: isUsedInStagedAction === "spawn-piece",
+                    [styles.isPartOfMoveAction]: isUsedInStagedAction === "move-piece",
+                    [styles.isPartOfSpecialAction]:
+                        isUsedInStagedAction === "special-move-piece" || isUsedInStagedAction === "switch-places",
+                    [styles.canSelectTile]:
+                        !hasPlayerTeamReachedMaxStagedActionsBoolean &&
+                        canAddAnyStagedAction.isValid &&
+                        selectedTile === undefined,
                     [styles.isSelectedTile]:
                         selectedTile?.rowIndex === rowIndex && selectedTile?.columnIndex === columnIndex,
                 },
@@ -138,9 +154,11 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             changeSelectedTile,
             columnIndex,
             dimension,
+            hasPlayerTeamReachedMaxStagedActionsBoolean,
             occupiedBy,
             rowIndex,
             selectedTile,
+            tilesUsedInStagedActions,
         } = this.props;
 
         const isSelectedTile = selectedTile?.columnIndex === columnIndex && selectedTile.rowIndex === rowIndex;
@@ -175,10 +193,12 @@ export class UnconnectedGameTile extends React.Component<IProps> {
             canAddAnyStagedAction,
             dimension,
             columnIndex,
+            hasPlayerTeamReachedMaxStagedActionsBoolean,
             rowIndex,
             selectedTile,
             shouldRenderBackground: false,
             teamOwner: teamOwner(),
+            tilesUsedInStagedActions,
         };
 
         return IOccupiedBy.visit<React.ReactElement | null>(occupiedBy, {
@@ -236,7 +256,9 @@ export class UnconnectedGameTile extends React.Component<IProps> {
 
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
+        hasPlayerTeamReachedMaxStagedActionsBoolean: hasPlayerTeamReachedMaxStagedActions(state),
         selectedTile: state.interface.selectedTile,
+        tilesUsedInStagedActions: getTilesUsedInStagedActions(state),
     };
 }
 

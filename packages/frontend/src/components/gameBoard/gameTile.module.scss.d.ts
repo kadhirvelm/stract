@@ -7,6 +7,9 @@ declare namespace GameTileModuleScssModule {
         destroyedPiece: string;
         fadeIn: string;
         freeTile: string;
+        isPartOfMoveAction: string;
+        isPartOfSpawnAction: string;
+        isPartOfSpecialAction: string;
         isSelectedTile: string;
         normalTile: string;
         northActive: string;
