@@ -349,6 +349,7 @@ function MaybeSwitchPlacesWithPieceOptions(props: {
 
 function UnconnectedAddNewStagedAction(props: IProps) {
     const { canPlayerAddMoreActionsBoolean, gameBoard, player, removeSelectedTile, selectedTile } = props;
+
     if (
         !canPlayerAddMoreActionsBoolean ||
         gameBoard === undefined ||

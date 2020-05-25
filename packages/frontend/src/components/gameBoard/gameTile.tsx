@@ -121,7 +121,7 @@ const BasicTile: React.FunctionComponent<{
                 },
             )}
             key={keyString}
-            onClick={canPlayerAddMoreActionsBoolean ? onClick : noop}
+            onClick={onClick}
             style={{
                 height: dimension,
                 width: dimension,

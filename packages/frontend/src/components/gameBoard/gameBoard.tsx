@@ -118,7 +118,7 @@ class UnconnectedGameBoard extends React.PureComponent<IProps> {
                                     rowIndex,
                                     columnIndex,
                                 )}
-                                key={getGameTileKey(occupiedBy, rowIndex, columnIndex)}
+                                key={getGameTileKey(occupiedBy, rowIndex, columnIndex, gameBoard.state)}
                                 occupiedBy={occupiedBy}
                                 rowIndex={rowIndex}
                                 columnIndex={columnIndex}

@@ -1,27 +1,25 @@
+import { NonIdealState } from "@blueprintjs/core";
 import { IPlayer, IStractGameV1 } from "@stract/api";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { UAParser } from "ua-parser-js";
-import { NonIdealState } from "@blueprintjs/core";
+import { ActionsSidebar } from "./components/actionsSidebar";
+import { SocketHealth } from "./components/common";
+import { AllPlayers } from "./components/common/allPlayers";
 import { GameBoard } from "./components/gameBoard";
 import { RegisterPlayer } from "./components/player";
+import { AddNewStagedAction } from "./components/stagedActions";
 import styles from "./game.module.scss";
 import { instantiateStractGameSocketListener } from "./socket";
 import { IStoreState } from "./store";
 import { IDevice, IDeviceType, SetupAudioPlayer } from "./utils";
-import { ActionsSidebar } from "./components/actionsSidebar";
-import { AddNewStagedAction } from "./components/stagedActions";
-import { SocketHealth } from "./components/common";
-import { AllPlayers } from "./components/common/allPlayers";
-import { canPlayerAddMoreActions } from "./selectors";
 
 interface IOwnProps {
     storeDispatch: Dispatch;
 }
 
 interface IStoreProps {
-    canPlayerAddMoreActionsBoolean: boolean;
     gameBoard?: IStractGameV1;
     player?: IPlayer;
 }
@@ -67,7 +65,7 @@ class UnconnectedGame extends React.PureComponent<IProps> {
     }
 
     private renderGame = () => {
-        const { canPlayerAddMoreActionsBoolean, player } = this.props;
+        const { player } = this.props;
         if (player == null) {
             return <RegisterPlayer />;
         }
@@ -75,7 +73,7 @@ class UnconnectedGame extends React.PureComponent<IProps> {
         return (
             <div className={styles.gameContainer}>
                 <ActionsSidebar />
-                <GameBoard key={canPlayerAddMoreActionsBoolean ? "can-add-actions" : "cannot-add-actions"} />
+                <GameBoard />
                 <AddNewStagedAction />
                 <SetupAudioPlayer />
             </div>
@@ -91,7 +89,6 @@ class UnconnectedGame extends React.PureComponent<IProps> {
 
 function mapStateToProps(state: IStoreState): IStoreProps {
     return {
-        canPlayerAddMoreActionsBoolean: canPlayerAddMoreActions(state),
         gameBoard: state.game.gameBoard,
         player: state.game.player,
     };
