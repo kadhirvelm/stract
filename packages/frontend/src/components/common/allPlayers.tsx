@@ -3,6 +3,7 @@ import { IBoardTeamMetadata, IAllTeams } from "@stract/api";
 import { connect } from "react-redux";
 import { IPlayerWithTeamKey, getOtherTeam } from "../../utils";
 import { IStoreState } from "../../store";
+import styles from "./allPlayers.module.scss";
 
 interface IStoreProps {
     currentPlayer: IPlayerWithTeamKey | undefined;
@@ -18,8 +19,10 @@ function UnconnectedAllPlayers(props: IProps) {
     }
 
     return (
-        <div>
+        <div className={styles.mainContainer}>
+            <span>Your team</span>
             {teams[currentPlayer.teamKey].players.length}
+            <span>The other team</span>
             {teams[getOtherTeam(currentPlayer.teamKey)].players.length}
         </div>
     );

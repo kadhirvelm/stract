@@ -38,7 +38,7 @@ function Action(props: {
     }
 
     const playerName =
-        addedByPlayer === currentPlayer.id ? "You" : teamMetadata.players.find(p => p.id === addedByPlayer);
+        addedByPlayer === currentPlayer.id ? "You" : teamMetadata.players.find(p => p.id === addedByPlayer)?.name;
 
     const maybeRenderDeleteButton = () => {
         if (action.addedByPlayer !== currentPlayer.id) {
