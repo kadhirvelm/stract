@@ -5,12 +5,7 @@ import { connect } from "react-redux";
 import { adjustRowAndColumnByMultipleDirections } from "@stract/utils";
 import { sendServerMessage } from "../../socket";
 import { IStoreState } from "../../store";
-import {
-    IPlayerWithTeamKey,
-    transformDirectionsIntoSingleDirection,
-    translateRowAndColumn,
-    translateColumn,
-} from "../../utils";
+import { IPlayerWithTeamKey, transformDirectionsIntoSingleDirection, translateRowAndColumn } from "../../utils";
 import { Arrow, Spawn, SwitchArrows, BoardPiece } from "../pieces";
 import styles from "./stagedAction.module.scss";
 
